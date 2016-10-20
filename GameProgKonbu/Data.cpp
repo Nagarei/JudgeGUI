@@ -67,9 +67,23 @@ void Data::update()
 
 void Data::InitBuildProblemText()
 {
-	load_state = Load_State::file_open;
+	font_normal   = DxLib::CreateFontToHandle(_T("MS UI Gothic"), 20, 1);
+	font_boldface = DxLib::CreateFontToHandle(_T("MS UI Gothic"), 20, 9);//太字
+	font_h1       = DxLib::CreateFontToHandle(_T("MS UI Gothic"), 40, 9);//大文字、太字
 
-	DEBUG_NOTE; return;
+	ClearProblemsCash();
+}
+void Data::ClearProblemsCash()
+{
+	problems_text.clear();
+	load_state = Load_State::file_open;
+	text_total_size = 0;
+	viewing_problem = 0;
+	now_loding_problem = 0;
+	problem_file.close();
+	problem_text_temp_end_pos.x = problem_text_temp_end_pos.y = 0;
+	problem_text_total_size.width = problem_text_total_size.height = 0;
+	problem_script.clear();
 }
 
 void Data::BuildProblemText()
@@ -80,40 +94,181 @@ void Data::BuildProblemText()
 	{
 		switch (load_state)
 		{
-		case Data::Load_State::file_open:
+		case Data::Load_State::file_open:{
 			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
 			if (problem_file.fail()) {
 				//読み込みエラー
-				const TCHAR*const str = _T("問題を読み込めませんでした。\nF5で再読み込みできます。");//仮テキスト
-				DxLib::GetDrawStringSizeToHandle(&problem_text_total_size.width, &problem_text_total_size.height, nullptr, str, -1, font_normal);//@todo dxlibex
-				problem_script.emplace_back(str);
-				load_state = Load_State::drawing;
+				problem_script.emplace_back(_T("問題を読み込めませんでした。"));
+				problem_script.emplace_back(_T('\n'));
+				problem_script.emplace_back(_T("F5で再読み込みできます。"));
+				load_state = Load_State::size_checking;
+				problem_script_iter = problem_script.begin();
 				break;
 			}
-			//初回読み込み
+			//ファイルチェック
 			if (problem_file.eof()) {
 				problem_file.close();
-				load_state = Load_State::drawing;
+				load_state = Load_State::size_checking;
+				problem_script_iter = problem_script.begin();
 				break;
 			}
-			problem_script.emplace_back();
-			std::getline(problem_file, problem_script.back(), _T('@'));//'@'がでるまで読み込む
-			//fall
+			load_state = Load_State::loading;
+			//初回読み込み処理（先頭に@をつけない）
+			dxle::tstring str_temp;
+			std::getline(problem_file, str_temp, _T('@'));//'@'がでるまで読み込む
+			//行分割
+			for (auto iter_end = str_temp.end(), before_iter = str_temp.begin(), iter = std::find(before_iter, iter_end, _T('\n'));
+				iter != iter_end; before_iter = iter, iter = std::find(before_iter, iter_end, _T('\n'))) {
+
+				problem_script.emplace_back(before_iter, iter);
+				problem_script.emplace_back(_T('\n'));
+			}
+			if (problem_file.eof()) {
+				problem_file.close();
+				load_state = Load_State::size_checking;
+				problem_script_iter = problem_script.begin();
+			}
+		}
+			break;
 		case Data::Load_State::loading:
 			//1区画(@から@まで)を読み込む
-			if (problem_file.eof()) {
-				problem_file.close();
-				load_state = Load_State::drawing;
-				break;
-			}
 			{
 				dxle::tstring temp_str;
 				std::getline(problem_file, temp_str, _T('@'));//'@'がでるまで読み込む
-				problem_script.emplace_back(_T('@') + std::move(temp_str));
+				temp_str.insert(temp_str.begin(), _T('@'));//読み飛ばした@を追加
+				//行分割
+				for (auto iter_end = temp_str.end(), before_iter = temp_str.begin(), iter = std::find(before_iter, iter_end, _T('\n'));
+					iter != iter_end; before_iter = iter, iter = std::find(before_iter, iter_end, _T('\n'))) {
+
+					problem_script.emplace_back(before_iter, iter);
+					problem_script.emplace_back(_T('\n'));
+				}
+			}
+			if (problem_file.eof()) {
+				problem_file.close();
+				load_state = Load_State::size_checking;
+				problem_script_iter = problem_script.begin();
+				break;
 			}
 			break;
-		case Data::Load_State::drawing:
-			DEBUG_NOTE;
+		case Data::Load_State::size_checking: {
+			//スクリプトを一行解析
+
+			DEBUG_NOTE;//スクリプト完全無視
+			
+			if (false)
+			{
+				//画像描画
+			}
+			else if (problem_script_iter->front() == _T('\n'))
+			{
+				//改行
+
+				problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
+
+				//復帰
+				problem_text_next_start_pos.x = 0;
+				problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+			}
+			else
+			{
+				//文字描画
+				int font = font_normal;
+
+				//サイズ取得
+				dxle::sizei temp_size;
+				DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
+					problem_script_iter->c_str(), problem_script_iter->size(), font);//@todo dxlibex
+				//サイズ更新
+				problem_text_next_start_pos.x += temp_size.width;
+				problem_text_newlinw_start_y = std::max(problem_text_newlinw_start_y, problem_text_next_start_pos.y + temp_size.height);
+
+				++problem_script_iter;
+				if (problem_script_iter == problem_script.end()) {
+					//サイズ更新
+					problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
+					problem_text_total_size.height = problem_text_newlinw_start_y;
+					//描画位置巻き戻し
+					problem_text_next_start_pos.x = 0;
+					problem_text_next_start_pos.y = problem_text_newlinw_start_y = 0;
+					//描画に遷移
+					load_state = Load_State::drawing;
+					problems_text[now_loding_problem] = dxle::MakeScreen(problem_text_total_size);
+					problem_script_iter = problem_script.begin();
+				}
+#if 0
+				下のは前の;
+				dxle::sizei temp_size;
+				auto enter_index = problem_script_iter->find_first_of(_T('\n'));
+				if (enter_index == dxle::tstring::npos) { enter_index = problem_script_iter->size(); }
+				//追記処理
+				if (problem_text_next_start_pos.x != 0) {
+					//改行前までの文字を作る
+					FINALLY(([enter_index, problem_script_iter = problem_script_iter]() {
+						(*problem_script_iter)[enter_index] = _T('\n');
+					}));
+					(*problem_script_iter)[enter_index] = _T('\0');
+
+					DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
+						problem_script_iter->c_str(), enter_index, font);//@todo dxlibex
+
+					problem_text_next_start_pos.x += temp_size.width;
+					problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
+					problem_text_total_size.height = problem_text_newlinw_start_y =
+						std::max(problem_text_newlinw_start_y, problem_text_next_start_pos.y + temp_size.height);
+				}
+				ここから書いてない;
+				改行でも分割すべきかもしれない;
+				//サイズチェック
+				dxle::sizei temp_size;
+				DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
+					problem_script_iter->c_str(), problem_script_iter->size(), font_normal);//@todo dxlibex
+				//描画画面拡張処理
+				if (problem_text_total_size.width < temp_size.width || ) {
+					DEBUG_NOTE;
+				}
+#endif
+			}
+		}
+			break;
+		case Data::Load_State::drawing: {
+			//スクリプトを一行解析
+
+			DEBUG_NOTE;//スクリプト完全無視
+
+			if (false)
+			{
+				//画像描画
+			}
+			else if (problem_script_iter->front() == _T('\n'))
+			{
+				//改行 //復帰
+				problem_text_next_start_pos.x = 0;
+				problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+			}
+			else
+			{
+				//文字描画
+				int font = font_normal;
+				dxle::dx_color color;
+
+				//サイズ取得
+				dxle::sizei temp_size;
+				DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
+					problem_script_iter->c_str(), problem_script_iter->size(), font);//@todo dxlibex
+				//描画
+				DxLib::DrawStringToHandle(problem_text_next_start_pos.x, problem_text_next_start_pos.y,
+					problem_script_iter->c_str(), color.get(), font);
+				//サイズ更新
+				problem_text_next_start_pos.x += temp_size.width;
+				problem_text_newlinw_start_y = std::max(problem_text_newlinw_start_y, problem_text_next_start_pos.y + temp_size.height);
+
+				++problem_script_iter;
+				if (problem_script_iter == problem_script.end()) {
+					//次のロードに
+					次のロードに;
+				}
+			}
 			break;
 		case Data::Load_State::end:
 			return;//読み込み終了

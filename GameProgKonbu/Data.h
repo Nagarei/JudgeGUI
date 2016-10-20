@@ -64,20 +64,23 @@ private:
 	std::vector<dxle::screen> problems_text;//問題文のキャッシュ
 
 	//問題文の非同期読み込み
-	enum class Load_State{file_open, loading, drawing, end}load_state;
+	enum class Load_State{file_open, loading, size_checking, drawing, end}load_state;
 	size_t text_total_size;//問題文の合計サイズ(面積)
 	int viewing_problem;//最後に読み込みが要請された問題（index）
-	int now_loding_problem;//今読み込み中の問題（index）
-	tifstream problem_file;//今読み込み中の問題（file-stream）
-	dxle::pointi problem_text_temp_end_pos;//今読み込み中の問題の読み込んだスクリプトの終端位置
-	dxle::sizei problem_text_total_size;//今読み込み中の問題の最大サイズ
+	int now_loding_problem;//今読み込み中(loading)の問題（index）
+	tifstream problem_file;//今読み込み中(loading)の問題（file-stream）
+	dxle::pointi problem_text_next_start_pos;//今drawingの問題の次に描画を始める座標(X==0&&y==problem_text_newlinw_start_yのとき新しい行)
+	int problem_text_newlinw_start_y;//今drawingの問題の次の行の開始y座標
+	dxle::sizei problem_text_total_size;//今drawingの問題の最大サイズ
 	//スクリプト
 	//特殊命令
 	//@image[width hright][image-name] //画像を表示します(width,heightは -1 or 省略した場合デフォルトになります)
 	//@h[text]//見出しのように大きく、太く表示します
 	//@[text]//太く表示します
 	//@@ //@を表示します
-	std::vector<dxle::tstring> problem_script;
+	//\n 改行します
+	std::vector<dxle::tstring> problem_script;//一つ一命令！！
+	decltype(problem_script)::iterator problem_script_iter;//今drawingの問題の次解析すべきスクリプト
 	int font_normal;
 	int font_boldface;//太字
 	int font_h1;//大文字、太字
