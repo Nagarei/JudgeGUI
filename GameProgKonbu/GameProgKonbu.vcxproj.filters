@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="プリコンパイル済みヘッダー">
+      <UniqueIdentifier>{9dd98c22-ec97-453c-aebd-bce01059ad3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sequence">
+      <UniqueIdentifier>{c30e9705-345c-4735-a14e-0316d9e9b672}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sequence\Contest">
+      <UniqueIdentifier>{92ec4d42-cc0a-452c-8d84-ca7c66e763cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{c69345b0-fc8b-4824-a35e-bb88a7121108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Key">
+      <UniqueIdentifier>{878c9465-be4a-406f-99fd-6c9da069cb0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mouse">
+      <UniqueIdentifier>{5a20328f-78f6-4ac7-b920-6dc449d95d5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{6d6085a5-f87e-401b-b221-8304665b1246}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sequence\Option">
+      <UniqueIdentifier>{187d70ed-7d0c-4986-a72e-576e8d5912f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="button">
+      <UniqueIdentifier>{cd90bd75-f0b6-48bc-9818-9364e2cb42a4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>プリコンパイル済みヘッダー</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Sequence.h">
+      <Filter>Sequence</Filter>
+    </ClInclude>
+    <ClInclude Include="Contest.h">
+      <Filter>Sequence\Contest</Filter>
+    </ClInclude>
+    <ClInclude Include="useful_func_and_class.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="FormatToString.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Data.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyInputData.h">
+      <Filter>Key</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="test.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="Option.h">
+      <Filter>Sequence\Option</Filter>
+    </ClInclude>
+    <ClInclude Include="other_usefuls.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
+      <Filter>button</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>プリコンパイル済みヘッダー</Filter>
+    </ClCompile>
+    <ClCompile Include="Contest.cpp">
+      <Filter>Sequence\Contest</Filter>
+    </ClCompile>
+    <ClCompile Include="Data.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyInputData.cpp">
+      <Filter>Key</Filter>
+    </ClCompile>
+    <ClCompile Include="sample_combuchat.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="Option.cpp">
+      <Filter>Sequence\Option</Filter>
+    </ClCompile>
+    <ClCompile Include="button.cpp">
+      <Filter>button</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GameProgKonbu.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="GameProgKonbu.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
