@@ -188,6 +188,11 @@ void Data::BuildProblemText()
 					//サイズ更新
 					problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
 					problem_text_total_size.height = problem_text_newlinw_start_y;
+					//キャッシュサイズ計算
+					text_total_size += problem_text_total_size.width * problem_text_total_size.height;
+					if (false) {
+						DEBUG_NOTE;//キャッシュサイズが規定値を超えた場合の動作
+					}
 					//描画位置巻き戻し
 					problem_text_next_start_pos.x = 0;
 					problem_text_next_start_pos.y = problem_text_newlinw_start_y = 0;
@@ -267,6 +272,18 @@ void Data::BuildProblemText()
 				if (problem_script_iter == problem_script.end()) {
 					//次のロードに
 					次のロードに;
+					const auto problem_num = problems.size();
+					if (problem_num == 1) {
+						load_state = Load_State::end;
+					}
+					//まだ、読み込んでないのを全探査
+					int b_index = viewing_problem;//デクリメントしていく
+					int a_index = (viewing_problem+1) % problem_num;//インクリメントしていく
+					while (b_index != a_index)
+					{
+
+					}
+
 				}
 			}
 			break;
