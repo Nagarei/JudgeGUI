@@ -81,6 +81,9 @@
     <ClInclude Include="button.h">
       <Filter>button</Filter>
     </ClInclude>
+    <ClInclude Include="SetLocale.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

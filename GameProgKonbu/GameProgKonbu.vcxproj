@@ -92,6 +92,7 @@
     <ClInclude Include="button.h" />
     <ClInclude Include="other_usefuls.h" />
     <ClInclude Include="Option.h" />
+    <ClInclude Include="SetLocale.h" />
     <ClInclude Include="test.h" />
     <ClInclude Include="Contest.h" />
     <ClInclude Include="Data.h" />

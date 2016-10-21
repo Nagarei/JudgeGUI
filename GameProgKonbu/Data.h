@@ -88,7 +88,7 @@ private:
 	void InitBuildProblemText();
 	void BuildProblemText();
 private:
-	Data() = default;
+	Data();
 	Data(const Data&) = delete;
 	~Data();
 public:

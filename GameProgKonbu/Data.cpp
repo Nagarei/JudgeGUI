@@ -75,13 +75,14 @@ void Data::InitBuildProblemText()
 }
 void Data::ClearProblemsCash()
 {
-	problems_text.clear();
+	for (auto& i : problems_text) {
+		i.delete_this();
+	}
 	load_state = Load_State::file_open;
 	text_total_size = 0;
-	viewing_problem = 0;
 	now_loding_problem = 0;
 	problem_file.close();
-	problem_text_temp_end_pos.x = problem_text_temp_end_pos.y = 0;
+	problem_text_next_start_pos.x = problem_text_next_start_pos.y = 0;
 	problem_text_total_size.width = problem_text_total_size.height = 0;
 	problem_script.clear();
 }
@@ -95,19 +96,16 @@ void Data::BuildProblemText()
 		switch (load_state)
 		{
 		case Data::Load_State::file_open:{
+			problem_script.clear();
+			text_total_size = 0;
+			problem_text_next_start_pos.x = problem_text_next_start_pos.y = 0;
+			problem_text_total_size.width = problem_text_total_size.height = 0;
 			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
-			if (problem_file.fail()) {
+			if (problem_file.fail() || problem_file.eof()) {
 				//読み込みエラー
 				problem_script.emplace_back(_T("問題を読み込めませんでした。"));
-				problem_script.emplace_back(_T('\n'));
+				problem_script.emplace_back(1, _T('\n'));
 				problem_script.emplace_back(_T("F5で再読み込みできます。"));
-				load_state = Load_State::size_checking;
-				problem_script_iter = problem_script.begin();
-				break;
-			}
-			//ファイルチェック
-			if (problem_file.eof()) {
-				problem_file.close();
 				load_state = Load_State::size_checking;
 				problem_script_iter = problem_script.begin();
 				break;
@@ -118,19 +116,25 @@ void Data::BuildProblemText()
 			std::getline(problem_file, str_temp, _T('@'));//'@'がでるまで読み込む
 			//行分割
 			for (auto iter_end = str_temp.end(), before_iter = str_temp.begin(), iter = std::find(before_iter, iter_end, _T('\n'));
-				iter != iter_end; before_iter = iter, iter = std::find(before_iter, iter_end, _T('\n'))) {
+				iter != iter_end; before_iter = iter+1, iter = std::find(before_iter, iter_end, _T('\n'))) {
 
 				problem_script.emplace_back(before_iter, iter);
-				problem_script.emplace_back(_T('\n'));
-			}
-			if (problem_file.eof()) {
-				problem_file.close();
-				load_state = Load_State::size_checking;
-				problem_script_iter = problem_script.begin();
+				problem_script.emplace_back(1, _T('\n'));
 			}
 		}
 			break;
 		case Data::Load_State::loading:
+			if (problem_file.eof()) {
+				problem_file.close();
+				if (problem_script.empty()) {
+					problem_script.emplace_back(_T("問題を読み込めませんでした。"));
+					problem_script.emplace_back(1, _T('\n'));
+					problem_script.emplace_back(_T("F5で再読み込みできます。"));
+				}
+				load_state = Load_State::size_checking;
+				problem_script_iter = problem_script.begin();
+				break;
+			}
 			//1区画(@から@まで)を読み込む
 			{
 				dxle::tstring temp_str;
@@ -138,25 +142,44 @@ void Data::BuildProblemText()
 				temp_str.insert(temp_str.begin(), _T('@'));//読み飛ばした@を追加
 				//行分割
 				for (auto iter_end = temp_str.end(), before_iter = temp_str.begin(), iter = std::find(before_iter, iter_end, _T('\n'));
-					iter != iter_end; before_iter = iter, iter = std::find(before_iter, iter_end, _T('\n'))) {
+					iter != iter_end; before_iter = iter+1, iter = std::find(before_iter, iter_end, _T('\n'))) {
 
 					problem_script.emplace_back(before_iter, iter);
-					problem_script.emplace_back(_T('\n'));
+					problem_script.emplace_back(1, _T('\n'));
 				}
-			}
-			if (problem_file.eof()) {
-				problem_file.close();
-				load_state = Load_State::size_checking;
-				problem_script_iter = problem_script.begin();
-				break;
 			}
 			break;
 		case Data::Load_State::size_checking: {
+			if (problem_script_iter == problem_script.end()) {
+				//サイズ更新
+				problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
+				problem_text_total_size.height = problem_text_newlinw_start_y;
+				//キャッシュサイズ計算
+				text_total_size += problem_text_total_size.width * problem_text_total_size.height;
+				if (false) {
+					DEBUG_NOTE;//キャッシュサイズが規定値を超えた場合の動作
+				}
+				//描画位置巻き戻し
+				problem_text_next_start_pos.x = 0;
+				problem_text_next_start_pos.y = problem_text_newlinw_start_y = 0;
+				//描画に遷移
+				load_state = Load_State::drawing;
+				problems_text[now_loding_problem] = dxle::MakeScreen(problem_text_total_size);
+				problems_text[now_loding_problem].draw_on_this([&problem_text_total_size = problem_text_total_size]() {
+					DxLib::DrawFillBox(0, 0, problem_text_total_size.width, problem_text_total_size.height
+						, dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
+				});
+				problem_script_iter = problem_script.begin();
+				break;
+			}
+
 			//スクリプトを一行解析
 
 			DEBUG_NOTE;//スクリプト完全無視
+			//クラス形式で書き直したほうが良いと思う
 			
-			if (false)
+			if(problem_script_iter->empty()){}
+			else if (false)
 			{
 				//画像描画
 			}
@@ -168,7 +191,13 @@ void Data::BuildProblemText()
 
 				//復帰
 				problem_text_next_start_pos.x = 0;
-				problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+				if (problem_text_next_start_pos.y == problem_text_newlinw_start_y) {
+					problem_text_newlinw_start_y += 22;
+					problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+				}
+				else {
+					problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+				}
 			}
 			else
 			{
@@ -182,66 +211,55 @@ void Data::BuildProblemText()
 				//サイズ更新
 				problem_text_next_start_pos.x += temp_size.width;
 				problem_text_newlinw_start_y = std::max(problem_text_newlinw_start_y, problem_text_next_start_pos.y + temp_size.height);
-
-				++problem_script_iter;
-				if (problem_script_iter == problem_script.end()) {
-					//サイズ更新
-					problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
-					problem_text_total_size.height = problem_text_newlinw_start_y;
-					//キャッシュサイズ計算
-					text_total_size += problem_text_total_size.width * problem_text_total_size.height;
-					if (false) {
-						DEBUG_NOTE;//キャッシュサイズが規定値を超えた場合の動作
-					}
-					//描画位置巻き戻し
-					problem_text_next_start_pos.x = 0;
-					problem_text_next_start_pos.y = problem_text_newlinw_start_y = 0;
-					//描画に遷移
-					load_state = Load_State::drawing;
-					problems_text[now_loding_problem] = dxle::MakeScreen(problem_text_total_size);
-					problem_script_iter = problem_script.begin();
-				}
-#if 0
-				下のは前の;
-				dxle::sizei temp_size;
-				auto enter_index = problem_script_iter->find_first_of(_T('\n'));
-				if (enter_index == dxle::tstring::npos) { enter_index = problem_script_iter->size(); }
-				//追記処理
-				if (problem_text_next_start_pos.x != 0) {
-					//改行前までの文字を作る
-					FINALLY(([enter_index, problem_script_iter = problem_script_iter]() {
-						(*problem_script_iter)[enter_index] = _T('\n');
-					}));
-					(*problem_script_iter)[enter_index] = _T('\0');
-
-					DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
-						problem_script_iter->c_str(), enter_index, font);//@todo dxlibex
-
-					problem_text_next_start_pos.x += temp_size.width;
-					problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
-					problem_text_total_size.height = problem_text_newlinw_start_y =
-						std::max(problem_text_newlinw_start_y, problem_text_next_start_pos.y + temp_size.height);
-				}
-				ここから書いてない;
-				改行でも分割すべきかもしれない;
-				//サイズチェック
-				dxle::sizei temp_size;
-				DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
-					problem_script_iter->c_str(), problem_script_iter->size(), font_normal);//@todo dxlibex
-				//描画画面拡張処理
-				if (problem_text_total_size.width < temp_size.width || ) {
-					DEBUG_NOTE;
-				}
-#endif
 			}
+
+			++problem_script_iter;
 		}
 			break;
 		case Data::Load_State::drawing: {
+			if (problem_script_iter == problem_script.end())
+			{
+				//次のロードに
+				const auto problem_num = problems.size();
+				if (problem_num == 1) {
+					load_state = Load_State::end;
+				}
+				//まだ、読み込んでないのを全探査
+				int b_index = viewing_problem;//デクリメントしていく
+				int a_index = (viewing_problem + 1) % problem_num;//インクリメントしていく
+				while (b_index != a_index)
+				{
+					if (problems_text[a_index].valid() == false) {
+						now_loding_problem = a_index; break;
+					}
+					++a_index;
+					a_index %= problem_num;
+
+					if (b_index == a_index) { break; }
+
+					if (problems_text[b_index].valid() == false) {
+						now_loding_problem = b_index; break;
+					}
+					--b_index;
+					if (b_index < 0) { b_index += problem_num; }
+				}
+				if (b_index != a_index) {
+					//新規読み込みに遷移
+					load_state = Load_State::file_open;
+				}
+				else {
+					//読み込み終了
+					load_state = Load_State::end;
+				}
+				break;
+			}
+
 			//スクリプトを一行解析
 
 			DEBUG_NOTE;//スクリプト完全無視
 
-			if (false)
+			if (problem_script_iter->empty()) {}
+			else if (false)
 			{
 				//画像描画
 			}
@@ -249,43 +267,37 @@ void Data::BuildProblemText()
 			{
 				//改行 //復帰
 				problem_text_next_start_pos.x = 0;
-				problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+				if (problem_text_next_start_pos.y == problem_text_newlinw_start_y) {
+					problem_text_newlinw_start_y += 22;
+					problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+				}
+				else {
+					problem_text_next_start_pos.y = problem_text_newlinw_start_y;
+				}
 			}
 			else
 			{
 				//文字描画
 				int font = font_normal;
-				dxle::dx_color color;
+				dxle::dx_color color = dxle::color_tag::black;
 
 				//サイズ取得
 				dxle::sizei temp_size;
 				DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
 					problem_script_iter->c_str(), problem_script_iter->size(), font);//@todo dxlibex
 				//描画
-				DxLib::DrawStringToHandle(problem_text_next_start_pos.x, problem_text_next_start_pos.y,
-					problem_script_iter->c_str(), color.get(), font);
+				problems_text[now_loding_problem].draw_on_this([this,color,font]() {
+					DxLib::DrawStringToHandle(problem_text_next_start_pos.x, problem_text_next_start_pos.y,
+						problem_script_iter->c_str(), color.get(), font);
+				});
 				//サイズ更新
 				problem_text_next_start_pos.x += temp_size.width;
 				problem_text_newlinw_start_y = std::max(problem_text_newlinw_start_y, problem_text_next_start_pos.y + temp_size.height);
-
-				++problem_script_iter;
-				if (problem_script_iter == problem_script.end()) {
-					//次のロードに
-					次のロードに;
-					const auto problem_num = problems.size();
-					if (problem_num == 1) {
-						load_state = Load_State::end;
-					}
-					//まだ、読み込んでないのを全探査
-					int b_index = viewing_problem;//デクリメントしていく
-					int a_index = (viewing_problem+1) % problem_num;//インクリメントしていく
-					while (b_index != a_index)
-					{
-
-					}
-
-				}
 			}
+
+
+			++problem_script_iter;
+		}
 			break;
 		case Data::Load_State::end:
 			return;//読み込み終了
@@ -296,6 +308,10 @@ void Data::BuildProblemText()
 
 		//一定時間たったら抜ける
 	} while ((DxLib::GetNowCount() - start_time) < load_time);
+}
+Data::Data()
+	: load_state(Load_State::end)
+{
 }
 Data::~Data()
 {

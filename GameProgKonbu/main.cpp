@@ -3,6 +3,7 @@
 #include "Option.h"
 #include "Mouse.h"
 #include "Data.h"
+#include "SetLocale.h"
 
 namespace {
 	///DxLib初期化処理
@@ -55,6 +56,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 namespace {
 	bool MyDxLib_Init()
 	{
+		SetLocale();
+
 #	ifndef _DEBUG
 		SetOutApplicationLogValidFlag(FALSE);//Log.txtを作成しない
 #	endif

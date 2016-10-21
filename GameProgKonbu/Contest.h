@@ -8,6 +8,7 @@ private:
 	int main_font;
 
 	int selecting;
+	dxle::pointi problem_pos;
 public:
 	Contest();
 	~Contest();

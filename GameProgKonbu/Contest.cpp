@@ -62,6 +62,7 @@ void Contest::draw()const
 	if (problems.IsLoadFinesed(selecting))
 	{
 		//–â‘è•\Ž¦
+		Data::GetIns().DrawProblem(selecting, problem_pos);
 	}
 	else
 	{
