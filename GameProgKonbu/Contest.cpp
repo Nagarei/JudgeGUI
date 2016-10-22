@@ -7,6 +7,7 @@ namespace
 {
 	const int title_space = 50;
 	const int side_space_size = 20;
+	const int menu_space_size = 100;
 }
 Contest::Contest()
 	: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
@@ -57,12 +58,15 @@ void Contest::draw()const
 	//タイトル表示
 	DrawStringCenter({ 0,0 }, problems[selecting].GetName().c_str(), dxle::color_tag::white, title_font, window_x);
 	//スコア表示
-	DrawStringCenter({ 0,32 }, _T("%d/%d"), dxle::color_tag::white, title_font, window_x, problems[selecting].GetScore(), problems[selecting].GetMaxScore());
+	DrawStringCenter({ 0,32 }, _T("%d/%d"), dxle::color_tag::white, main_font, window_x, problems[selecting].GetScore(), problems[selecting].GetMaxScore());
 
 	if (problems.IsLoadFinesed(selecting))
 	{
 		//問題表示
+		DxLib::SetDrawArea(menu_space_size, title_space, window_x, window_y);
+		DxLib::DrawFillBox(menu_space_size, title_space, window_x, window_y, dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
 		Data::GetIns().DrawProblem(selecting, problem_pos);
+		DxLib::SetDrawAreaFull();
 	}
 	else
 	{
@@ -75,8 +79,8 @@ void Contest::draw()const
 
 	//問題選択矢印表示
 	draw_SelectProblem();
-	DrawToLeftArrow2(0, window_y / 2, side_space_size, dxle::color_tag::yellow);
-	DrawToRightArrow2(window_x, window_y / 2, side_space_size, dxle::color_tag::yellow);
+	DrawToLeftArrow2(0, title_space / 2, side_space_size, dxle::color_tag::yellow);
+	DrawToRightArrow2(window_x, title_space / 2, side_space_size, dxle::color_tag::yellow);
 }
 
 void Contest::SetWindowTitle()
@@ -84,9 +88,11 @@ void Contest::SetWindowTitle()
 	auto& problems = Data::GetIns();
 	DxLib::SetMainWindowText(ToStringEx(
 		problems[selecting].GetName(),
+		_T(" ("),
 		problems[selecting].GetScore(),
 		_T('/'),
-		problems[selecting].GetMaxScore()
+		problems[selecting].GetMaxScore(),
+		_T(')')
 	).c_str());
 }
 
@@ -151,6 +157,13 @@ void Contest::draw_SelectProblem() const
 void Contest::update_Scroll()
 {
 	DEBUG_NOTE;
+	problem_pos.x = menu_space_size;
+	problem_pos.y = title_space;
+	return;
+	
+	auto problem_size = Data::GetIns().GetProblemSize(selecting);
+	//上下
+	if()
 }
 
 void Contest::draw_Scroll() const

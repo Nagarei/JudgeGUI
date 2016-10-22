@@ -108,6 +108,10 @@ public:
 	void DrawProblem(int index, dxle::pointi pos)const {
 		problems_text[index].DrawGraph(pos, false);
 	}
+	//@return true:finish
+	dxle::sizei GetProblemSize(int index)const {
+		return problems_text[index].GetGraphSize();
+	}
 	void ClearProblemsCash();
 	//スレッドセーフ
 	const dxle::tstring& GetProblemsDirectory()const { return problems_directory; }

@@ -40,6 +40,9 @@
     <Filter Include="button">
       <UniqueIdentifier>{cd90bd75-f0b6-48bc-9818-9364e2cb42a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ScrollBar">
+      <UniqueIdentifier>{9b41938d-1b5c-4f47-bd7e-561b7f76d328}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -84,6 +87,9 @@
     <ClInclude Include="SetLocale.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="ScrollBar.h">
+      <Filter>ScrollBar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -115,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="button.cpp">
       <Filter>button</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollBar.cpp">
+      <Filter>ScrollBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
