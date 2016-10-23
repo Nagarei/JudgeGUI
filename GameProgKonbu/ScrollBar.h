@@ -37,12 +37,17 @@ public:
 private:
 	int32_t bar_height;//スクロールバー自体の描画サイズ
 	int32_t object_size;//ずらしたいオブジェクトのyサイズ
-	int32_t display_area_size;//オブジェクトの描画範囲
-	int32_t now_pos;//ずらすピクセル [0,display_area_size-object_size)
-	int32_t hold_pos_correction;//マウスに掴まれているとき grip_y = mouse_y + hold_pos_correction になる値 (old_grip_y-old_mouse_y)
+	int32_t display_area_size;//スクロールバー部分を除いたオブジェクトの描画範囲
+	DEBUG_NOTE;//↑スクロールバーを不要なときに消す動作を実装したい
+	int32_t now_pos;//ずらすピクセル [0,display_area_size-object_size) 描画座標スケール
+	int32_t hold_pos_correction;//マウスに掴まれているとき grip_y = mouse_y + hold_pos_correction になる値 (old_grip_y-old_mouse_y) バー上座標スケール
 	bool is_horizontal;
 	bool last_mouse_input;
 	bool is_holded;//マウスに掴まれているか
 	bool is_mouse_on_grip;//マウスがバーの上にいるか
-	static const int bar_width = 17;
+	static const int32_t bar_width = 17;
+	static const int32_t arrow_size = 15;
+
+	inline int32_t to_display_scale(int32_t bar_pos)const { return     bar_pos * object_size / bar_height; }//バー上座標=>描画座標の変換
+	inline int32_t to_bar_scale(int32_t display_pos)const { return display_pos * bar_height / object_size; }//描画座標=>バー上座標の変換
 };
