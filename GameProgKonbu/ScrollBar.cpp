@@ -3,31 +3,30 @@
 #include "useful_func_and_class.h"
 
 ScroolBar::ScroolBar()
-	: bar_height(0)
-	, object_size(1)
-	, display_area_size(1)
+	: object_size(1)
+	, page_size(1)
 	, now_pos(0)
-	, hold_pos_correction(0)
+	, grip_start_mousepos(0)
+	, grip_start_nowpos(0)
 	, is_horizontal(false)
 	, last_mouse_input(false)
 	, is_holded(false)
-	, is_mouse_on_grip(false)
+	, on_mouse_pos(mouse_pos::out)
 {
 }
 
-void ScroolBar::set(int32_t bar_size_, int32_t object_size_, int32_t display_area_size_, bool is_horizontal_)
+void ScroolBar::set(int32_t object_size_, int32_t page_size_, bool is_horizontal_)
 {
-	bar_height = bar_size_;
-	object_size_ = object_size_;
-	display_area_size = display_area_size_;
-	now_pos = std::min(now_pos, std::max(0, object_size - display_area_size));
+	object_size = object_size_;
+	page_size = page_size_;
+	now_pos = std::min(now_pos, std::max(0, object_size - page_size) - 1);
 	is_horizontal = is_horizontal_;
 }
 
-void ScroolBar::update(dxle::point_c<int32_t> mouse_relative, bool mouse_left_input, uint32_t keyboard_input)
+void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value)
 {
-	if (bar_height == 0) { return; }
-	if (object_size <= display_area_size) {
+	assert(0 < bar_height);
+	if (object_size <= page_size) {
 		now_pos = 0;
 		return;
 	}
@@ -39,6 +38,13 @@ void ScroolBar::update(dxle::point_c<int32_t> mouse_relative, bool mouse_left_in
 	FINALLY([&](){
 		last_mouse_input = mouse_left_input; 
 	});
+	
+	auto to_pix_scale = [object_size= object_size, bar_height](int32_t bar_v) {
+		return bar_v * object_size / bar_height;
+	};
+	auto to_bar_scale = [object_size = object_size, bar_height](int32_t pix_v) {
+		return pix_v * bar_height / object_size;
+	};
 
 	//マウス入力計算
 	if (is_holded)
@@ -57,11 +63,16 @@ void ScroolBar::update(dxle::point_c<int32_t> mouse_relative, bool mouse_left_in
 			(0 <= mouse_relative.y && mouse_relative.y < bar_height))
 		{
 			//マウスがバーの上
+
 			if (mouse_relative.y < arrow_size) {
 				//上矢印
-				DEBUG_NOTE;
+				on_mouse_pos = mouse_pos::up_arrow;
 			}
-			else if (to_bar_scale(now_pos) <= mouse_relative.y && mouse_relative.y < to_bar_scale(now_pos + object_size)) {
+			else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos)) {
+				//上矢印とグリップの間
+				on_mouse_pos = mouse_pos::up_space;
+			}
+			else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos + page_size)) {
 				DEBUG_NOTE;
 			}
 			else if (mouse_relative.y - arrow_size <= mouse_relative.y) {

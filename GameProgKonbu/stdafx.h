@@ -27,4 +27,10 @@
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください。
 
+namespace dxle
+{
+	using pointi32 = dxle::point_c<int32_t>;
+	using sizei32 = dxle::size_c<int32_t>;
+}
+
 #endif

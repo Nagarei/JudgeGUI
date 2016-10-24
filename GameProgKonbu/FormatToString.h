@@ -38,12 +38,14 @@ inline dxle::tstring FormatToString(dxle::tstring format_string, Args&&... args)
 //ó‚¯æ‚Á‚½‚Ì‚ğ•Ğ‚Á’[‚©‚çostream‚É“Ë‚Á‚Ş
 inline void ToStringEx_impl(std::basic_ostream<TCHAR>&)
 {}
+
 template<typename Type1, typename... Args >
 //ó‚¯æ‚Á‚½‚Ì‚ğ•Ğ‚Á’[‚©‚çostream‚É“Ë‚Á‚Ş
 inline void ToStringEx_impl(std::basic_ostream<TCHAR>& os, Type1&& param1, Args&&... args)
 {
 	ToStringEx_impl(os << std::forward<Type1>(param1), std::forward<Args>(args)...);
 }
+
 template<typename... Args>
 //ó‚¯æ‚Á‚½‚Ì‚ğ•Ğ‚Á’[‚©‚çsstream‚É“Ë‚Á‚Ş
 inline dxle::tstring ToStringEx(Args&&... args)

@@ -45,11 +45,13 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\lib\boost;C:\lib;C:\lib\DxLib;..\DxLib;Z:\library\DxLib;Z:\library\boost;Z:\library;$(IncludePath)</IncludePath>
     <LibraryPath>..\DxLib;C:\lib\DxLib;Z:\library\DxLib;Z:\library\boost\stage\$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\lib\boost;C:\lib;C:\lib\DxLib;..\DxLib;Z:\library\DxLib;Z:\library\boost;Z:\library;$(IncludePath)</IncludePath>
     <LibraryPath>..\DxLib;C:\lib\DxLib;Z:\library\DxLib;Z:\library\boost\stage\$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
