@@ -26,7 +26,7 @@ void ScroolBar::set_bar_state(int32_t object_size_, int32_t page_size_, bool is_
 	reset_mouse_state();
 }
 
-void ScroolBar::update(uint32_t frame_time, dxle::point_c<int32_t> mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value)
+void ScroolBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value)
 {
 	assert(0 < bar_size.width && 0 < bar_size.height);
 	if (object_size <= page_size) {
@@ -50,13 +50,14 @@ void ScroolBar::update(uint32_t frame_time, dxle::point_c<int32_t> mouse_relativ
 	if (is_holded)
 	{
 		if (mouse_left_input) {
-			int32_t grip_y = mouse_relative.y + hold_pos_correction;
-			now_pos = to_display_scale(grip_y);
+			auto mouse_diff = mouse_relative.y - grip_start_mousepos;
+			now_pos = grip_start_nowpos + to_pix_scale(mouse_diff) * 1000;
 		}
 		else {
 			is_holded = false;
 		}
 	}
+	on_mouse_pos = mouse_pos::out;
 	if ((0 <= mouse_relative.x && mouse_relative.x < bar_size.width) &&
 		(0 <= mouse_relative.y && mouse_relative.y < bar_size.height))
 	{
@@ -75,8 +76,12 @@ void ScroolBar::update(uint32_t frame_time, dxle::point_c<int32_t> mouse_relativ
 		else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos / 1000 + page_size)) {
 			//グリップ
 			on_mouse_pos = mouse_pos::grip;
-			DEBUG_NOTE;
-			(!last_mouse_input) && mouse_left_input;
+			if (!is_holded && mouse_left_input)
+			{
+				is_holded = true;
+				grip_start_nowpos = now_pos;
+				grip_start_mousepos = mouse_relative.y;
+			}
 		}
 		else if (mouse_relative.y < bar_size.height - arrow_size) {
 			//下矢印とグリップの間
