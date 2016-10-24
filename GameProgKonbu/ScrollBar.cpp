@@ -79,7 +79,7 @@ void ScroolBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32
 		else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos / 1000 + page_size)) {
 			//グリップ
 			on_mouse_pos = mouse_pos::grip;
-			if (!is_holded && mouse_left_input)
+			if (!is_holded && !last_mouse_input && mouse_left_input)
 			{
 				is_holded = true;
 				grip_start_nowpos = now_pos;
@@ -140,6 +140,17 @@ void ScroolBar::draw(dxle::pointi32 bar_pos) const
 		return;
 	}
 	DEBUG_NOTE;
+
+	constexpr dxle::rgb back_color{ 230, 231, 232 };
+	constexpr dxle::rgb arrow_neutral_color{ 80,80,80 };
+	constexpr dxle::rgb arrow_on_back_color{ 210,210,210 };
+	constexpr dxle::rgb arrow_push_color{ 255,255,255 };
+	constexpr dxle::rgb arrow_push_back_color{ 120,120,120 };
+	constexpr dxle::rgb grip_neutral_color{ 193,193,193 };
+	constexpr dxle::rgb grip_on_color{ 168,168,168 };
+	constexpr dxle::rgb grip_push_color{ 120,120,120 };
+
+	//後ろ描画
 }
 
 void ScroolBar::reset_mouse_state()
