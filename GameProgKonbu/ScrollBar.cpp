@@ -8,24 +8,27 @@ ScroolBar::ScroolBar()
 	, now_pos(0)
 	, grip_start_mousepos(0)
 	, grip_start_nowpos(0)
+	, bar_size()
 	, is_horizontal(false)
-	, last_mouse_input(false)
+	, mouse_input_start_is_out(false)
 	, is_holded(false)
 	, on_mouse_pos(mouse_pos::out)
 {
 }
 
-void ScroolBar::set(int32_t object_size_, int32_t page_size_, bool is_horizontal_)
+void ScroolBar::set_bar_state(int32_t object_size_, int32_t page_size_, bool is_horizontal_)
 {
 	object_size = object_size_;
 	page_size = page_size_;
-	now_pos = std::min(now_pos, std::max(0, object_size - page_size) - 1);
+	set_now_pos_raw(now_pos);
 	is_horizontal = is_horizontal_;
+
+	reset_mouse_state();
 }
 
-void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value)
+void ScroolBar::update(uint32_t frame_time, dxle::point_c<int32_t> mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value)
 {
-	assert(0 < bar_height);
+	assert(0 < bar_size.width && 0 < bar_size.height);
 	if (object_size <= page_size) {
 		now_pos = 0;
 		return;
@@ -34,17 +37,14 @@ void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relativ
 		//x軸、y軸を入れ替えてやれば垂直と同じ
 		std::swap(mouse_relative.x, mouse_relative.y);
 	}
-
-	FINALLY([&](){
-		last_mouse_input = mouse_left_input; 
-	});
 	
-	auto to_pix_scale = [object_size= object_size, bar_height](int32_t bar_v) {
-		return bar_v * object_size / bar_height;
+	auto to_pix_scale = [object_size= object_size, bar_size_height = bar_size.height](int32_t bar_v) {
+		return bar_v * object_size / bar_size_height;
 	};
-	auto to_bar_scale = [object_size = object_size, bar_height](int32_t pix_v) {
-		return pix_v * bar_height / object_size;
+	auto to_bar_scale = [object_size = object_size, bar_size_height = bar_size.height](int32_t pix_v) {
+		return pix_v * bar_size_height / object_size;
 	};
+
 
 	//マウス入力計算
 	if (is_holded)
@@ -57,48 +57,79 @@ void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relativ
 			is_holded = false;
 		}
 	}
-	else
+	if ((0 <= mouse_relative.x && mouse_relative.x < bar_size.width) &&
+		(0 <= mouse_relative.y && mouse_relative.y < bar_size.height))
 	{
-		if ((0 <= mouse_relative.x && mouse_relative.x < bar_width) &&
-			(0 <= mouse_relative.y && mouse_relative.y < bar_height))
-		{
-			//マウスがバーの上
+		//マウスがバーの上
 
-			if (mouse_relative.y < arrow_size) {
-				//上矢印
-				on_mouse_pos = mouse_pos::up_arrow;
-			}
-			else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos)) {
-				//上矢印とグリップの間
-				on_mouse_pos = mouse_pos::up_space;
-			}
-			else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos + page_size)) {
-				DEBUG_NOTE;
-			}
-			else if (mouse_relative.y - arrow_size <= mouse_relative.y) {
-				//下矢印
-				DEBUG_NOTE;
-			}
-			is_mouse_on_bar = true;
-			DEBUG_NOTE;
+		if (mouse_relative.y < arrow_size) {
+			//上矢印
+			on_mouse_pos = mouse_pos::up_arrow;
+			if(!is_holded && mouse_left_input){ now_pos -= arrow_value * frame_time; }
 		}
+		else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos / 1000)) {
+			//上矢印とグリップの間
+			on_mouse_pos = mouse_pos::up_space;
+			if (!is_holded && mouse_left_input) { now_pos -= page_size * frame_time * 2; }
+		}
+		else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos / 1000 + page_size)) {
+			//グリップ
+			on_mouse_pos = mouse_pos::grip;
+			DEBUG_NOTE;
+			(!last_mouse_input) && mouse_left_input;
+		}
+		else if (mouse_relative.y < bar_size.height - arrow_size) {
+			//下矢印とグリップの間
+			on_mouse_pos = mouse_pos::down_space;
+			if (!is_holded && mouse_left_input) { now_pos += page_size * frame_time * 2; }
+		}
+		else{
+			//下矢印
+			on_mouse_pos = mouse_pos::down_arrow;
+			if (!is_holded && mouse_left_input) { now_pos += arrow_value * frame_time; }
+		}
+
+	}
+	if (!is_holded)
+	{
+		now_pos += wheel * 1000;
 	}
 
 	//キーボード入力
 	if (!is_holded)
 	{
-		DEBUG_NOTE;
+		if (keyboard_input & keyboard_input_mask::up) {
+			now_pos -= arrow_value * frame_time;
+		}
+		if (keyboard_input & keyboard_input_mask::page_up) {
+			now_pos -= page_size * frame_time * 2;
+		}
+		if (keyboard_input & keyboard_input_mask::down) {
+			now_pos += arrow_value * frame_time;
+		}
+		if (keyboard_input & keyboard_input_mask::page_down) {
+			now_pos += page_size * frame_time * 2;
+		}
 	}
 
 	//now_posの補正
-	if (now_pos < 0) { now_pos = 0; }
-	else if (std::max(0, object_size - display_area_size) < now_pos) {
-		now_pos = std::max(0, object_size - display_area_size);
-	}
+	set_now_pos_raw(now_pos);
+
+	mouse_input_start_is_outの計算;
 }
 
-void ScroolBar::draw() const
+void ScroolBar::draw(dxle::pointi32 bar_pos) const
 {
-	if (bar_height == 0) { return; }
+	assert(0 < bar_size.width && 0 < bar_size.height);
+	if (object_size <= page_size) {
+		return;
+	}
 	DEBUG_NOTE;
+}
+
+void ScroolBar::reset_mouse_state()
+{
+	mouse_input_start_is_out = true;
+	is_holded = false;
+	on_mouse_pos = mouse_pos::out;
 }
