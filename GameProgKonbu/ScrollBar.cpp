@@ -45,6 +45,9 @@ void ScroolBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32
 		return pix_v * bar_size_height / object_size;
 	};
 
+	FINALLY([&]() {
+		last_mouse_input = mouse_left_input;
+	});
 
 	//マウス入力計算
 	if (is_holded)
@@ -120,7 +123,14 @@ void ScroolBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32
 	//now_posの補正
 	set_now_pos_raw(now_pos);
 
-	mouse_input_start_is_outの計算;
+	//mouse_input_start_is_outの計算;
+	if (mouse_input_start_is_out) {
+		mouse_input_start_is_out = mouse_left_input;
+	}
+	else  if (!last_mouse_input && mouse_left_input)
+	{
+		mouse_input_start_is_out = (on_mouse_pos == mouse_pos::out);
+	}
 }
 
 void ScroolBar::draw(dxle::pointi32 bar_pos) const

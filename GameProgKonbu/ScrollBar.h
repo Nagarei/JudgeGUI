@@ -34,7 +34,7 @@ public:
 	//@param mouse_left_input マウスの「掴む」ボタンの入力
 	//@param keyboard_input keyboard_input_maskで構成されたキーの入力状況
 	//@param arrow_value 矢印ボタンが押されたときの移動量(pix/sec)
-	void update(uint32_t frame_time, dxle::point_c<int32_t> mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value = 100);
+	void update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value = 100);
 	void draw(dxle::pointi32 bar_pos)const;
 	
 	//どれだけずらすべきか取得
@@ -46,9 +46,10 @@ private:
 	int32_t page_size;//スクロールバー部分を除いたオブジェクトの描画範囲(pix)(is_visible==falseのときはバーの大きさが0の事に注意)
 	int32_t now_pos;//ずらすピクセル*1000 [0,object_size-page_size*1000) (pix*1000)
 	int32_t grip_start_mousepos;//グリップが始まったときのマウスの位置
-	int32_t grip_start_nowpos;//グリップが始まったときのnow_pos
+	int32_t grip_start_nowpos;//グリップが始まったときのnow_pos(pix*1000)
 	dxle::sizei32 bar_size;
 	bool is_horizontal;
+	bool last_mouse_input;
 	bool mouse_input_start_is_out;
 	bool is_holded;//マウスに掴まれているか
 	enum class mouse_pos{up_arrow, up_space, grip, down_space, down_arrow, out}on_mouse_pos;
