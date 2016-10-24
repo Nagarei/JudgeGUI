@@ -1,4 +1,4 @@
-#include "button.h"
+ï»¿#include "button.h"
 
 namespace {
 	
@@ -12,7 +12,7 @@ void Button::draw_str(dxle::dx_color_param string_color, str_pos str_pos_, int f
 {
 	if (size == 0) { return; }
 
-	//•`‰æ”ÍˆÍ’²®
+	//æç”»ç¯„å›²èª¿æ•´
 	//@todo dxlibex
 	RECT old_draw_area;
 	DxLib::GetDrawArea(&old_draw_area);
@@ -23,7 +23,7 @@ void Button::draw_str(dxle::dx_color_param string_color, str_pos str_pos_, int f
 		std::min<int>(pos1.y + size.height, old_draw_area.bottom)
 	);
 
-	//•¶š•\¦
+	//æ–‡å­—è¡¨ç¤º
 	switch (str_pos_)
 	{
 	case Button::str_pos::left:
@@ -41,7 +41,7 @@ void Button::draw_str(dxle::dx_color_param string_color, str_pos str_pos_, int f
 		 break;
 	}
 
-	//•`‰æ”ÍˆÍ’²®
+	//æç”»ç¯„å›²èª¿æ•´
 	DxLib::SetDrawArea(
 		(old_draw_area.left), (old_draw_area.top), (old_draw_area.right), (old_draw_area.bottom)
 	);

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <cstdint>
 
 #if !defined(__clang__) && 1
@@ -10,13 +10,13 @@ class ScroolBar
 {
 public:
 	ScroolBar();
-	//@param object_size_ “®‚©‚·‚à‚Ì‚Ì‘å‚«‚³
-	//@param page_size_ •¨‚ğ•\¦‚·‚é‘å‚«‚³(ƒo[ŠÜ‚Ş)
-	//@param is_horizontal_ true‚Å‰¡Œü‚«ƒo[
+	//@param object_size_ å‹•ã‹ã™ã‚‚ã®ã®å¤§ãã•
+	//@param page_size_ ç‰©ã‚’è¡¨ç¤ºã™ã‚‹å¤§ãã•(ãƒãƒ¼å«ã‚€)
+	//@param is_horizontal_ trueã§æ¨ªå‘ããƒãƒ¼
 	ScroolBar(int32_t object_size_, int32_t page_size_, bool is_horizontal_ = false) :ScroolBar() { set(object_size_, page_size_, is_horizontal_); }
-	//@param object_size_ “®‚©‚·‚à‚Ì‚Ì‘å‚«‚³
-	//@param page_size_ •¨‚ğ•\¦‚·‚é‘å‚«‚³(ƒo[ŠÜ‚Ş)
-	//@param is_horizontal_ true‚Å‰¡Œü‚«ƒo[
+	//@param object_size_ å‹•ã‹ã™ã‚‚ã®ã®å¤§ãã•
+	//@param page_size_ ç‰©ã‚’è¡¨ç¤ºã™ã‚‹å¤§ãã•(ãƒãƒ¼å«ã‚€)
+	//@param is_horizontal_ trueã§æ¨ªå‘ããƒãƒ¼
 	void set(int32_t object_size_, int32_t page_size_, bool is_horizontal_ = false);
 
 	struct keyboard_input_mask{
@@ -25,27 +25,27 @@ public:
 		static const uint32_t page_up   = 0b0100;
 		static const uint32_t page_down = 0b1000;
 	};
-	//@param bar_size ƒo[‚Ì•`‰æy(‰¡‚Ì‚Íx)ƒTƒCƒY
-	//@param mouse_relative ƒo[‚Ì¶ã‚ğŒ´“_‚Æ‚µ‚½ƒ}ƒEƒX‚Ì‘Š‘ÎÀ•W
-	//@param wheel ƒ}ƒEƒX‚ÌƒzƒC[ƒ‹‚Ì‰ñ“]—Ê
-	//@param mouse_left_input ƒ}ƒEƒX‚Ìu’Í‚Şvƒ{ƒ^ƒ“‚Ì“ü—Í
-	//@param keyboard_input keyboard_input_mask‚Å\¬‚³‚ê‚½ƒL[‚Ì“ü—Íó‹µ
-	//@param arrow_value –îˆóƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚ÌˆÚ“®—Ê
+	//@param bar_size ãƒãƒ¼ã®æç”»y(æ¨ªã®æ™‚ã¯x)ã‚µã‚¤ã‚º
+	//@param mouse_relative ãƒãƒ¼ã®å·¦ä¸Šã‚’åŸç‚¹ã¨ã—ãŸãƒã‚¦ã‚¹ã®ç›¸å¯¾åº§æ¨™
+	//@param wheel ãƒã‚¦ã‚¹ã®ãƒ›ã‚¤ãƒ¼ãƒ«ã®å›è»¢é‡
+	//@param mouse_left_input ãƒã‚¦ã‚¹ã®ã€Œæ´ã‚€ã€ãƒœã‚¿ãƒ³ã®å…¥åŠ›
+	//@param keyboard_input keyboard_input_maskã§æ§‹æˆã•ã‚ŒãŸã‚­ãƒ¼ã®å…¥åŠ›çŠ¶æ³
+	//@param arrow_value çŸ¢å°ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ãã®ç§»å‹•é‡
 	void update(uint32_t bar_size, dxle::point_c<int32_t> mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value = 2);
 	void draw(dxle::pointi32 bar_pos, uint32_t bar_size)const;
 	
-	//‚Ç‚ê‚¾‚¯‚¸‚ç‚·‚×‚«‚©æ“¾
+	//ã©ã‚Œã ã‘ãšã‚‰ã™ã¹ãã‹å–å¾—
 	int32_t get_value()const { return now_pos; }
 private:
-	int32_t object_size;//‚¸‚ç‚µ‚½‚¢ƒIƒuƒWƒFƒNƒg‚ÌyƒTƒCƒY(pix)
-	int32_t page_size;//ƒXƒNƒ[ƒ‹ƒo[•”•ª‚ğœ‚¢‚½ƒIƒuƒWƒFƒNƒg‚Ì•`‰æ”ÍˆÍ(pix)
-	DEBUG_NOTE;//ªƒXƒNƒ[ƒ‹ƒo[‚ğ•s—v‚È‚Æ‚«‚ÉÁ‚·“®ì‚ğÀ‘•‚µ‚½‚¢
-	int32_t now_pos;//‚¸‚ç‚·ƒsƒNƒZƒ‹ [0,object_size-page_size) (pix)
-	int32_t grip_start_mousepos;//ƒOƒŠƒbƒv‚ªn‚Ü‚Á‚½‚Æ‚«‚Ìƒ}ƒEƒX‚ÌˆÊ’u
-	int32_t grip_start_nowpos;//ƒOƒŠƒbƒv‚ªn‚Ü‚Á‚½‚Æ‚«‚Ìnow_pos
+	int32_t object_size;//ãšã‚‰ã—ãŸã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®yã‚µã‚¤ã‚º(pix)
+	int32_t page_size;//ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼éƒ¨åˆ†ã‚’é™¤ã„ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æç”»ç¯„å›²(pix)
+	DEBUG_NOTE;//â†‘ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã‚’ä¸è¦ãªã¨ãã«æ¶ˆã™å‹•ä½œã‚’å®Ÿè£…ã—ãŸã„
+	int32_t now_pos;//ãšã‚‰ã™ãƒ”ã‚¯ã‚»ãƒ« [0,object_size-page_size) (pix)
+	int32_t grip_start_mousepos;//ã‚°ãƒªãƒƒãƒ—ãŒå§‹ã¾ã£ãŸã¨ãã®ãƒã‚¦ã‚¹ã®ä½ç½®
+	int32_t grip_start_nowpos;//ã‚°ãƒªãƒƒãƒ—ãŒå§‹ã¾ã£ãŸã¨ãã®now_pos
 	bool is_horizontal;
 	bool last_mouse_input;
-	bool is_holded;//ƒ}ƒEƒX‚É’Í‚Ü‚ê‚Ä‚¢‚é‚©
+	bool is_holded;//ãƒã‚¦ã‚¹ã«æ´ã¾ã‚Œã¦ã„ã‚‹ã‹
 	enum class mouse_pos{up_arrow, up_space, grip, down_space, down_arrow, out}on_mouse_pos;
 	static const int32_t bar_width = 17;
 	static const int32_t arrow_size = 15;

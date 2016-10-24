@@ -1,4 +1,4 @@
-#ifndef USEFUL_FUNC_AND_CLASS_H_201503222223_1223_
+ï»¿#ifndef USEFUL_FUNC_AND_CLASS_H_201503222223_1223_
 #define USEFUL_FUNC_AND_CLASS_H_201503222223_1223_
 
 using dxColor = decltype(GetColor(255, 255, 255));
@@ -34,22 +34,22 @@ inline void DrawStringCenter(dxle::pointi pos, const TCHAR*const str, dxle::dx_c
 	DrawFormatStringToHandle(pos.x + (area_width - str_width) / 2, pos.y, color.get(), font, str, std::forward<Args>(args)...);
 }
 
-//!‰©F‚¢¶Œü‚«–îˆó‚ğ‘‚­(x:¶,y:’†‰›,size:c‚Ì’·‚³‚Ì”¼•ª)
+//!é»„è‰²ã„å·¦å‘ãçŸ¢å°ã‚’æ›¸ã(x:å·¦,y:ä¸­å¤®,size:ç¸¦ã®é•·ã•ã®åŠåˆ†)
 inline void DrawToLeftArrow(int x, int y, int size_half, unsigned color)throw()
 {
 	DrawTriangle(x, y, x + (int)(sqrt3 * size_half), y - size_half, x + (int)(sqrt3 * size_half), y + size_half, color, TRUE);
 }
-//!‰©F‚¢‰EŒü‚«–îˆó‚ğ‘‚­(x:‰E,y:’†‰›,size:c‚Ì’·‚³‚Ì”¼•ª)
+//!é»„è‰²ã„å³å‘ãçŸ¢å°ã‚’æ›¸ã(x:å³,y:ä¸­å¤®,size:ç¸¦ã®é•·ã•ã®åŠåˆ†)
 inline void DrawToRightArrow(int x, int y, int size_half, unsigned color)throw()
 {
 	DrawTriangle(x, y, x - (int)(sqrt3 * size_half), y - size_half, x - (int)(sqrt3 * size_half), y + size_half, color, TRUE);
 }
-//!‰©F‚¢¶Œü‚«–îˆó‚ğ‘‚­(x:¶,y:’†‰›,size:‰¡‚Ì’·‚³)
+//!é»„è‰²ã„å·¦å‘ãçŸ¢å°ã‚’æ›¸ã(x:å·¦,y:ä¸­å¤®,size:æ¨ªã®é•·ã•)
 inline void DrawToLeftArrow2(int x, int y, int width, dxle::dx_color_param color)throw()
 {
 	DrawTriangle(x, y, x + width, y - (int)(width / sqrt3), x + width, y + (int)(width / sqrt3), color.get(), TRUE);
 }
-//!‰©F‚¢‰EŒü‚«–îˆó‚ğ‘‚­(x:‰E,y:’†‰›,size:c‚Ì’·‚³‚Ì”¼•ª)
+//!é»„è‰²ã„å³å‘ãçŸ¢å°ã‚’æ›¸ã(x:å³,y:ä¸­å¤®,size:ç¸¦ã®é•·ã•ã®åŠåˆ†)
 inline void DrawToRightArrow2(int x, int y, int width, dxle::dx_color_param color)throw()
 {
 	DrawTriangle(x, y, x - width, y - (int)(width / sqrt3), x - width, y + (int)(width / sqrt3), color.get(), TRUE);

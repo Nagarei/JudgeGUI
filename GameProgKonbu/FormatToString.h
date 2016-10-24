@@ -1,10 +1,10 @@
-//printf‚Ì‚æ‚¤‚ÈƒtƒH[ƒ}ƒbƒg‚ğstd::string‚É•ÏŠ·‚·‚é
-//(boost::format‚Ì‘®‚ğó‚¯æ‚Á‚Ästd::string‚É•ÏŠ·‚·‚é)
+ï»¿//printfã®ã‚ˆã†ãªãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’std::stringã«å¤‰æ›ã™ã‚‹
+//(boost::formatã®æ›¸å¼ã‚’å—ã‘å–ã£ã¦std::stringã«å¤‰æ›ã™ã‚‹)
 
 // 2015/11/07 by nagata
-//g—p‚Íboost‚ğƒCƒ“ƒNƒ‹[ƒhƒfƒBƒŒƒNƒgƒŠ‚É’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢
-//‚ ‚Æ‚Í‚±‚Ìƒwƒbƒ_‚ğƒCƒ“ƒNƒ‹[ƒh‚·‚é‚¾‚¯‚Åg‚¦‚Ü‚·
-//iŒ»İZ:\library\boostj
+//ä½¿ç”¨æ™‚ã¯boostã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«è¿½åŠ ã—ã¦ãã ã•ã„
+//ã‚ã¨ã¯ã“ã®ãƒ˜ãƒƒãƒ€ã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã™ã‚‹ã ã‘ã§ä½¿ãˆã¾ã™
+//ï¼ˆç¾åœ¨Z:\library\boostï¼‰
 
 #ifndef FORMAT_TO_STRING_2015_11_07_1500_415386410534036025
 #define FORMAT_TO_STRING_2015_11_07_1500_415386410534036025
@@ -27,27 +27,27 @@ inline dxle::tstring FormatToString_impl(Format_T&& format, Type1&& param1, Args
 
 
 template<typename... Args>
-//printf‚Ì‚æ‚¤‚ÈƒtƒH[ƒ}ƒbƒg‚ğstring‚É•ÏŠ·‚·‚é
-//(boost::format‚Ì‘®‚ğó‚¯æ‚Á‚Ästring‚É•ÏŠ·‚·‚é)
+//printfã®ã‚ˆã†ãªãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’stringã«å¤‰æ›ã™ã‚‹
+//(boost::formatã®æ›¸å¼ã‚’å—ã‘å–ã£ã¦stringã«å¤‰æ›ã™ã‚‹)
 inline dxle::tstring FormatToString(dxle::tstring format_string, Args&&... args)
 {
 	return FormatToString_impl(boost::basic_format<TCHAR>(format_string), std::forward<Args>(args)...);
 }
 
 
-//ó‚¯æ‚Á‚½‚Ì‚ğ•Ğ‚Á’[‚©‚çostream‚É“Ë‚Á‚Ş
+//å—ã‘å–ã£ãŸã®ã‚’ç‰‡ã£ç«¯ã‹ã‚‰ostreamã«çªã£è¾¼ã‚€
 inline void ToStringEx_impl(std::basic_ostream<TCHAR>&)
 {}
 
 template<typename Type1, typename... Args >
-//ó‚¯æ‚Á‚½‚Ì‚ğ•Ğ‚Á’[‚©‚çostream‚É“Ë‚Á‚Ş
+//å—ã‘å–ã£ãŸã®ã‚’ç‰‡ã£ç«¯ã‹ã‚‰ostreamã«çªã£è¾¼ã‚€
 inline void ToStringEx_impl(std::basic_ostream<TCHAR>& os, Type1&& param1, Args&&... args)
 {
 	ToStringEx_impl(os << std::forward<Type1>(param1), std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-//ó‚¯æ‚Á‚½‚Ì‚ğ•Ğ‚Á’[‚©‚çsstream‚É“Ë‚Á‚Ş
+//å—ã‘å–ã£ãŸã®ã‚’ç‰‡ã£ç«¯ã‹ã‚‰sstreamã«çªã£è¾¼ã‚€
 inline dxle::tstring ToStringEx(Args&&... args)
 {
 	std::basic_stringstream<TCHAR> ss;

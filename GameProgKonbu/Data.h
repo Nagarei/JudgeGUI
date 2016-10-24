@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "useful_func_and_class.h"
 
 class Score final
@@ -7,7 +7,7 @@ public:
 	uint32_t use_memory;
 	uint32_t use_time;
 	enum class Type_T{ AC,WA,TLE,MLE,RE }type;
-	TCHAR input_name[10];//“ü—Íƒtƒ@ƒCƒ‹‚Ì–¼‘O
+	TCHAR input_name[10];//å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰
 };
 class Scores final
 {
@@ -17,7 +17,7 @@ private:
 	Type_T type;
 	dxle::tstring source_name;
 	std::vector<Score> scores;
-	dxle::tstring C_message;//ƒRƒ“ƒpƒCƒ‹ƒƒbƒZ[ƒW
+	dxle::tstring C_message;//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 public:
 	Scores() = default;
 	Scores(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_, dxle::tstring C_message_)
@@ -34,24 +34,24 @@ class Problem final
 {
 private:
 	const int max_score = 0;
-	const std::vector<std::pair<int, size_t>> partial_scores;//•”•ª“_@first: “¾“_A@secondF‚Ç‚±‚Ü‚Å‚Ì–â‘è‚©(<=)(“ü—Íƒtƒ@ƒCƒ‹‚Ì”Ô†)
+	const std::vector<std::pair<int, size_t>> partial_scores;//éƒ¨åˆ†ç‚¹ã€€first: å¾—ç‚¹ã€ã€€secondï¼šã©ã“ã¾ã§ã®å•é¡Œã‹(<=)(å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®ç•ªå·)
 	const dxle::tstring name;
 	int my_socre = 0;
 	std::vector<Scores> scores_set;
 public:
 	struct init_error{};
-	//@param path:––”ö‚É\–”‚Í/
+	//@param path:æœ«å°¾ã«\åˆã¯/
 	Problem(dxle::tstring path, const TCHAR* name)throw(...);
 	Problem(const Problem&) = default;
 	Problem(Problem&&) = default;
 
-	//ƒXƒŒƒbƒhƒZ[ƒt
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•
 	const dxle::tstring& GetName()const { return name; }
-	//ƒXƒŒƒbƒhƒZ[ƒt‚Å‚È‚¢
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•ã§ãªã„
 	int GetScore()const { return my_socre; }
-	//ƒXƒŒƒbƒhƒZ[ƒt
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•
 	int GetMaxScore()const { return max_score; }
-	//ƒXƒŒƒbƒhƒZ[ƒt‚Å‚È‚¢
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•ã§ãªã„
 	void AddScores(Scores&& new_data);
 };
 class Data final : boost::noncopyable
@@ -59,31 +59,31 @@ class Data final : boost::noncopyable
 private:
 	dxle::tstring user_name;
 
-	const dxle::tstring problems_directory;//InitProblemˆÈŠO‚Å•ÏX‚µ‚È‚¢‚±‚Æi‚»‚ê‚É‚æ‚Á‚ÄƒXƒŒƒbƒhƒZ[ƒt‚É‚µ‚Ä‚¢‚éˆ×j
-	const std::vector<Problem> problems;//InitProblemˆÈŠO‚Å—v‘f”‚ğ•ÏX‚µ‚È‚¢‚±‚Æi‚»‚ê‚É‚æ‚Á‚ÄƒXƒŒƒbƒhƒZ[ƒt‚É‚µ‚Ä‚¢‚éˆ×j
-	std::vector<dxle::screen> problems_text;//–â‘è•¶‚ÌƒLƒƒƒbƒVƒ…
+	const dxle::tstring problems_directory;//InitProblemä»¥å¤–ã§å¤‰æ›´ã—ãªã„ã“ã¨ï¼ˆãã‚Œã«ã‚ˆã£ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•ã«ã—ã¦ã„ã‚‹ç‚ºï¼‰
+	const std::vector<Problem> problems;//InitProblemä»¥å¤–ã§è¦ç´ æ•°ã‚’å¤‰æ›´ã—ãªã„ã“ã¨ï¼ˆãã‚Œã«ã‚ˆã£ã¦ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•ã«ã—ã¦ã„ã‚‹ç‚ºï¼‰
+	std::vector<dxle::screen> problems_text;//å•é¡Œæ–‡ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥
 
-	//–â‘è•¶‚Ì”ñ“¯Šú“Ç‚İ‚İ
+	//å•é¡Œæ–‡ã®éåŒæœŸèª­ã¿è¾¼ã¿
 	enum class Load_State{file_open, loading, size_checking, drawing, end}load_state;
-	size_t text_total_size;//–â‘è•¶‚Ì‡ŒvƒTƒCƒY(–ÊÏ)
-	int viewing_problem;//ÅŒã‚É“Ç‚İ‚İ‚ª—v¿‚³‚ê‚½–â‘èiindexj
-	int now_loding_problem;//¡“Ç‚İ‚İ’†(loading)‚Ì–â‘èiindexj
-	tifstream problem_file;//¡“Ç‚İ‚İ’†(loading)‚Ì–â‘èifile-streamj
-	dxle::pointi problem_text_next_start_pos;//¡drawing‚Ì–â‘è‚ÌŸ‚É•`‰æ‚ğn‚ß‚éÀ•W(X==0&&y==problem_text_newlinw_start_y‚Ì‚Æ‚«V‚µ‚¢s)
-	int problem_text_newlinw_start_y;//¡drawing‚Ì–â‘è‚ÌŸ‚Ìs‚ÌŠJnyÀ•W
-	dxle::sizei problem_text_total_size;//¡drawing‚Ì–â‘è‚ÌÅ‘åƒTƒCƒY
-	//ƒXƒNƒŠƒvƒg
-	//“Áê–½—ß
-	//@image[width hright][image-name] //‰æ‘œ‚ğ•\¦‚µ‚Ü‚·(width,height‚Í -1 or È—ª‚µ‚½ê‡ƒfƒtƒHƒ‹ƒg‚É‚È‚è‚Ü‚·)
-	//@h[text]//Œ©o‚µ‚Ì‚æ‚¤‚É‘å‚«‚­A‘¾‚­•\¦‚µ‚Ü‚·
-	//@[text]//‘¾‚­•\¦‚µ‚Ü‚·
-	//@@ //@‚ğ•\¦‚µ‚Ü‚·
-	//\n ‰üs‚µ‚Ü‚·
-	std::vector<dxle::tstring> problem_script;//ˆê‚Âˆê–½—ßII
-	decltype(problem_script)::iterator problem_script_iter;//¡drawing‚Ì–â‘è‚ÌŸ‰ğÍ‚·‚×‚«ƒXƒNƒŠƒvƒg
+	size_t text_total_size;//å•é¡Œæ–‡ã®åˆè¨ˆã‚µã‚¤ã‚º(é¢ç©)
+	int viewing_problem;//æœ€å¾Œã«èª­ã¿è¾¼ã¿ãŒè¦è«‹ã•ã‚ŒãŸå•é¡Œï¼ˆindexï¼‰
+	int now_loding_problem;//ä»Šèª­ã¿è¾¼ã¿ä¸­(loading)ã®å•é¡Œï¼ˆindexï¼‰
+	tifstream problem_file;//ä»Šèª­ã¿è¾¼ã¿ä¸­(loading)ã®å•é¡Œï¼ˆfile-streamï¼‰
+	dxle::pointi problem_text_next_start_pos;//ä»Šdrawingã®å•é¡Œã®æ¬¡ã«æç”»ã‚’å§‹ã‚ã‚‹åº§æ¨™(X==0&&y==problem_text_newlinw_start_yã®ã¨ãæ–°ã—ã„è¡Œ)
+	int problem_text_newlinw_start_y;//ä»Šdrawingã®å•é¡Œã®æ¬¡ã®è¡Œã®é–‹å§‹yåº§æ¨™
+	dxle::sizei problem_text_total_size;//ä»Šdrawingã®å•é¡Œã®æœ€å¤§ã‚µã‚¤ã‚º
+	//ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+	//ç‰¹æ®Šå‘½ä»¤
+	//@image[width hright][image-name] //ç”»åƒã‚’è¡¨ç¤ºã—ã¾ã™(width,heightã¯ -1 or çœç•¥ã—ãŸå ´åˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«ãªã‚Šã¾ã™)
+	//@h[text]//è¦‹å‡ºã—ã®ã‚ˆã†ã«å¤§ããã€å¤ªãè¡¨ç¤ºã—ã¾ã™
+	//@[text]//å¤ªãè¡¨ç¤ºã—ã¾ã™
+	//@@ //@ã‚’è¡¨ç¤ºã—ã¾ã™
+	//\n æ”¹è¡Œã—ã¾ã™
+	std::vector<dxle::tstring> problem_script;//ä¸€ã¤ä¸€å‘½ä»¤ï¼ï¼
+	decltype(problem_script)::iterator problem_script_iter;//ä»Šdrawingã®å•é¡Œã®æ¬¡è§£æã™ã¹ãã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 	int font_normal;
-	int font_boldface;//‘¾š
-	int font_h1;//‘å•¶šA‘¾š
+	int font_boldface;//å¤ªå­—
+	int font_h1;//å¤§æ–‡å­—ã€å¤ªå­—
 
 	void InitBuildProblemText();
 	void BuildProblemText();
@@ -95,7 +95,7 @@ public:
 	static Data& GetIns(){
 		static Data ins; return ins;
 	}
-	void InitProblem(dxle::tstring path);//‰‰ñŒÄ‚Ño‚µŒÀ’èI
+	void InitProblem(dxle::tstring path);//åˆå›å‘¼ã³å‡ºã—é™å®šï¼
 	void set_user_name(dxle::tstring name) { user_name = std::move(name); }
 	const dxle::tstring& get_user_name() { return user_name; }
 	void SetBuildProblemText(size_t index);
@@ -113,21 +113,21 @@ public:
 		return problems_text[index].GetGraphSize();
 	}
 	void ClearProblemsCash();
-	//ƒXƒŒƒbƒhƒZ[ƒt
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•
 	const dxle::tstring& GetProblemsDirectory()const { return problems_directory; }
-	//ƒXƒŒƒbƒhƒZ[ƒt
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•
 	const Problem& operator[](size_t i)const{
 		return problems[i];
 	}
-	//ƒXƒŒƒbƒhƒZ[ƒt
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•
 	Problem& operator[](size_t i){
 		return const_cast<std::vector<Problem>&>(problems)[i];
 	}
-	//ƒXƒŒƒbƒhƒZ[ƒt
+	//ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•
 	size_t size()const { return problems.size(); }
 
 private:
-	//problems‚ÌScore‚ÌXVƒLƒƒƒbƒVƒ…
+	//problemsã®Scoreã®æ›´æ–°ã‚­ãƒ£ãƒƒã‚·ãƒ¥
 	static std::mutex new_scores_mtx;
 	static std::vector<std::pair<size_t, Scores>> new_scores;//FIFO (first: pop, last: push)
 	void update_ScoresSet();

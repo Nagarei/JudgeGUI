@@ -1,4 +1,4 @@
-#include "KeyInputData.h"
+ï»¿#include "KeyInputData.h"
 
 KeyInputData::KeyInputData()
 	: now( GetNowCount() )
@@ -14,21 +14,21 @@ KeyInputData::KeyInputData()
 }
 void KeyInputData::Update()
 {
-	//XV‘O‚Ì•ûŒüƒL[‚Ìó‘Ô‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+	//æ›´æ–°å‰ã®æ–¹å‘ã‚­ãƒ¼ã®çŠ¶æ…‹ã‚’ä¿å­˜ã—ã¦ãŠã
 	for (uint8_t i = 0; i < end_DirectionKey; ++i)
 	{
-		if( now_key[GetKeyMask(static_cast<DirectionKey>(i))] == 1 ){//ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡
-			if((last_arrow_key[i] + 200 <= now)){//0.2•b‘OƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢ê‡
-				last_arrow_key[i] = now;//‰Ÿ‚µ‚½”»’è
+		if( now_key[GetKeyMask(static_cast<DirectionKey>(i))] == 1 ){//ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆ
+			if((last_arrow_key[i] + 200 <= now)){//0.2ç§’å‰ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„å ´åˆ
+				last_arrow_key[i] = now;//æŠ¼ã—ãŸåˆ¤å®š
 			}
 		}
 		else{
 			last_arrow_key[i] = -1;
 		}
 	}
-	//XV
+	//æ›´æ–°
 	std::swap(last_key, now_key);
-	GetHitKeyStateAll(now_key);//Œ»İ‚ÌƒL[‚Ìó‘Ô‚ğ‹L˜^
+	GetHitKeyStateAll(now_key);//ç¾åœ¨ã®ã‚­ãƒ¼ã®çŠ¶æ…‹ã‚’è¨˜éŒ²
 	now = GetNowCount();
 }
 uint_fast8_t KeyInputData::GetKeyMask(DirectionKey direction)
@@ -58,8 +58,8 @@ bool KeyInputData::GetNewKeyInput(uint_fast8_t Mask)
 }
 bool KeyInputData::GetDirectionKeyInput(DirectionKey direction)
 {
-	if( now_key[GetKeyMask(direction)] ){//ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡
-		if((last_arrow_key[direction] + 200 <= now)){//0.2•b‘OƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢ê‡
+	if( now_key[GetKeyMask(direction)] ){//ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆ
+		if((last_arrow_key[direction] + 200 <= now)){//0.2ç§’å‰ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„å ´åˆ
 			return true;
 		}
 	}

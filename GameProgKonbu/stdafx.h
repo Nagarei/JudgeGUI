@@ -1,7 +1,7 @@
-// stdafx.h : �W���̃V�X�e�� �C���N���[�h �t�@�C���̃C���N���[�h �t�@�C���A�܂���
-// �Q�Ɖ񐔂������A�����܂�ύX����Ȃ��A�v���W�F�N�g��p�̃C���N���[�h �t�@�C��
-// ���L�q���܂��B
-// VC++�̐ݒ�ɂ��t�@�C���̐擪�Ŏ����I�ɓǂݍ��܂�܂��B
+﻿// stdafx.h : 標準のシステム インクルード ファイルのインクルード ファイル、または
+// 参照回数が多く、かつあまり変更されない、プロジェクト専用のインクルード ファイル
+// を記述します。
+// VC++の設定によりファイルの先頭で自動的に読み込まれます。
 
 #ifndef STDAFX_H_201505121652_1_6_5_8_
 #define STDAFX_H_201505121652_1_6_5_8_
@@ -25,7 +25,7 @@
 #include "Sequence.h"
 #include "KeyInputData.h"
 
-// TODO: �v���O�����ɕK�v�Ȓǉ��w�b�_�[�������ŎQ�Ƃ��Ă��������B
+// TODO: プログラムに必要な追加ヘッダーをここで参照してください。
 
 namespace dxle
 {

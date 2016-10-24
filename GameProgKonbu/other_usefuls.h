@@ -1,28 +1,28 @@
-#pragma once
+ï»¿#pragma once
 
 //class Uncopyable : public boost::noncopyable
 //{};
 
 
 	//-------type_modifier-------
-//ã‚©‚çCüq‚È‚µ—pAconst—pAvolatile—pAconst volatile—p
+//ä¸Šã‹ã‚‰ä¿®é£¾å­ãªã—ç”¨ã€constç”¨ã€volatileç”¨ã€const volatileç”¨
 
-//‘æˆêƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¢‚Ä‚¢‚éCüq‚ğ‘æ“ñƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¯‚é
+//ç¬¬ä¸€ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã„ã¦ã„ã‚‹ä¿®é£¾å­ã‚’ç¬¬äºŒãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã‘ã‚‹
 template<typename check_type , typename base_type>
 struct type_modifier{
 	typedef base_type result_type;
 };
-//‘æˆêƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¢‚Ä‚¢‚éCüq‚ğ‘æ“ñƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¯‚é
+//ç¬¬ä¸€ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã„ã¦ã„ã‚‹ä¿®é£¾å­ã‚’ç¬¬äºŒãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã‘ã‚‹
 template<typename check_type , typename base_type>
 struct type_modifier<const check_type,base_type>{
 	typedef const base_type result_type;
 };
-//‘æˆêƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¢‚Ä‚¢‚éCüq‚ğ‘æ“ñƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¯‚é
+//ç¬¬ä¸€ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã„ã¦ã„ã‚‹ä¿®é£¾å­ã‚’ç¬¬äºŒãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã‘ã‚‹
 template<typename check_type , typename base_type>
 struct type_modifier<volatile check_type,base_type>{
 	typedef volatile base_type result_type;
 };
-//‘æˆêƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¢‚Ä‚¢‚éCüq‚ğ‘æ“ñƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Â‚¯‚é
+//ç¬¬ä¸€ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã„ã¦ã„ã‚‹ä¿®é£¾å­ã‚’ç¬¬äºŒãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¤ã‘ã‚‹
 template<typename check_type , typename base_type>
 struct type_modifier<const volatile check_type,base_type>{
 	typedef const volatile base_type result_type;
@@ -30,11 +30,11 @@ struct type_modifier<const volatile check_type,base_type>{
 
 	//------pointer_cast-------
 
-//ƒ|ƒCƒ“ƒ^‚©‚çƒ|ƒCƒ“ƒ^‚Ö‚ÌŒ^•ÏŠ·‚ğs‚¤
+//ãƒã‚¤ãƒ³ã‚¿ã‹ã‚‰ãƒã‚¤ãƒ³ã‚¿ã¸ã®å‹å¤‰æ›ã‚’è¡Œã†
 template<typename return_type , typename parameter_type>
 inline return_type pointer_cast(parameter_type*const& pointer)
 {
-	//‚¢‚Á‚½‚ñ‘Î‰‚·‚éCüq‚ğ‚Â‚¯‚½void*‚É•ÏŠ·‚µ‚Ä‚©‚ç‚à‚¤ˆê“xƒLƒƒƒXƒg‚·‚é
+	//ã„ã£ãŸã‚“å¯¾å¿œã™ã‚‹ä¿®é£¾å­ã‚’ã¤ã‘ãŸvoid*ã«å¤‰æ›ã—ã¦ã‹ã‚‰ã‚‚ã†ä¸€åº¦ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹
 	return static_cast<return_type>(static_cast<typename type_modifier<parameter_type,void*>::result_type >(pointer));
 }
 
@@ -62,7 +62,7 @@ struct BIT<0>{
 #define DEBUG_NOTE static_assert(false,"");
 #endif
 
-//***‘I‘ğˆ‚Ég‚¤enum class:unsigned char;***
+//***é¸æŠè‚¢ã«ä½¿ã†enum class:unsigned char;***
 #define EnumClassSelectDeclarationMain(ENUM,ENUM_NAME,...) \
 	enum class ENUM:unsigned char{ __VA_ARGS__ , end}ENUM_NAME;\
 	friend auto operator++(ENUM& param)->ENUM&{\
@@ -83,7 +83,7 @@ struct BIT<0>{
 		return (param = static_cast<ENUM>(temp));\
 	}
 
-//***‘I‘ğˆ‚Ég‚¤enum:unsigned char;***
+//***é¸æŠè‚¢ã«ä½¿ã†enum:unsigned char;***
 #define EnumSelectDeclarationMain(ENUM,ENUM_NAME,...) \
 	enum ENUM:unsigned char{ __VA_ARGS__ , ENUM##_end}ENUM_NAME;\
 	friend auto operator++(ENUM& param)->ENUM&{\
@@ -104,5 +104,5 @@ struct BIT<0>{
 		return (param = static_cast<ENUM>(temp));\
 	}
 
-//***‘I‘ğˆ‚Ég‚¤enum class Select:unsigned char;***
+//***é¸æŠè‚¢ã«ä½¿ã†enum class Select:unsigned char;***
 #define EnumClassSelectDeclaration(...) EnumClassSelectDeclarationMain(Select,selecting,__VA_ARGS__)

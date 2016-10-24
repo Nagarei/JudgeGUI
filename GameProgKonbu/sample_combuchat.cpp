@@ -1,4 +1,4 @@
-#include <time.h>
+ï»¿#include <time.h>
 #include <direct.h>
 #include "Shlwapi.h"
 #include "DxLib.h"
@@ -6,24 +6,24 @@
 
 #pragma comment(lib, "shlwapi.lib")
 
-#define DATA_DIR_NAME "\\\\SERVER-PC\\Server\\WorkSpace\\CombChat"	//ƒf[ƒ^ŠÇ——pƒtƒHƒ‹ƒ_
+#define DATA_DIR_NAME "\\\\SERVER-PC\\Server\\WorkSpace\\CombChat"	//ãƒ‡ãƒ¼ã‚¿ç®¡ç†ç”¨ãƒ•ã‚©ãƒ«ãƒ€
 
-#define WIN_SIZE_X		640							//‘‹‰¡
-#define WIN_SIZE_Y		480							//‘‹c
-#define MAX_STRING_SIZE	54							//•¶Žš‚ÌÅ‘å
+#define WIN_SIZE_X		640							//çª“æ¨ª
+#define WIN_SIZE_Y		480							//çª“ç¸¦
+#define MAX_STRING_SIZE	54							//æ–‡å­—ã®æœ€å¤§
 #define DISP_SENTENCE	28
 
-#define STR_ERR		-1								//ƒGƒ‰[
-#define STR_MSG		1								//•¶Žš—ñ‚ªƒƒbƒZ[ƒW
-#define STR_CONT	2								//•¶Žš—ñ‚ª‘O‚Ì•¶‚Ì‘±‚«
-#define STR_FILE	3								//•¶Žš—ñ‚ªƒtƒ@ƒCƒ‹
-#define STR_INFO	4								//•¶Žš—ñ‚ªî•ñ
+#define STR_ERR		-1								//ã‚¨ãƒ©ãƒ¼
+#define STR_MSG		1								//æ–‡å­—åˆ—ãŒãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+#define STR_CONT	2								//æ–‡å­—åˆ—ãŒå‰ã®æ–‡ã®ç¶šã
+#define STR_FILE	3								//æ–‡å­—åˆ—ãŒãƒ•ã‚¡ã‚¤ãƒ«
+#define STR_INFO	4								//æ–‡å­—åˆ—ãŒæƒ…å ±
 
-#define BUFFER_TYPE_STRING	1						//ƒoƒbƒtƒ@[‚ª•¶Žš—ñ
-#define BUFFER_TYPE_FILE	2						//ƒoƒbƒtƒ@[‚ªƒtƒ@ƒCƒ‹
-#define BUFFER_TYPE_INFO	3						//ƒoƒbƒtƒ@[‚ªî•ñ
+#define BUFFER_TYPE_STRING	1						//ãƒãƒƒãƒ•ã‚¡ãƒ¼ãŒæ–‡å­—åˆ—
+#define BUFFER_TYPE_FILE	2						//ãƒãƒƒãƒ•ã‚¡ãƒ¼ãŒãƒ•ã‚¡ã‚¤ãƒ«
+#define BUFFER_TYPE_INFO	3						//ãƒãƒƒãƒ•ã‚¡ãƒ¼ãŒæƒ…å ±
 
-struct Chat {										//ƒ`ƒƒƒbƒg“à•”ƒf[ƒ^
+struct Chat {										//ãƒãƒ£ãƒƒãƒˆå†…éƒ¨ãƒ‡ãƒ¼ã‚¿
 	int StrAttribute;
 	char UserName[MAX_PATH];
 	char DrawString[MAX_PATH];
@@ -31,16 +31,16 @@ struct Chat {										//ƒ`ƒƒƒbƒg“à•”ƒf[ƒ^
 };
 
 struct SendBuffer {
-	int BufferType;				//ƒoƒbƒtƒ@[‚ÌŽí—Þ
-	char BufferStr[1024];		//ƒoƒbƒtƒ@[‚Ì“à—e
+	int BufferType;				//ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®ç¨®é¡ž
+	char BufferStr[1024];		//ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®å†…å®¹
 };
 
-bool GetChatName(char *ChatNameBuffer, int nSize);	//ƒ`ƒƒƒbƒg‚Å‚Ì–¼‘O‚ðŽæ“¾
-int SendStr(const char *SendString);				//•¶Žš—ño—Í
-int SendFile(const char *FilePath);					//ƒtƒ@ƒCƒ‹ƒAƒbƒvƒ[ƒh&‘‚«ž‚Ý
-int CommandStrToInt(const char *Command);			//ƒRƒ}ƒ“ƒh‚ð”’l‚É•ÏŠ·
-Chat* ReadChat(int *nBuffer);						//ƒRƒ}ƒ“ƒh“Ç‚Ýž‚Ý
-int SendInfo(const char *InfoStr);					//î•ñ‘—M
+bool GetChatName(char *ChatNameBuffer, int nSize);	//ãƒãƒ£ãƒƒãƒˆã§ã®åå‰ã‚’å–å¾—
+int SendStr(const char *SendString);				//æ–‡å­—åˆ—å‡ºåŠ›
+int SendFile(const char *FilePath);					//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰&æ›¸ãè¾¼ã¿
+int CommandStrToInt(const char *Command);			//ã‚³ãƒžãƒ³ãƒ‰ã‚’æ•°å€¤ã«å¤‰æ›
+Chat* ReadChat(int *nBuffer);						//ã‚³ãƒžãƒ³ãƒ‰èª­ã¿è¾¼ã¿
+int SendInfo(const char *InfoStr);					//æƒ…å ±é€ä¿¡
 
 char ChatFilePath[MAX_PATH];
 char ChatName[MAX_PATH];
@@ -50,32 +50,32 @@ void ShutDownCallback(void *Data)
 {
 	char Logout[MAX_PATH];
 
-	sprintf_s(Logout, "%s‚ª‘Þo‚µ‚Ü‚µ‚½B", ChatName);
+	sprintf_s(Logout, "%sãŒé€€å‡ºã—ã¾ã—ãŸã€‚", ChatName);
 
 	SendInfo(Logout);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
-	SetOutApplicationLogValidFlag(FALSE);				//ƒƒO‚ðo‚³‚È‚¢
-	ChangeWindowMode(TRUE);								//ƒEƒBƒ“ƒhƒEƒ‚[ƒh‚É‚·‚é
-	SetAlwaysRunFlag(TRUE);								//í‚É“®ì
-	SetGraphMode(WIN_SIZE_X, WIN_SIZE_Y, 16);			//‰ð‘œ“x•ÏX
-	SetMainWindowText("©•zƒ`ƒƒƒbƒg");					//ƒ^ƒCƒgƒ‹•ÏX
-	SetWindowIconID(IDI_ICON1);							//ƒAƒCƒRƒ“•ÏX
+	SetOutApplicationLogValidFlag(FALSE);				//ãƒ­ã‚°ã‚’å‡ºã•ãªã„
+	ChangeWindowMode(TRUE);								//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¢ãƒ¼ãƒ‰ã«ã™ã‚‹
+	SetAlwaysRunFlag(TRUE);								//å¸¸ã«å‹•ä½œ
+	SetGraphMode(WIN_SIZE_X, WIN_SIZE_Y, 16);			//è§£åƒåº¦å¤‰æ›´
+	SetMainWindowText("æ˜†å¸ƒãƒãƒ£ãƒƒãƒˆ");					//ã‚¿ã‚¤ãƒˆãƒ«å¤‰æ›´
+	SetWindowIconID(IDI_ICON1);							//ã‚¢ã‚¤ã‚³ãƒ³å¤‰æ›´
 
-	//ƒVƒƒƒbƒgƒ_ƒEƒ“Žž‚ÉŽÀs
+	//ã‚·ãƒ£ãƒƒãƒˆãƒ€ã‚¦ãƒ³æ™‚ã«å®Ÿè¡Œ
 	SetShutdownCallbackFunction(ShutDownCallback, NULL, "Exiting...");
 
-	//ƒEƒBƒ“ƒhƒE”ñ•\Ž¦
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦éžè¡¨ç¤º
 	SetWindowVisibleFlag(FALSE);
 
-	if (DxLib_Init() == -1) return -1;					//DXƒ‰ƒCƒuƒ‰ƒŠ‰Šú‰»ˆ—
+	if (DxLib_Init() == -1) return -1;					//DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªåˆæœŸåŒ–å‡¦ç†
 
-	SetWindowUserCloseEnableFlag(FALSE);				//•Â‚¶‚é–³Œø
-	SetDragFileValidFlag(TRUE);							//D&D‚ð—LŒø
-	SetDrawScreen(DX_SCREEN_BACK);						//•`‰ææ‰æ–Ê‚ð— ‚É‚·‚é
-	SetFontSize(16);									//ƒtƒHƒ“ƒgƒTƒCƒYŽw’è
+	SetWindowUserCloseEnableFlag(FALSE);				//é–‰ã˜ã‚‹ç„¡åŠ¹
+	SetDragFileValidFlag(TRUE);							//D&Dã‚’æœ‰åŠ¹
+	SetDrawScreen(DX_SCREEN_BACK);						//æç”»å…ˆç”»é¢ã‚’è£ã«ã™ã‚‹
+	SetFontSize(16);									//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºæŒ‡å®š
 
 	int LastReadTime = 0;
 	time_t timer = time(NULL);
@@ -106,14 +106,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	KeyInputHandle = MakeKeyInput(1023, FALSE, FALSE, FALSE);
 	SetActiveKeyInput(KeyInputHandle);
 
-	SetFontSize(28);											//ƒtƒHƒ“ƒgƒTƒCƒYŽw’è
-	ChangeFontType(DX_FONTTYPE_ANTIALIASING_8X8);				//ƒtƒHƒ“ƒgƒ^ƒCƒvŽw’è
+	SetFontSize(28);											//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºæŒ‡å®š
+	ChangeFontType(DX_FONTTYPE_ANTIALIASING_8X8);				//ãƒ•ã‚©ãƒ³ãƒˆã‚¿ã‚¤ãƒ—æŒ‡å®š
 
 	int FontHandle = CreateFontToHandle(NULL, 16, -1);
 
 	char Login[MAX_PATH];
 
-	sprintf_s(Login, "%s‚ª“üŽº‚µ‚Ü‚µ‚½B", ChatName);
+	sprintf_s(Login, "%sãŒå…¥å®¤ã—ã¾ã—ãŸã€‚", ChatName);
 
 	if (SendInfo(Login) == -1) {
 		BufferNum++;
@@ -122,25 +122,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		strcpy_s(SBuffer[BufferNum - 1].BufferStr, Login);
 	}
 
-	//ƒEƒBƒ“ƒhƒE•\Ž¦
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤º
 	SetWindowVisibleFlag(TRUE);
 
 	while (ProcessMessage() == 0) {
 
-		ClearDrawScreen();										//‰æ–Ê‚ÌƒNƒŠƒA
+		ClearDrawScreen();										//ç”»é¢ã®ã‚¯ãƒªã‚¢
 
-		/*********************ˆ—*********************/
+		/*********************å‡¦ç†*********************/
 		MouseState = GetMouseInput();
 		GetMousePoint(&MouseX, &MouseY);
 
-		//–ˆ•bƒtƒ@ƒCƒ‹Šm”F
+		//æ¯Žç§’ãƒ•ã‚¡ã‚¤ãƒ«ç¢ºèª
 		if (GetNowCount() >= LastReadTime + 100) {
-			SetDragFileValidFlag(TRUE);							//D&D‚ð—LŒø
+			SetDragFileValidFlag(TRUE);							//D&Dã‚’æœ‰åŠ¹
 			HANDLE hFile = CreateFile(ChatFilePath, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (hFile != INVALID_HANDLE_VALUE) {
 				GetFileTime(hFile, NULL, NULL, &LastWriteTime_Now);
 				if (LastWriteTime_Now.dwHighDateTime != LastWriteTime_Last.dwHighDateTime || LastWriteTime_Now.dwLowDateTime != LastWriteTime_Last.dwLowDateTime) {
-					//ƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý
+					//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 					Chat *TmpChatDatas = NULL;
 					int TmpChatDataNum;
 					TmpChatDatas = ReadChat(&TmpChatDataNum);
@@ -149,15 +149,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						ChatDataNum = TmpChatDataNum;
 						TopSentence = ChatDataNum - DISP_SENTENCE;
 						if (ChatDataNum > 28) {
-							Scroll = true;							//28sˆÈã‚ÅƒXƒNƒ[ƒ‹
+							Scroll = true;							//28è¡Œä»¥ä¸Šã§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 						}
 						ChatDatas = TmpChatDatas;
-						//ÅŒã‚É“Ç‚Ýž‚ñ‚¾ŽžŠÔ‚Æƒtƒ@ƒCƒ‹XV“úŽž‹L˜^
+						//æœ€å¾Œã«èª­ã¿è¾¼ã‚“ã æ™‚é–“ã¨ãƒ•ã‚¡ã‚¤ãƒ«æ›´æ–°æ—¥æ™‚è¨˜éŒ²
 						LastWriteTime_Last = LastWriteTime_Now;
 						LastReadTime = GetNowCount();
 
 						if (GetWindowActiveFlag() == FALSE) {
-							FlashWindow(GetMainWindowHandle(), TRUE);		//”ñƒAƒNƒeƒBƒuŽž‚ÉXV‚³‚ê‚½‚çƒAƒCƒRƒ““_–Å
+							FlashWindow(GetMainWindowHandle(), TRUE);		//éžã‚¢ã‚¯ãƒ†ã‚£ãƒ–æ™‚ã«æ›´æ–°ã•ã‚ŒãŸã‚‰ã‚¢ã‚¤ã‚³ãƒ³ç‚¹æ»…
 						}
 					}
 				}
@@ -169,12 +169,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 		}
 
-			while (GetDragFileNum() > 0) {								//ƒtƒ@ƒCƒ‹D&Dˆ—
+			while (GetDragFileNum() > 0) {								//ãƒ•ã‚¡ã‚¤ãƒ«D&Då‡¦ç†
 				char FilePath[MAX_PATH];
 
-				GetDragFilePath(FilePath);							//D&Dƒtƒ@ƒCƒ‹–¼Žæ“¾
+				GetDragFilePath(FilePath);							//D&Dãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—
 
-				if (SendFile(FilePath) == -1) {						//ƒtƒ@ƒCƒ‹ƒAƒbƒvƒ[ƒh&‘‚«ž‚Ý
+				if (SendFile(FilePath) == -1) {						//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰&æ›¸ãè¾¼ã¿
 					BufferNum++;
 					SBuffer = (SendBuffer *)realloc(SBuffer, sizeof(SendBuffer)*BufferNum);
 					SBuffer[BufferNum - 1].BufferType = BUFFER_TYPE_FILE;
@@ -182,12 +182,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 
-		//•Â‚¶‚ç‚ê‚½‚çÅ¬‰»
+		//é–‰ã˜ã‚‰ã‚ŒãŸã‚‰æœ€å°åŒ–
 		if (GetWindowUserCloseFlag(TRUE)) {
 			ShowWindow(GetMainWindowHandle(), SW_MINIMIZE);
 		}
 
-		//•¶Žš—ñ‘—M
+		//æ–‡å­—åˆ—é€ä¿¡
 		if (CheckKeyInput(KeyInputHandle)) {
 			char Send[1024];
 			GetKeyInputString(Send, KeyInputHandle);
@@ -203,7 +203,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			SetKeyInputString("", KeyInputHandle);
 		}
 
-		//ƒoƒbƒtƒ@[Á‰»
+		//ãƒãƒƒãƒ•ã‚¡ãƒ¼æ¶ˆåŒ–
 		while (BufferNum > 0) {
 			if (SBuffer[0].BufferType == BUFFER_TYPE_STRING) {
 				if (SendStr(SBuffer[0].BufferStr) == -1) {
@@ -243,7 +243,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 		}
 
-		//ƒXƒNƒ[ƒ‹
+		//ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 		if (Scroll) {
 			ScrollArrowUP = false;
 			ScrollArrowDOWN = false;
@@ -283,7 +283,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				TopSentence = (MouseY - 15)*ChatDataNum / (WIN_SIZE_Y - 30) - DISP_SENTENCE / 2;
 			}
 		}
-		//•â³
+		//è£œæ­£
 		if (TopSentence > ChatDataNum - DISP_SENTENCE) {
 			TopSentence = ChatDataNum - DISP_SENTENCE;
 		}
@@ -291,7 +291,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			TopSentence = 0;
 		}
 
-		//ƒtƒ@ƒCƒ‹ƒNƒŠƒbƒN
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒªãƒƒã‚¯
 		int SelectingNum = -1;
 		int SelectingNum_End = -1;
 		if (MouseX >= 0 && MouseX < WIN_SIZE_X - 17) {
@@ -317,13 +317,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		char DLPath[MAX_PATH];
 		ExpandEnvironmentStrings("%UserProfile%", DLPath, MAX_PATH);
-		sprintf_s(DLPath, "%s\\Documents\\©•zƒ`ƒƒƒbƒg", DLPath);
+		sprintf_s(DLPath, "%s\\Documents\\æ˜†å¸ƒãƒãƒ£ãƒƒãƒˆ", DLPath);
 
 		if ((MouseState&MOUSE_INPUT_LEFT) && SentenceClicking == false) {
 			SentenceClicking = true;
 			if (SelectingNum != -1) {
 				if (ChatDatas[SelectingNum].StrAttribute == STR_FILE) {
-					//ƒtƒ@ƒCƒ‹‚ªƒNƒŠƒbƒN‚³‚ê‚½
+					//ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
 					_mkdir(DLPath);
 					char UpLoadFilePath[MAX_PATH];
 					char LocalFilePath[MAX_PATH];
@@ -336,8 +336,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					ShellExecute(NULL, "explore", DLPath, NULL, NULL, SW_SHOWNORMAL);
 				}
 				else if (ChatDatas[SelectingNum].StrAttribute == STR_MSG){
-					//•¶Žš—ñ‚ªƒNƒŠƒbƒN‚³‚ê‚½
-					//ƒNƒŠƒbƒvƒ{[ƒh‚ÖƒRƒs[
+					//æ–‡å­—åˆ—ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+					//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã¸ã‚³ãƒ”ãƒ¼
 					char CopyStr[1024];
 					CopyStr[0] = '\0';
 					for (int i = SelectingNum; i <= SelectingNum_End; i++){
@@ -351,7 +351,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			SentenceClicking = false;
 		}
 
-		/*********************•`‰æ*********************/
+		/*********************æç”»*********************/
 
 		DrawBox(0, 0, WIN_SIZE_X, WIN_SIZE_Y, GetColor(255, 255, 255), TRUE);
 
@@ -382,7 +382,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 		}
 
-		//ƒXƒNƒ[ƒ‹ƒo[
+		//ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼
 		DrawBox(WIN_SIZE_X - 17, 0, WIN_SIZE_X, WIN_SIZE_Y, GetColor(230, 231, 232), TRUE);
 		if (Scroll == true) {
 			DrawTriangle(WIN_SIZE_X - 8, 5, WIN_SIZE_X - 13, 9, WIN_SIZE_X - 4, 9, GetColor(134, 137, 153), TRUE);
@@ -403,14 +403,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DrawTriangle(WIN_SIZE_X - 8, WIN_SIZE_Y - 5, WIN_SIZE_X - 13, WIN_SIZE_Y - 9, WIN_SIZE_X - 4, WIN_SIZE_Y - 9, GetColor(202, 203, 211), TRUE);
 		}
 
-		//‹L“üƒo[
+		//è¨˜å…¥ãƒãƒ¼
 		DrawBox(0, WIN_SIZE_Y - 30, WIN_SIZE_X - 17, WIN_SIZE_Y, GetColor(128, 128, 128), TRUE);
 		SetDrawArea(0, WIN_SIZE_Y - 30, WIN_SIZE_X - 17, WIN_SIZE_Y);
 
 		DrawKeyInputString(0, WIN_SIZE_Y - 30, KeyInputHandle);
 		SetDrawArea(0, 0, WIN_SIZE_X, WIN_SIZE_Y);
 
-		ScreenFlip();											//— ‰æ–Ê”½‰f
+		ScreenFlip();											//è£ç”»é¢åæ˜ 
 
 		if (GetWindowCloseFlag() == TRUE){
 			break;
@@ -420,11 +420,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	char Logout[MAX_PATH];
 
-	sprintf_s(Logout, "%s‚ª‘Þo‚µ‚Ü‚µ‚½B", ChatName);
+	sprintf_s(Logout, "%sãŒé€€å‡ºã—ã¾ã—ãŸã€‚", ChatName);
 
 	SendInfo(Logout);
 
-	//ƒƒ‚ƒŠŠJ•ú
+	//ãƒ¡ãƒ¢ãƒªé–‹æ”¾
 	if (ChatDatas != NULL) {
 		free(ChatDatas);
 	}
@@ -432,7 +432,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		free(SBuffer);
 	}
 
-	DxLib_End();												//DXƒ‰ƒCƒuƒ‰ƒŠI—¹ˆ—
+	DxLib_End();												//DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªçµ‚äº†å‡¦ç†
 
 	return 0;
 
@@ -499,7 +499,7 @@ int SendStr(const char *SendString) {
 		fopen_s(&fp, ChatFilePath, "a");
 		if (fp != NULL) {
 
-			fprintf_s(fp, "MSG\t%s\t%s\n", ChatName, MSG);			//1s–Ú‘‚«ž‚Ý
+			fprintf_s(fp, "MSG\t%s\t%s\n", ChatName, MSG);			//1è¡Œç›®æ›¸ãè¾¼ã¿
 
 			while (SendCharNum < (int)strlen(SendString)) {
 				char CONT[MAX_STRING_SIZE + 1];
@@ -546,7 +546,7 @@ int SendFile(const char *FilePath) {
 	char FileName[MAX_PATH];
 	int PathLengh;
 
-	//ƒtƒ@ƒCƒ‹–¼Žæ“¾
+	//ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—
 	PathLengh = strlen(FilePath);
 
 	for (int i = PathLengh;; i--) {
@@ -558,7 +558,7 @@ int SendFile(const char *FilePath) {
 		}
 	}
 
-	//ƒtƒ@ƒCƒ‹ƒAƒbƒvƒ[ƒh
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰
 	int FileNum = -1;
 	char UpLoadFilePath[MAX_PATH];
 
@@ -571,7 +571,7 @@ int SendFile(const char *FilePath) {
 		return -1;
 	}
 
-	//ƒRƒ}ƒ“ƒh‘‚«ž‚Ý
+	//ã‚³ãƒžãƒ³ãƒ‰æ›¸ãè¾¼ã¿
 	FILE *fp;
 	fopen_s(&fp, ChatFilePath, "a");
 	if (fp != NULL) {
@@ -665,7 +665,7 @@ Chat* ReadChat(int *nBuffer) {
 }
 
 int SendInfo(const char *InfoStr) {
-	//‘—M
+	//é€ä¿¡
 	FILE *fp;
 	fopen_s(&fp, ChatFilePath, "a");
 	if (fp != NULL) {

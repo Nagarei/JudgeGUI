@@ -1,4 +1,4 @@
-#include "Contest.h"
+ï»¿#include "Contest.h"
 #include "useful_func_and_class.h"
 #include "other_usefuls.h"
 #include "Mouse.h"
@@ -41,9 +41,9 @@ std::unique_ptr<Sequence> Contest::update()
 
 	if (GetWindowActiveFlag())
 	{
-		//–â‘è‘I‘ğ
+		//å•é¡Œé¸æŠ
 		update_SelectProblem();
-		//–â‘èƒXƒNƒ[ƒ‹
+		//å•é¡Œã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 		update_Scroll();
 	}
 
@@ -55,14 +55,14 @@ void Contest::draw()const
 	int window_x, window_y;
 	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
 
-	//ƒ^ƒCƒgƒ‹•\¦
+	//ã‚¿ã‚¤ãƒˆãƒ«è¡¨ç¤º
 	DrawStringCenter({ 0,0 }, problems[selecting].GetName().c_str(), dxle::color_tag::white, title_font, window_x);
-	//ƒXƒRƒA•\¦
+	//ã‚¹ã‚³ã‚¢è¡¨ç¤º
 	DrawStringCenter({ 0,32 }, _T("%d/%d"), dxle::color_tag::white, main_font, window_x, problems[selecting].GetScore(), problems[selecting].GetMaxScore());
 
 	if (problems.IsLoadFinesed(selecting))
 	{
-		//–â‘è•\¦
+		//å•é¡Œè¡¨ç¤º
 		DxLib::SetDrawArea(menu_space_size, title_space, window_x, window_y);
 		DxLib::DrawFillBox(menu_space_size, title_space, window_x, window_y, dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
 		Data::GetIns().DrawProblem(selecting, problem_pos);
@@ -74,10 +74,10 @@ void Contest::draw()const
 		DrawStringCenter({ 0,y }, _T("Now Loading"), dxle::color_tag::white, title_font, window_x);
 	}
 
-	//ƒXƒNƒ[ƒ‹Œn•\¦
+	//ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ç³»è¡¨ç¤º
 	draw_Scroll();
 
-	//–â‘è‘I‘ğ–îˆó•\¦
+	//å•é¡Œé¸æŠçŸ¢å°è¡¨ç¤º
 	draw_SelectProblem();
 	DrawToLeftArrow2(0, title_space / 2, side_space_size, dxle::color_tag::yellow);
 	DrawToRightArrow2(window_x, title_space / 2, side_space_size, dxle::color_tag::yellow);
@@ -104,7 +104,7 @@ void Contest::update_SelectProblem()
 	int window_x, window_y;
 	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
 
-	//ƒ}ƒEƒX“ü—Íƒ`ƒFƒbƒN
+	//ãƒã‚¦ã‚¹å…¥åŠ›ãƒã‚§ãƒƒã‚¯
 
 	//@todo dxlibex
 	while(!mouse.click_log_is_empty())
@@ -113,14 +113,14 @@ void Contest::update_SelectProblem()
 		if (click_state.type & MOUSE_INPUT_LEFT)
 		{
 			if (0 <= click_state.pos.x && click_state.pos.x < side_space_size) {
-				//¶
+				//å·¦
 				if (selecting <= 0) {
 					selecting = problems.size();
 				}
 				--selecting;
 			}
 			else if (window_x - side_space_size <= click_state.pos.x && click_state.pos.x < window_x) {
-				//‰E
+				//å³
 				++selecting;
 				if (problems.size() <= (unsigned)selecting) {
 					selecting = 0;
@@ -129,17 +129,17 @@ void Contest::update_SelectProblem()
 		}
 	}
 
-	//ƒL[ƒ{[ƒh“ü—Íƒ`ƒFƒbƒN
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ãƒã‚§ãƒƒã‚¯
 
 	if (key.GetDirectionKeyInput(key.KEY_LEFT)) {
-		//¶
+		//å·¦
 		if (selecting <= 0) {
 			selecting = problems.size();
 		}
 		--selecting;
 	}
 	else if (key.GetDirectionKeyInput(key.KEY_RIGHT)) {
-		//‰E
+		//å³
 		++selecting;
 		if (problems.size() <= (unsigned)selecting) {
 			selecting = 0;
@@ -162,7 +162,7 @@ void Contest::update_Scroll()
 	return;
 	
 	auto problem_size = Data::GetIns().GetProblemSize(selecting);
-	//ã‰º
+	//ä¸Šä¸‹
 	if()
 }
 

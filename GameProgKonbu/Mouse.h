@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class Mouse final : boost::noncopyable
 {
@@ -17,7 +17,7 @@ private:
 
 	dxle::pointi now_pos;
 	std::deque<click_data> click_point;//front: pop back:push
-	std::unordered_map<int, drag_data> drag_point;//key: “ü—Íƒ^ƒCƒv@first ƒhƒ‰ƒbƒOŠJnˆÊ’u second@ƒhƒ‰ƒbƒO—Ê
+	std::unordered_map<int, drag_data> drag_point;//key: å…¥åŠ›ã‚¿ã‚¤ãƒ—ã€€first ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½® secondã€€ãƒ‰ãƒ©ãƒƒã‚°é‡
 
 	void erase_drag(int input);
 	decltype(drag_point)::iterator erase_drag(decltype(drag_point)::const_iterator iter);
@@ -36,7 +36,7 @@ public:
 	auto click_log_clear() { return click_point.clear(); }
 
 	auto drag_end()const { return drag_point.end(); }
-	//@param is_value_reset value‚Æstart‚ğ0‚ÉƒŠƒZƒbƒg‚·‚é‚©
+	//@param is_value_reset valueã¨startã‚’0ã«ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã‹
 	//@return first is_valid
 	std::pair<bool, drag_data> get_drag_iter(int type, bool is_value_reset = false) {
 		auto iter = drag_point.find(type);

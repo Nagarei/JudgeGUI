@@ -1,4 +1,4 @@
-#include "test.h"
+ï»¿#include "test.h"
 #include "Data.h"
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
@@ -49,18 +49,18 @@ namespace
 			log_directory.push_back('/');
 		}
 		if (2 <= log_directory.size() && log_directory[1] != _T(':')) {
-			//"judge++"‚©‚ç‚Ì‘Š‘ÎƒpƒX‚É
+			//"judge++"ã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹ã«
 			log_directory.insert(0, _T("../"));
 		}
 		if (!input_directory.empty() && input_directory.back() != '\\' && input_directory.back() != '/') {
 			input_directory.push_back('/');
 		}
 		if (2 <= input_directory.size() && input_directory[1] != _T(':')) {
-			//"judge++"‚©‚ç‚Ì‘Š‘ÎƒpƒX‚É
+			//"judge++"ã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹ã«
 			input_directory.insert(0, _T("../"));
 		}
 
-		//ƒpƒ‰ƒ[ƒ^‚Ìİ’è
+		//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨­å®š
 		dxle::tstring param;
 		param += _T(" /c-out ") + log_directory + LOG_COMPILE_NAME;
 		param += _T(" /problem ") + input_directory;
@@ -77,13 +77,13 @@ namespace
 			param += _T(" /m-limit "_ts) + my_itoa(memory_limit, itoa_buf);
 		}
 		param += _T('>') + log_directory + LOG_RESULT_NAME;
-		//‹N“®
+		//èµ·å‹•
 		ShellExecute(NULL, NULL, _T("Judge++\\Judge++.exe"), param.c_str(), _T("Judge++"), SW_HIDE);
 	}
-	//Œ‹‰Ê‚Ì‰ğÍ
+	//çµæœã®è§£æ
 	Scores BuildScores(dxle::tstring log_directory)
 	{
-		//ƒRƒ“ƒpƒCƒ‹ƒƒbƒZ[ƒW‚Ìæ“¾
+		//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
 		dxle::tstring compile_message;
 		{
 			tifstream ifs(log_directory + LOG_COMPILE_NAME);
@@ -97,7 +97,7 @@ namespace
 				}
 			}
 		}
-		//Œ‹‰Ê‚Ì‰ğÍ
+		//çµæœã®è§£æ
 		tifstream ifs(log_directory + LOG_RESULT_NAME);
 		if (ifs.fail()) {
 			//IE
@@ -105,14 +105,14 @@ namespace
 				, std::vector<Score>{}, std::move(compile_message));
 		}
 		dxle::tstring buf;
-		//CEƒ`ƒFƒbƒN
+		//CEãƒã‚§ãƒƒã‚¯
 		std::getline(ifs, buf);
 		if (buf == _T("CE")) {
 			//CE
 			return Scores(Scores::Type_T::CE, log_directory + LOG_SOURCE_NAME
 				, std::vector<Score>{}, std::move(compile_message));
 		}
-		//Œ‹‰Ê‚ğæ“¾
+		//çµæœã‚’å–å¾—
 		uint32_t counter = 1;
 		std::vector<Score> score_temp;
 		TCHAR itoa_buf[20];
@@ -133,7 +133,7 @@ namespace
 			++counter;
 			return false;
 		};
-		{//‰‚ß‚Ìˆês‚¾‚¯‚à‚¤“Ç‚İ‚ñ‚Å‚µ‚Ü‚Á‚½‚Ì‚Å•Êˆ—
+		{//åˆã‚ã®ä¸€è¡Œã ã‘ã‚‚ã†èª­ã¿è¾¼ã‚“ã§ã—ã¾ã£ãŸã®ã§åˆ¥å‡¦ç†
 			std::basic_stringstream<TCHAR> ss(buf);
 			if (get_score(ss)) {
 				return Scores(Scores::Type_T::IE, log_directory + LOG_SOURCE_NAME
@@ -163,7 +163,7 @@ void compile_taskmanager::Loop()
 	while (!is_end)
 	{
 		std::unique_ptr<test_class> test;
-		//ƒeƒXƒgƒoƒbƒtƒ@‚ğŠm”F
+		//ãƒ†ã‚¹ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºèª
 		{
 			std::lock_guard<std::mutex> lock(test_queue_mtx);
 			if (!test_queue.empty())
@@ -172,7 +172,7 @@ void compile_taskmanager::Loop()
 				test_queue.pop_front();
 			}
 		}
-		//Àsor‘Ò‹@
+		//å®Ÿè¡Œorå¾…æ©Ÿ
 		if (test) {
 			test->test_run();
 		}
@@ -195,18 +195,18 @@ test_Local::test_Local(size_t problem_num_, dxle::tstring cppfile_full_name_)
 
 void test_Local::test_run()
 {
-	//ƒƒOƒtƒHƒ‹ƒ_‚ÌŠm•Û
+	//ãƒ­ã‚°ãƒ•ã‚©ãƒ«ãƒ€ã®ç¢ºä¿
 	dxle::tstring problem_irectory = Data::GetIns().GetProblemsDirectory() + Data::GetIns()[problem_num].GetName() + _T('/');
 	dxle::tstring log_directory = SerchFolderNum(problem_irectory);
 
-	//‰ğ“š‚Ì‘‚«o‚µ
+	//è§£ç­”ã®æ›¸ãå‡ºã—
 	CopyFile(cppfile_full_name.c_str(), (log_directory + LOG_SOURCE_NAME).c_str(), FALSE);
 
-	//ƒWƒƒƒbƒW
+	//ã‚¸ãƒ£ãƒƒã‚¸
 	RunTest(log_directory, problem_irectory);
 
-	//Œ‹‰Ê‚Ì‰ğÍ
-	//ƒXƒRƒAƒf[ƒ^‚ğƒZƒbƒg
+	//çµæœã®è§£æ
+	//ã‚¹ã‚³ã‚¢ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 	Data::AddScoresSet_threadsafe(problem_num, BuildScores(log_directory));
 
 	return;

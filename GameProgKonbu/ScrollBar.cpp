@@ -1,4 +1,4 @@
-#include "ScrollBar.h"
+ï»¿#include "ScrollBar.h"
 #include <utility>
 #include "useful_func_and_class.h"
 
@@ -31,7 +31,7 @@ void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relativ
 		return;
 	}
 	if (is_horizontal) {
-		//x²Ay²‚ğ“ü‚ê‘Ö‚¦‚Ä‚â‚ê‚Î‚’¼‚Æ“¯‚¶
+		//xè»¸ã€yè»¸ã‚’å…¥ã‚Œæ›¿ãˆã¦ã‚„ã‚Œã°å‚ç›´ã¨åŒã˜
 		std::swap(mouse_relative.x, mouse_relative.y);
 	}
 
@@ -46,7 +46,7 @@ void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relativ
 		return pix_v * bar_height / object_size;
 	};
 
-	//ƒ}ƒEƒX“ü—ÍŒvZ
+	//ãƒã‚¦ã‚¹å…¥åŠ›è¨ˆç®—
 	if (is_holded)
 	{
 		if (mouse_left_input) {
@@ -62,21 +62,21 @@ void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relativ
 		if ((0 <= mouse_relative.x && mouse_relative.x < bar_width) &&
 			(0 <= mouse_relative.y && mouse_relative.y < bar_height))
 		{
-			//ƒ}ƒEƒX‚ªƒo[‚Ìã
+			//ãƒã‚¦ã‚¹ãŒãƒãƒ¼ã®ä¸Š
 
 			if (mouse_relative.y < arrow_size) {
-				//ã–îˆó
+				//ä¸ŠçŸ¢å°
 				on_mouse_pos = mouse_pos::up_arrow;
 			}
 			else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos)) {
-				//ã–îˆó‚ÆƒOƒŠƒbƒv‚ÌŠÔ
+				//ä¸ŠçŸ¢å°ã¨ã‚°ãƒªãƒƒãƒ—ã®é–“
 				on_mouse_pos = mouse_pos::up_space;
 			}
 			else if (mouse_relative.y < arrow_size + to_bar_scale(now_pos + page_size)) {
 				DEBUG_NOTE;
 			}
 			else if (mouse_relative.y - arrow_size <= mouse_relative.y) {
-				//‰º–îˆó
+				//ä¸‹çŸ¢å°
 				DEBUG_NOTE;
 			}
 			is_mouse_on_bar = true;
@@ -84,13 +84,13 @@ void ScroolBar::update(uint32_t bar_height, dxle::point_c<int32_t> mouse_relativ
 		}
 	}
 
-	//ƒL[ƒ{[ƒh“ü—Í
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›
 	if (!is_holded)
 	{
 		DEBUG_NOTE;
 	}
 
-	//now_pos‚Ì•â³
+	//now_posã®è£œæ­£
 	if (now_pos < 0) { now_pos = 0; }
 	else if (std::max(0, object_size - display_area_size) < now_pos) {
 		now_pos = std::max(0, object_size - display_area_size);
