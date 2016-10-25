@@ -39,6 +39,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 
 			ScreenFlip();
 			ClearDrawScreen();
+#ifdef _DEBUG
+			clsDx();
+#endif
 		}
 
 		DxLib_End();

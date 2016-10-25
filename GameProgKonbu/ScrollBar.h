@@ -61,9 +61,9 @@ private:
 	void reset_mouse_state();
 
 	int32_t to_pix_scale(int32_t bar_v)const {
-		return bar_v * object_size / bar_size.height;
+		return bar_v * object_size / (bar_size.height - bar_size.width*2);
 	};
 	int32_t to_bar_scale(int32_t pix_v)const {
-		return pix_v * bar_size.height / object_size;
+		return pix_v * (bar_size.height - bar_size.width * 2) / object_size;
 	};
 };

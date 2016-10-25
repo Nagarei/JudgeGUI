@@ -120,7 +120,7 @@ void Contest::update_SelectProblem()
 	while(!mouse.click_log_is_empty())
 	{
 		auto click_state = mouse.click_log_front(); mouse.click_log_pop();
-		if (click_state.type & MOUSE_INPUT_LEFT)
+		if ((click_state.type & MOUSE_INPUT_LEFT) && (click_state.pos.y < title_space))
 		{
 			if (0 <= click_state.pos.x && click_state.pos.x < side_space_size) {
 				//左
@@ -128,6 +128,7 @@ void Contest::update_SelectProblem()
 					selecting = problems.size();
 				}
 				--selecting;
+				SetWindowTitle();
 				problem_load_finished = false;
 			}
 			else if (window_x - side_space_size <= click_state.pos.x && click_state.pos.x < window_x) {
@@ -136,6 +137,7 @@ void Contest::update_SelectProblem()
 				if (problems.size() <= (unsigned)selecting) {
 					selecting = 0;
 				}
+				SetWindowTitle();
 				problem_load_finished = false;
 			}
 		}
@@ -150,6 +152,7 @@ void Contest::update_SelectProblem()
 				selecting = problems.size();
 			}
 			--selecting;
+			SetWindowTitle();
 			problem_load_finished = false;
 		}
 		else if (key.GetDirectionKeyInput(key.KEY_RIGHT)) {
@@ -158,6 +161,7 @@ void Contest::update_SelectProblem()
 			if (problems.size() <= (unsigned)selecting) {
 				selecting = 0;
 			}
+			SetWindowTitle();
 			problem_load_finished = false;
 		}
 	}
@@ -195,12 +199,12 @@ void Contest::update_Scroll()
 	DEBUG_NOTE;//key_input
 	scrollbar_v.update(GetFrameTime(),
 		mouse.get_now_pos() - dxle::pointi32{ window_size.width - scrollbar_size, title_space },
-		mouse.get_now_wheel(), mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
+		mouse.get_now_wheel() * -25, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
 	keyinput = 0;
 	DEBUG_NOTE;//key_input
 	scrollbar_h.update(GetFrameTime(),
 		mouse.get_now_pos() - dxle::pointi32{ menu_space_size, window_size.height - scrollbar_size },
-		mouse.get_now_H_wheel(), mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
+		mouse.get_now_H_wheel() * -25, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
 
 	//値セット
 	problem_pos.x = menu_space_size - scrollbar_h.get_value();

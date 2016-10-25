@@ -15,8 +15,9 @@ public:
 	}
 	void upadte()DXLE_NOEXCEPT_OR_NOTHROW
 	{
-		auto now_raw = DxLib::GetNowCount();
-		frame_time_raw = last_count_raw - now_raw;
+		int now_raw = DxLib::GetNowCount();
+		frame_time_raw = (now_raw - last_count_raw) & INT_MAX;
+		last_count_raw = now_raw;
 		now_time += GetFrameTime();
 	}
 private:
