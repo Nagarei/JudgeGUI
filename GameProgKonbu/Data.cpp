@@ -4,6 +4,9 @@
 
 std::mutex Data::new_scores_mtx;
 std::vector<std::pair<size_t, Scores>> Data::new_scores;//FIFO (first: pop, last: push)
+namespace {
+	const int linestart_space = 2;
+}
 
 void Data::InitProblem(dxle::tstring path)
 {
@@ -98,8 +101,9 @@ void Data::BuildProblemText()
 		case Data::Load_State::file_open:{
 			problem_script.clear();
 			text_total_size = 0;
-			problem_text_next_start_pos.x = problem_text_next_start_pos.y = 0;
+			problem_text_next_start_pos.x = linestart_space; problem_text_next_start_pos.y = 0;
 			problem_text_total_size.width = problem_text_total_size.height = 0;
+			problem_text_newlinw_start_y = 0;
 			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
 			if (problem_file.fail() || problem_file.eof()) {
 				//読み込みエラー
@@ -160,12 +164,13 @@ void Data::BuildProblemText()
 					DEBUG_NOTE;//キャッシュサイズが規定値を超えた場合の動作
 				}
 				//描画位置巻き戻し
-				problem_text_next_start_pos.x = 0;
+				problem_text_next_start_pos.x = linestart_space;
 				problem_text_next_start_pos.y = problem_text_newlinw_start_y = 0;
 				//描画に遷移
 				load_state = Load_State::drawing;
 				problems_text[now_loding_problem] = dxle::MakeScreen(problem_text_total_size);
 				problems_text[now_loding_problem].draw_on_this([&problem_text_total_size = problem_text_total_size]() {
+					DxLib::SetDrawAreaFull();
 					DxLib::DrawFillBox(0, 0, problem_text_total_size.width, problem_text_total_size.height
 						, dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
 				});
@@ -190,7 +195,7 @@ void Data::BuildProblemText()
 				problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
 
 				//復帰
-				problem_text_next_start_pos.x = 0;
+				problem_text_next_start_pos.x = linestart_space;
 				if (problem_text_next_start_pos.y == problem_text_newlinw_start_y) {
 					problem_text_newlinw_start_y += 22;
 					problem_text_next_start_pos.y = problem_text_newlinw_start_y;
@@ -266,7 +271,7 @@ void Data::BuildProblemText()
 			else if (problem_script_iter->front() == _T('\n'))
 			{
 				//改行 //復帰
-				problem_text_next_start_pos.x = 0;
+				problem_text_next_start_pos.x = linestart_space;
 				if (problem_text_next_start_pos.y == problem_text_newlinw_start_y) {
 					problem_text_newlinw_start_y += 22;
 					problem_text_next_start_pos.y = problem_text_newlinw_start_y;
@@ -287,6 +292,7 @@ void Data::BuildProblemText()
 					problem_script_iter->c_str(), problem_script_iter->size(), font);//@todo dxlibex
 				//描画
 				problems_text[now_loding_problem].draw_on_this([this,color,font]() {
+					DxLib::SetDrawAreaFull();
 					DxLib::DrawStringToHandle(problem_text_next_start_pos.x, problem_text_next_start_pos.y,
 						problem_script_iter->c_str(), color.get(), font);
 				});
