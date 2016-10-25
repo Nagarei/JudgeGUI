@@ -4,6 +4,7 @@
 #include "Mouse.h"
 #include "Data.h"
 #include "SetLocale.h"
+#include "fps.h"
 
 namespace {
 	///DxLib初期化処理
@@ -18,12 +19,15 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 			return -1;
 		}
 
+		frame_time::GetIns().upadte();
+		frame_time::GetIns().upadte();
 		std::unique_ptr<Sequence> seqence = std::make_unique<Option_Sequence>();
 		while (ProcessMessage() == 0)
 		{
 			KeyInputData::GetIns().Update();
 			Mouse::GetIns().update();
 			Data::GetIns().update();
+			frame_time::GetIns().upadte();
 
 			auto new_seq = seqence->update();
 			if (new_seq){

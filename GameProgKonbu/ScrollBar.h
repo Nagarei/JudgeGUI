@@ -1,26 +1,27 @@
 ﻿#pragma once
 #include <cstdint>
 
-#if !defined(__clang__) && 1
-static_assert(false, "");
-using int32_t = int;
-using uint32_t = unsigned;
-#endif
-class ScroolBar
+class ScrollBar final
 {
 public:
-	ScroolBar();
+	ScrollBar();
 	//@param bar_size バーの描画サイズ
 	//@param object_size_ 動かすものの大きさ
 	//@param page_size_ 物を表示する大きさ(バー含む)
 	//@param is_horizontal_ trueで横向きバー
-	ScroolBar(dxle::sizei32 bar_size_, int32_t object_size_, int32_t page_size_, bool is_horizontal_ = false) :ScroolBar() { set_bar_size(bar_size_); set_bar_state(object_size_, page_size_, is_horizontal_); }
+	ScrollBar(dxle::sizei32 bar_size_, int32_t object_size_, int32_t page_size_, bool is_horizontal_ = false) :ScrollBar() { set_bar_size(bar_size_); set_bar_state(object_size_, page_size_, is_horizontal_); }
 	//@param object_size_ 動かすものの大きさ
 	//@param page_size_ 物を表示する大きさ(バー含む)
 	//@param is_horizontal_ trueで横向きバー
 	void set_bar_state(int32_t object_size_, int32_t page_size_, bool is_horizontal_ = false);
 	//@param bar_size バーの描画サイズ
-	void set_bar_size(dxle::sizei32 bar_size_) { assert(0 < bar_size.width && 0 < bar_size.height); bar_size = bar_size_; reset_mouse_state(); }
+	void set_bar_size(dxle::sizei32 bar_size_);
+	//@return 1 object_size_ 動かすものの大きさ
+	//@return 2 page_size_ 物を表示する大きさ(バー含む)
+	//@return 3 is_horizontal_ trueで横向きバー
+	std::tuple<int32_t, int32_t,bool> get_bar_state();
+	//@return bar_size バーの描画サイズ
+	dxle::sizei32 get_bar_size();
 
 	struct keyboard_input_mask{
 		static const uint32_t up        = 0b0001;
@@ -47,17 +48,22 @@ private:
 	int32_t now_pos;//ずらすピクセル*1000 [0,object_size-page_size*1000) (pix*1000)
 	int32_t grip_start_mousepos;//グリップが始まったときのマウスの位置
 	int32_t grip_start_nowpos;//グリップが始まったときのnow_pos(pix*1000)
-	dxle::sizei32 bar_size;
+	dxle::sizei32 bar_size;//縦でも横でも長いほうがheight
 	bool is_horizontal;
 	bool last_mouse_input;
 	bool mouse_input_start_is_out;
 	bool is_holded;//マウスに掴まれているか
 	enum class mouse_pos{up_arrow, up_space, grip, down_space, down_arrow, out}on_mouse_pos;
-	//static const int32_t bar_width = 17;
-	static const int32_t arrow_size = 15;
 
 	void set_now_pos_raw(int32_t now_pos_) {
 		now_pos = std::max(0, std::min(now_pos_, (object_size - page_size - 1) * 1000));
 	}
 	void reset_mouse_state();
+
+	int32_t to_pix_scale(int32_t bar_v)const {
+		return bar_v * object_size / bar_size.height;
+	};
+	int32_t to_bar_scale(int32_t pix_v)const {
+		return pix_v * bar_size.height / object_size;
+	};
 };

@@ -3,8 +3,10 @@
 void Mouse::update()
 {
 	//現在情報の取得
+	now_wheel = DxLib::GetMouseWheelRotVol();
+	now_H_wheel = DxLib::GetMouseHWheelRotVol();
 	DxLib::GetMousePoint(&now_pos.x, &now_pos.y);
-	int now_input = DxLib::GetMouseInput();//ログの後にキューに積むため保留
+	now_input = DxLib::GetMouseInput();//ログの後にキューに積むため保留
 
 	//ログのチェック
 	{int log_input;
@@ -30,14 +32,15 @@ void Mouse::update()
 	}}
 
 	//ドラッグの処理
+	auto temp_now_input = now_input;
 	//既存の物を更新
 	for (auto i = drag_point.begin(), iend = drag_point.end(); i != iend;)
 	{
-		if (now_input & i->first) {
+		if (temp_now_input & i->first) {
 			//押し続けている
 			i->second.value = now_pos - i->second.start;
 			i->second.is_drag |= (i->second.value != 0);
-			now_input &= ~i->first;//処理済み登録
+			temp_now_input &= ~i->first;//処理済み登録
 			++i;
 		}
 		else {
@@ -49,15 +52,15 @@ void Mouse::update()
 	//未処理の物をとりあえずドラッグとして処理
 	for (size_t i = 0; i < sizeof(int); ++i)
 	{
-		if (now_input & (1 << i)) {
+		if (temp_now_input & (1 << i)) {
 			//新規入力
 			//とりあえずドラッグとして処理
 			drag_data data;
 			data.start = now_pos;
 			//data.value = 0;
 			data.is_drag = false;
-			//erase_drag(now_input & (1 << i));
-			drag_point[now_input & (1 << i)] = data;
+			//erase_drag(temp_now_input & (1 << i));
+			drag_point[temp_now_input & (1 << i)] = data;
 		}
 	}
 }

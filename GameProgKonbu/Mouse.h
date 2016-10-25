@@ -16,6 +16,9 @@ private:
 	Mouse() = default;
 
 	dxle::pointi now_pos;
+	int32_t now_wheel;
+	int32_t now_H_wheel;
+	int32_t now_input;
 	std::deque<click_data> click_point;//front: pop back:push
 	std::unordered_map<int, drag_data> drag_point;//key: 入力タイプ　first ドラッグ開始位置 second　ドラッグ量
 
@@ -28,7 +31,10 @@ public:
 	}
 	void update();
 
+	int32_t get_now_wheel()const { return now_wheel; }
+	int32_t get_now_H_wheel()const { return now_H_wheel; }//!< 水平ホイール
 	dxle::pointi get_now_pos()const { return now_pos; }
+	int32_t get_now_input()const { return now_input; }
 
 	auto click_log_is_empty()const { return click_point.empty(); }
 	auto click_log_front()const { return click_point.front(); }
