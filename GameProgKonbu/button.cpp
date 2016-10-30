@@ -3,6 +3,19 @@
 namespace {
 
 }
+void Button::set_on_color(dxle::dx_color_param on_back_color_, dxle::dx_color_param on_edge_color_, dxle::dx_color_param on_string_color_)
+{
+	on_back_color = on_back_color_;
+	on_edge_color = on_edge_color_;
+	on_string_color = on_string_color_;
+}
+void Button::set_out_color(dxle::dx_color_param out_back_color_, dxle::dx_color_param out_edge_color_, dxle::dx_color_param out_string_color_)
+{
+	out_back_color   = out_back_color_;
+	out_edge_color   = out_edge_color_;
+	out_string_color = out_string_color_;
+
+}
 bool Button::update(dxle::pointi32 mouse_pos, bool mouse_left_input, uint32_t keyboard_input)
 {
 	FINALLY([&](){
@@ -13,10 +26,10 @@ bool Button::update(dxle::pointi32 mouse_pos, bool mouse_left_input, uint32_t ke
 		mouse_input_start_is_out = last_mouse_input;
 	}
 	else {
-		if ((!last_input) && mouse_left_input) {
+		if ((!last_mouse_input) && mouse_left_input) {
 			mouse_input_start_is_out = !is_in_area;
 		}
-		else if (last_input && !mouse_left_input) {
+		else if (last_mouse_input && !mouse_left_input) {
 			return is_in_area;
 		}
 	}
@@ -31,10 +44,10 @@ void Button::draw(dxle::pointi32 bar_pos)const
 void Button::draw_box(bool is_on) const
 {
 	//DxLib::DrawRoundRect(pos1.x, pos1.y, pos1.x + size.width, pos1.y + size.height, 2, 2, color.get(), TRUE);
-	dxle::dx_color color, edge_color;
+	dxle::dx_color_param color{ on_back_color }, edge_color{ on_edge_color };
 	if (is_on) {
-		color = on_back_color;
-		edge_color = on_edge_color;
+		//color = on_back_color;
+		//edge_color = on_edge_color;
 	}
 	else {
 		color = out_back_color;

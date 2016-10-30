@@ -33,6 +33,12 @@ Option_Sequence::Option_Sequence()
 	buttons[1] = Button{ { 5,  52 }, { 303, 38 }, _T("") };
 	buttons[2] = Button{ { 5, 100 }, { 303, 38 }, _T("") };
 	buttons[3] = Button{ { 4, 191 }, { 303, 38 }, _T("") };
+	constexpr dxle::rgb selecting_color{ 0, 197, 30 };
+	constexpr dxle::rgb normal_color{ 154, 130, 0 };
+	for (auto& i : buttons) {
+		i.set_on_color(selecting_color, selecting_color, selecting_color);
+		i.set_out_color(normal_color, normal_color, normal_color);
+	}
 }
 Option_Sequence::~Option_Sequence()
 {
@@ -164,13 +170,17 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 
 void Option_Sequence::draw() const
 {
-	constexpr dxle::rgb selecting_color{ 0, 197, 30 };
-	constexpr dxle::rgb normal_color{ 154, 130, 0 };
 
-	buttons[0].draw_box(selecting == Select::local ? selecting_color : normal_color);
-	buttons[1].draw_box(selecting == Select::server_contact ? selecting_color : normal_color);
-	buttons[2].draw_box(selecting == Select::contest ? selecting_color : normal_color);
-	buttons[3].draw_box(selecting == Select::name ? is_username_inputing ? dxle::color_tag::magenta : selecting_color : normal_color);
+	buttons[0].draw_box(selecting == Select::local);
+	buttons[1].draw_box(selecting == Select::server_contact);
+	buttons[2].draw_box(selecting == Select::contest);
+	if (is_username_inputing) {
+		auto area = buttons[3].get_area();
+		DrawButton(area.first, area.second, dxle::color_tag::magenta, dxle::color_tag::magenta);
+	}
+	else {
+		buttons[3].draw_box(selecting == Select::name);
+	}
 
 	//名前の標示
 	if (is_username_inputing)

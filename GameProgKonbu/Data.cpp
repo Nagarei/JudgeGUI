@@ -1,6 +1,7 @@
 ﻿
 #include "Data.h"
 #include "other_usefuls.h"
+#include "GetNumfileNum.h"
 
 std::mutex Data::new_scores_mtx;
 std::vector<std::pair<size_t, Scores>> Data::new_scores;//FIFO (first: pop, last: push)
@@ -226,27 +227,24 @@ void Data::BuildProblemText()
 			{
 				//次のロードに
 				const auto problem_num = problems.size();
-				if (problem_num == 1) {
-					load_state = Load_State::end;
-				}
 				//まだ、読み込んでないのを全探査
 				int b_index = viewing_problem;//デクリメントしていく
-				int a_index = (viewing_problem + 1) % problem_num;//インクリメントしていく
-				while (b_index != a_index)
+				int a_index = viewing_problem;//インクリメントしていく
+				for(;;)
 				{
+					++a_index;
+					a_index %= problem_num;
 					if (problems_text[a_index].valid() == false) {
 						now_loding_problem = a_index; break;
 					}
-					++a_index;
-					a_index %= problem_num;
-
 					if (b_index == a_index) { break; }
 
+					--b_index;
+					if (b_index < 0) { b_index += problem_num; }
 					if (problems_text[b_index].valid() == false) {
 						now_loding_problem = b_index; break;
 					}
-					--b_index;
-					if (b_index < 0) { b_index += problem_num; }
+					if (b_index == a_index) { break; }
 				}
 				if (b_index != a_index) {
 					//新規読み込みに遷移
@@ -360,7 +358,7 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 		const_cast<int&>(max_score) += partial_scores.back().first;
 	}
 				
-	sample_num = get_numfile_num(path + _T("sample_in"), _T(".txt"), 1);
+	const_cast<uint32_t&>(sample_num) = get_numfile_num(path + _T("sample_in"), _T(".txt"), 1);
 }
 
 void Problem::AddScores(Scores && new_data)
@@ -401,33 +399,4 @@ void Data::AddScoresSet_threadsafe(size_t problem_num, Scores param_new_scores)
 {
 	std::lock_guard<std::mutex> lock(new_scores_mtx);
 	new_scores.emplace_back(problem_num, std::move(param_new_scores));
-}
-
-//f1.a f2.a ... の番号がどこまで続くか調べる
-//なかったらreturn (unsigned)(-1)
-uint32_t get_numfile_num(dxle::tstring file_name_before, dxle::tstring file_name_after, uint32_t index_start, uint32_t index_end = 10000)
-{
-    //二分探索
-    uint32_t begin = index_start, end = index_end;//[begin,end)
-    dxle::tstring file_name_temp;
-    auto is_exisist = [&file_name_temp, &file_name_before, &file_name_after](uint32_t num){
-		return PathFileExists()
-    };
-    if(is_exisist(begin) == false){ return (uint32_t)(-1); }
-    while(is_exisist(end)){
-		begin = end;
-        assert(end < 0xffffffff / 2);
-		end *= 2;
-    }
-    while(begin + 1 < end)
-    {
-        auto mid = begin + (end - begin) / 2;
-        if(is_exisist(mid)){
-			begin = mid;
-        }
-        else {
-			end = mid;
-        }
-    }
-    return begin;
 }

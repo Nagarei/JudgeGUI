@@ -8,12 +8,12 @@ void DrawButtonString(dxle::pointi32 pos1, dxle::sizei32 size, const dxle::tstri
 class Button final
 {
 private:
-	dxle::dx_color out_back_color = dxle::color_tag::white;
-	dxle::dx_color out_edge_color = dxle::color_tag::gray;
-	dxle::dx_color out_string_color = dxle::color_tag::black;
-	dxle::dx_color on_back_color = dxle::color_tag::black;
-	dxle::dx_color on_edge_color = dxle::color_tag::gray;
-	dxle::dx_color on_string_color = dxle::color_tag::white;
+	dxle::dx_color_param out_back_color = dxle::color_tag::white;
+	dxle::dx_color_param out_edge_color = dxle::color_tag::gray;
+	dxle::dx_color_param out_string_color = dxle::color_tag::black;
+	dxle::dx_color_param on_back_color = dxle::color_tag::black;
+	dxle::dx_color_param on_edge_color = dxle::color_tag::gray;
+	dxle::dx_color_param on_string_color = dxle::color_tag::white;
 	dxle::pointi32 pos1;
 	dxle::sizei32 size;
 	dxle::tstring str;
@@ -27,13 +27,13 @@ public:
 	template<typename... Args>
 	void set_str(Args&&... args) { str.assign(std::forward<Args>(args)...); }
 	void set_on_color(
-		dxle::dx_color on_back_color,
-		dxle::dx_color on_edge_color,
-		dxle::dx_color on_string_color);
+		dxle::dx_color_param on_back_color,
+		dxle::dx_color_param on_edge_color,
+		dxle::dx_color_param on_string_color);
 	void set_out_color(
-		dxle::dx_color out_back_color,
-		dxle::dx_color out_edge_color,
-		dxle::dx_color out_string_color);
+		dxle::dx_color_param out_back_color,
+		dxle::dx_color_param out_edge_color,
+		dxle::dx_color_param out_string_color);
 
 	//@return true: 入力アリ
 	bool update(dxle::pointi32 mouse_pos, bool mouse_left_input, uint32_t keyboard_input = false);

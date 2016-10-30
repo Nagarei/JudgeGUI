@@ -130,6 +130,10 @@
   <ItemGroup>
     <ClInclude Include="button.h" />
     <ClInclude Include="fps.h" />
+    <ClInclude Include="GetNumfileNum.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="other_usefuls.h" />
     <ClInclude Include="Option.h" />
     <ClInclude Include="ScrollBar.h" />
