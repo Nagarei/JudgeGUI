@@ -1,6 +1,7 @@
 #pragma once
 #include "Data.h"
 #include "ScrollBar.h"
+#include "Button.h"
 
 class Contest final : public Sequence
 {
@@ -15,6 +16,9 @@ private:
 	dxle::sizei32 last_window_size;
 	ScrollBar scrollbar_v;
 	ScrollBar scrollbar_h;
+	Button to_result;
+	//Button to_submit;
+	std::vector<Button> samples;
 public:
 	Contest();
 	~Contest();
@@ -28,6 +32,6 @@ private:
 	void draw_SelectProblem()const;
 
 	void update_Scroll();
-	void reset_Scroll();//–â‘è‚ª•Ï‚í‚Á‚½Û‚ÌƒXƒNƒ[ƒ‹‚ÌÄŒvZ
+	void reset_Scroll();//ï¿½ï¿½è‚ªï¿½Ï‚ï¿½Bï¿½ï¿½Û‚ÌƒXï¿½Nï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ÌÄŒvï¿½Z
 	void draw_Scroll()const;
 };

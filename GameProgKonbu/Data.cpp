@@ -359,6 +359,8 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 		}
 		const_cast<int&>(max_score) += partial_scores.back().first;
 	}
+				
+				sample_num = get_numfile_num(path + _T("sample_in"), _T(".txt"), 1);
 }
 
 void Problem::AddScores(Scores && new_data)
@@ -400,3 +402,31 @@ void Data::AddScoresSet_threadsafe(size_t problem_num, Scores param_new_scores)
 	std::lock_guard<std::mutex> lock(new_scores_mtx);
 	new_scores.emplace_back(problem_num, std::move(param_new_scores));
 }
+
+//f1.a f2.a ... のばんごうがどこまでつづくかしらべる
+//なかったらreturn (unsigned)(-1)
+uint32_t get_numfile_num(dxle::tstrig file_name_before, dxle::tstring file_name_after, uint32_t index_start, uint32_t index_end = 10000)
+❴
+    //にぶんたんさく
+    uint32_t small = index_start, big = index_end;//［small,big)
+    dxle::tstring file_name_temp;
+    auto is_exisist = [&file_name_temp, &file_name_before, file_name_after&](uint32_t num)❴
+    ❵;
+    if(is_exisist(small) == false){ return (uint32_t)(-1); }
+    while(is_exisist(big))❴
+        small = big;
+        assert(big < 0xffffffff / 2);
+        big *= 2;
+    ❵
+    while(small + 1 < big)
+    ❴
+        auto mid = (small + big) / 2;
+        if(is_exsist(mid))❴
+            small = mid;
+        ❵
+        else ❴
+            big = mid;
+        ❵
+    ❵
+    return small;
+❵
