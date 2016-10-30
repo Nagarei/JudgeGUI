@@ -24,8 +24,15 @@ bool Button::update(dxle::pointi32 mouse_pos, bool mouse_left_input, uint32_t ke
 }
 void Button::draw(dxle::pointi32 bar_pos)const
 {
+	draw_box(is_in_area);
+	draw_str(is_in_area, Button_string_pos::center);
+}
+
+void Button::draw_box(bool is_on) const
+{
+	//DxLib::DrawRoundRect(pos1.x, pos1.y, pos1.x + size.width, pos1.y + size.height, 2, 2, color.get(), TRUE);
 	dxle::dx_color color, edge_color;
-	if (is_in_area) {
+	if (is_on) {
 		color = on_back_color;
 		edge_color = on_edge_color;
 	}
@@ -33,50 +40,46 @@ void Button::draw(dxle::pointi32 bar_pos)const
 		color = out_back_color;
 		edge_color = out_edge_color;
 	}
+	DrawButton(pos1, size, color, edge_color);
+}
+
+void Button::draw_str(bool is_on, Button_string_pos str_pos_, int font) const
+{
+	if (size == 0) { return; }
+
+	DrawButtonString(pos1, size, str, is_on ? on_string_color : out_string_color,
+		str_pos_, font);
+}
+
+void DrawButton(dxle::pointi32 pos1, dxle::sizei32 size, dxle::dx_color_param color, dxle::dx_color_param edge_color)
+{
 	DxLib::DrawFillBox(pos1.x, pos1.y, pos1.x + size.width, pos1.y + size.height, color.get());
 	DxLib::DrawLineBox(pos1.x, pos1.y, pos1.x + size.width, pos1.y + size.height, edge_color.get());
 }
 
-void Button::draw_box(dxle::dx_color_param color) const
+void DrawButtonString(dxle::pointi32 pos1, dxle::sizei32 size, const dxle::tstring& str, dxle::dx_color_param string_color, Button_string_pos str_pos_, int font, int32_t padding)
 {
-	DxLib::DrawRoundRect(pos1.x, pos1.y, pos1.x + size.width, pos1.y + size.height, 2, 2, color.get(), TRUE);
-}
-
-void Button::draw_str(dxle::dx_color_param string_color, str_pos str_pos_, int font) const
-{
-	if (size == 0) { return; }
-
-	//描画範囲調整
-	//@todo dxlibex
-	RECT old_draw_area;
-	DxLib::GetDrawArea(&old_draw_area);
-	DxLib::SetDrawArea(
-		std::max<int>(pos1.x, old_draw_area.left),
-		std::max<int>(pos1.y, old_draw_area.top),
-		std::min<int>(pos1.x + size.width, old_draw_area.right),
-		std::min<int>(pos1.y + size.height, old_draw_area.bottom)
-	);
-
-	//文字表示
+	RECT bef_draw_area;
+	DxLib::GetDrawArea(&bef_draw_area);//@todo dxlibex
+	FINALLY([&bef_draw_area]() {
+		DxLib::SetDrawArea(bef_draw_area.left, bef_draw_area.top, bef_draw_area.right, bef_draw_area.bottom);
+	});
+	DxLib::SetDrawArea(pos1.x + padding, pos1.y + padding, pos1.x + size.width - padding, pos1.y + size.height - padding);
+	dxle::sizei str_size;
+	DxLib::GetDrawStringSizeToHandle(&str_size.width, &str_size.height, nullptr,
+		str.c_str(), str.size(), font);//@todo dxlibex
 	switch (str_pos_)
 	{
-	case Button::str_pos::left:
-		DxLib::DrawStringToHandle(pos1.x, pos1.y, str.c_str(), string_color.get(), font);
+	case Button_string_pos::center:
+		DrawStringToHandle(pos1.x + padding + (size.width - 2 * padding - str_size.width) / 2,
+			pos1.y + padding + (size.height - 2 * padding - str_size.height) / 2,
+			str.c_str(), string_color.get(), font);
+		break;
+	case Button_string_pos::left:
+		DrawStringToHandle(pos1.x + padding, pos1.y + padding + (size.height - 2 * padding - str_size.height) / 2,
+			str.c_str(), string_color.get(), font);
 		break;
 	default:
-		assert(false);
-		//fall
-	case Button::str_pos::center: {
-		int str_size_x, str_size_y;
-		DxLib::GetDrawStringSizeToHandle(&str_size_x, &str_size_y, nullptr, str.c_str(), str.size(), font);
-		DxLib::DrawStringToHandle(pos1.x + (size.width - str_size_x) / 2, pos1.y + (size.height - str_size_y) / 2,
-			str.c_str(), string_color.get(), font);
-	}
 		break;
 	}
-
-	//描画範囲調整
-	DxLib::SetDrawArea(
-		(old_draw_area.left), (old_draw_area.top), (old_draw_area.right), (old_draw_area.bottom)
-	);
 }
