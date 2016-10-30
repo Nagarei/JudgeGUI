@@ -34,7 +34,7 @@ class Problem final
 {
 private:
 	const int max_score = 0;
-				const uint32_t sample_num = 0;
+	const uint32_t sample_num = 0;
 	const std::vector<std::pair<int, size_t>> partial_scores;//部分点　first: 得点、　second：どこまでの問題か(<=)(入力ファイルの番号)
 	const dxle::tstring name;
 	int my_socre = 0;

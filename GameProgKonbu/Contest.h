@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Data.h"
 #include "ScrollBar.h"
 #include "Button.h"
@@ -32,6 +32,6 @@ private:
 	void draw_SelectProblem()const;
 
 	void update_Scroll();
-	void reset_Scroll();//��肪�ς�B��ۂ̃X�N���[���̍Čv�Z
+	void reset_Scroll();//問題が変わった際のスクロールの再計算
 	void draw_Scroll()const;
 };

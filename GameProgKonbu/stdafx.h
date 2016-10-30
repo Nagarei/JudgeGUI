@@ -20,6 +20,8 @@
 #include <queue>
 #include <cstdint>
 #include <Lmcons.h>
+#include <shlwapi.h>
+#pragma comment( lib, "shlwapi.lib")
 #include "DxLib.h"
 #include "FormatToString.h"
 #include "Sequence.h"
