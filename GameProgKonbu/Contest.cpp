@@ -16,8 +16,10 @@ Contest::Contest()
 	, main_font (DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
 	, selecting(0)
 	, problem_load_finished(false)
+	, extend_rate(1.0)
 {
 	DxLib::SetDragFileValidFlag(TRUE);
+	DxLib::DragFileInfoClear();
 	SetWindowTitle();
 }
 Contest::~Contest()
@@ -30,13 +32,12 @@ Contest::~Contest()
 
 std::unique_ptr<Sequence> Contest::update()
 {
-
-	if (1 <= GetDragFileNum())
+	if (1 <= DxLib::GetDragFileNum())
 	{
 		auto str_buf = std::make_unique<TCHAR[]>(GetDragFilePath(nullptr)+1);
 		GetDragFilePath(str_buf.get());
-		DragFileInfoClear();
-		SetDragFileValidFlag(TRUE);
+		DxLib::DragFileInfoClear();
+		DxLib::SetDragFileValidFlag(TRUE);
 		compile_taskmanager::set_test(selecting, str_buf.get());
 	}
 
@@ -75,7 +76,7 @@ void Contest::draw()const
 		//問題表示
 		DxLib::SetDrawArea(menu_space_size, title_space, window_x, window_y);
 		DxLib::DrawFillBox(menu_space_size, title_space, window_x, window_y, dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
-		Data::GetIns().DrawProblem(selecting, problem_pos);
+		Data::GetIns().DrawExtendProblem(selecting, problem_pos, extend_rate);
 		DxLib::SetDrawAreaFull();
 
 		//スクロール系表示
@@ -191,20 +192,38 @@ void Contest::update_Scroll()
 			return;
 		}
 	}
-	//スクロール
 	auto& key = KeyInputData::GetIns();
 	auto& mouse = Mouse::GetIns();
 
+	//拡大/縮小入力
+	if (key.GetKeyInput(KEY_INPUT_LCONTROL) || key.GetKeyInput(KEY_INPUT_RCONTROL))
+	{
+		auto old_extend_rate = extend_rate;
+		extend_rate += mouse.get_now_wheel() * 10.0 / 100.0;
+		if (key.GetKeyInput(KEY_INPUT_0) || key.GetKeyInput(KEY_INPUT_NUMPAD0)) {
+			extend_rate = 1.0;
+		}
+		if (old_extend_rate != extend_rate) {
+			reset_Scroll();
+			return;
+		}
+	}
+	//スクロール
 	uint32_t keyinput = 0;
+	int32_t v_wheel = mouse.get_now_wheel() * -25;
+	int32_t h_wheel = mouse.get_now_H_wheel() * -25;
+	if (key.GetKeyInput(KEY_INPUT_LSHIFT) || key.GetKeyInput(KEY_INPUT_RSHIFT)) {
+		std::swap(v_wheel, h_wheel);
+	}
 	DEBUG_NOTE;//key_input
 	scrollbar_v.update(GetFrameTime(),
 		mouse.get_now_pos() - dxle::pointi32{ window_size.width - scrollbar_size, title_space },
-		mouse.get_now_wheel() * -25, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
+		v_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
 	keyinput = 0;
 	DEBUG_NOTE;//key_input
 	scrollbar_h.update(GetFrameTime(),
 		mouse.get_now_pos() - dxle::pointi32{ menu_space_size, window_size.height - scrollbar_size },
-		mouse.get_now_H_wheel() * -25, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
+		h_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
 
 	//値セット
 	problem_pos.x = menu_space_size - scrollbar_h.get_value();
@@ -215,7 +234,7 @@ void Contest::update_Scroll()
 void Contest::reset_Scroll()
 {
 	assert(problem_load_finished);
-	auto prob_size = Data::GetIns().GetProblemSize(selecting);
+	auto prob_size = Data::GetIns().GetProblemSize(selecting) * extend_rate;
 	dxle::sizei32 page_size;
 	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
 	dxle::sizei32 window_size = page_size;

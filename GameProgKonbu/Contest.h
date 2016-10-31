@@ -16,6 +16,7 @@ private:
 	dxle::sizei32 last_window_size;
 	ScrollBar scrollbar_v;
 	ScrollBar scrollbar_h;
+	double extend_rate;//拡大/縮小率
 	Button to_result;
 	//Button to_submit;
 	std::vector<Button> samples;

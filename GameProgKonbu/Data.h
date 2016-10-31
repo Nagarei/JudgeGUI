@@ -79,7 +79,6 @@ private:
 	//@h[text]//見出しのように大きく、太く表示します
 	//@[text]//太く表示します
 	//@@ //@を表示します
-	//\n 改行します
 	std::vector<dxle::tstring> problem_script;//一つ一命令！！
 	decltype(problem_script)::iterator problem_script_iter;//今drawingの問題の次解析すべきスクリプト
 	int font_normal;
@@ -106,8 +105,11 @@ public:
 	bool IsLoadFinesed(int index)const {
 		return problems_text[index].valid();
 	}
-	void DrawProblem(int index, dxle::pointi pos)const {
+	void DrawProblem(int index, const dxle::pointi& pos)const {
 		problems_text[index].DrawGraph(pos, false);
+	}
+	void DrawExtendProblem(int index, const dxle::pointi& pos, double extend_rate)const {
+		problems_text[index].DrawExtendGraph(pos, static_cast<dxle::pointi>(pos + GetProblemSize(index) * extend_rate), false);
 	}
 	dxle::sizei GetProblemSize(int index)const {
 		return problems_text[index].GetGraphSize();
