@@ -95,3 +95,30 @@ namespace {
 		return false;
 	}
 }
+
+//template<typename T, size_t N, size_t... Ns>
+//class md_array : public md_array<md_array<T, Ns...>,N>
+//{
+//public:
+//	void fill_all(const T& v) {
+//		for (auto& i : *this) {
+//			i.fill_all(v);
+//		}
+//	}
+//};
+//template<typename T, size_t N>
+//class md_array<T, N> : public std::array<T, N>
+//{
+//public:
+//	void fill_all(const T& v) {
+//		std::array<T, N>::fill(v);
+//	}
+//};
+
+//void f()
+//{
+//	md_array<int, 5, 4, 3> arr;//int arr[5][4][3]
+//	arr[4][3][2] = 0;
+//	arr.fill_all(0);
+//	arr[0].fill_all(0);
+//}
