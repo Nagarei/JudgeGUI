@@ -16,7 +16,7 @@ void Button::set_out_color(dxle::dx_color_param out_back_color_, dxle::dx_color_
 	out_string_color = out_string_color_;
 
 }
-bool Button::update(dxle::pointi32 mouse_pos, bool mouse_left_input, uint32_t keyboard_input)
+bool Button::update(dxle::pointi32 mouse_pos, bool mouse_left_input)
 {
 	FINALLY([&](){
 		last_mouse_input = mouse_left_input;
@@ -35,10 +35,10 @@ bool Button::update(dxle::pointi32 mouse_pos, bool mouse_left_input, uint32_t ke
 	}
 	return false;
 }
-void Button::draw(dxle::pointi32 bar_pos)const
+void Button::draw(int font)const
 {
-	draw_box(is_in_area);
-	draw_str(is_in_area, Button_string_pos::center);
+	draw_box(is_in_area || (last_mouse_input && !mouse_input_start_is_out));
+	draw_str(is_in_area || (last_mouse_input && !mouse_input_start_is_out), Button_string_pos::center, font);
 }
 
 void Button::draw_box(bool is_on) const

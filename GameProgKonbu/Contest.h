@@ -8,6 +8,7 @@ class Contest final : public Sequence
 private:
 	int title_font;
 	int main_font;
+	int menu_font;
 
 	int selecting;
 	dxle::pointi problem_pos;
@@ -17,8 +18,9 @@ private:
 	ScrollBar scrollbar_v;
 	ScrollBar scrollbar_h;
 	double extend_rate;//拡大/縮小率
+	Button arrow[2];//left,right
 	Button to_result;
-	//Button to_submit;
+	Button to_submit;
 	std::vector<Button> samples;
 public:
 	Contest();
@@ -32,7 +34,12 @@ private:
 	void update_SelectProblem();
 	void draw_SelectProblem()const;
 
+	void update_Menu();
+	void draw_Menu()const;
+
 	void update_Scroll();
 	void reset_Scroll();//問題が変わった際のスクロールの再計算
 	void draw_Scroll()const;
+
+	void reset_window_size();
 };

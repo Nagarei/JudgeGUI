@@ -36,8 +36,8 @@ public:
 		dxle::dx_color_param out_string_color);
 
 	//@return true: 入力アリ
-	bool update(dxle::pointi32 mouse_pos, bool mouse_left_input, uint32_t keyboard_input = false);
-	void draw(dxle::pointi32 bar_pos)const;
+	bool update(dxle::pointi32 mouse_pos, bool mouse_left_input);
+	void draw(int font = DX_DEFAULT_FONT_HANDLE)const;
 
 	bool IsInArea(dxle::pointi point)const { return ::IsInArea(point, pos1, size); }
 

@@ -7,13 +7,16 @@
 namespace
 {
 	const int title_space = 50;
-	const int side_space_size = 20;
+	const int arrow_width = 20;
+	const int button_edge_size = 2;
 	const int menu_space_size = 100;
+	const int menu_button_height = 50;
 	const int scrollbar_size = 17;
 }
 Contest::Contest()
 	: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
 	, main_font (DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
+	, menu_font (DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
 	, selecting(0)
 	, problem_load_finished(false)
 	, extend_rate(1.0)
@@ -21,17 +24,54 @@ Contest::Contest()
 	DxLib::SetDragFileValidFlag(TRUE);
 	DxLib::DragFileInfoClear();
 	SetWindowTitle();
+
+	int window_x, window_y;
+	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
+
+	arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
+	arrow[1].set_area({ window_x - arrow_width,0 }, { arrow_width , title_space });
+
+	to_result.set_area({ 0, title_space }, { menu_space_size , menu_button_height });
+	to_result.set_str(_T("結果"));
+	to_submit.set_area({ 0, title_space + menu_button_height }, { menu_space_size , menu_button_height });
+	to_submit.set_str(_T("提出"));
+
+	dxle::rgb out_back_color{ 154, 130, 0 };
+	dxle::rgb on_back_color{ 0, 197, 30 };
+	dxle::rgb out_edge_color = dxle::color_tag::white;
+	dxle::rgb on_edge_color = dxle::color_tag::white;
+	dxle::rgb on_string_color = dxle::color_tag::white;
+	dxle::rgb out_string_color = dxle::color_tag::white;
+
+	arrow[0].set_on_color(on_back_color, on_edge_color, on_string_color);
+	arrow[1].set_on_color(on_back_color, on_edge_color, on_string_color);
+	to_result.set_on_color(on_back_color, on_edge_color, on_string_color);
+	to_submit.set_on_color(on_back_color, on_edge_color, on_string_color);
+
+	arrow[0].set_out_color(out_back_color, out_edge_color, out_string_color);
+	arrow[1].set_out_color(out_back_color, out_edge_color, out_string_color);
+	to_result.set_out_color(out_back_color, out_edge_color, out_string_color);
+	to_submit.set_out_color(out_back_color, out_edge_color, out_string_color);
 }
 Contest::~Contest()
 {
 	DxLib::SetDragFileValidFlag(FALSE);
 	DeleteFontToHandle(title_font);
 	DeleteFontToHandle(main_font);
+	DeleteFontToHandle(menu_font);
 }
 
 
 std::unique_ptr<Sequence> Contest::update()
 {
+	dxle::sizei32 window_size;
+	{
+		DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
+		if (window_size != last_window_size) {
+			reset_window_size();
+		}
+	}
+
 	if (1 <= DxLib::GetDragFileNum())
 	{
 		auto str_buf = std::make_unique<TCHAR[]>(GetDragFilePath(nullptr)+1);
@@ -47,6 +87,8 @@ std::unique_ptr<Sequence> Contest::update()
 		update_SelectProblem();
 		//問題スクロール
 		update_Scroll();
+		//メニュー処理
+		update_Menu();
 	}
 
 	if (!problem_load_finished) {
@@ -90,8 +132,9 @@ void Contest::draw()const
 
 	//問題選択矢印表示
 	draw_SelectProblem();
-	DrawToLeftArrow2(0, title_space / 2, side_space_size, dxle::color_tag::yellow);
-	DrawToRightArrow2(window_x, title_space / 2, side_space_size, dxle::color_tag::yellow);
+
+	//メニュー処理
+	draw_Menu();
 }
 
 void Contest::SetWindowTitle()
@@ -117,6 +160,25 @@ void Contest::update_SelectProblem()
 
 	//マウス入力チェック
 
+	if (arrow[0].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+		//左
+		if (selecting <= 0) {
+			selecting = problems.size();
+		}
+		--selecting;
+		SetWindowTitle();
+		problem_load_finished = false;
+	}
+	if (arrow[1].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+		//右
+		++selecting;
+		if (problems.size() <= (unsigned)selecting) {
+			selecting = 0;
+		}
+		SetWindowTitle();
+		problem_load_finished = false;
+	}
+#if 0
 	//@todo dxlibex
 	while(!mouse.click_log_is_empty())
 	{
@@ -143,6 +205,7 @@ void Contest::update_SelectProblem()
 			}
 		}
 	}
+#endif
 
 	//キーボード入力チェック
 	if (key.GetKeyInput(KEY_INPUT_LCONTROL) || key.GetKeyInput(KEY_INPUT_RCONTROL))
@@ -172,7 +235,69 @@ void Contest::update_SelectProblem()
 
 void Contest::draw_SelectProblem() const
 {
-	DEBUG_NOTE;
+	int window_x, window_y;
+	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
+	arrow[0].draw();
+	DrawToLeftArrow2(button_edge_size, title_space / 2, arrow_width - button_edge_size*2, dxle::color_tag::yellow);
+	arrow[1].draw();
+	DrawToRightArrow2(window_x - button_edge_size, title_space / 2, arrow_width - button_edge_size*2, dxle::color_tag::yellow);
+}
+
+void Contest::update_Menu()
+{
+	auto& key = KeyInputData::GetIns();
+	auto& mouse = Mouse::GetIns();
+
+	if (to_result.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+		DEBUG_NOTE;
+	}
+	if (to_submit.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+
+		//ファイルを開く為の設定用構造体
+		OPENFILENAME ofn;
+		memset(&ofn, NULL, sizeof(OPENFILENAME));
+		ofn.lStructSize = sizeof(OPENFILENAME);
+		//ここに指定ファイルの絶対パスが代入される
+		TCHAR szFile[MAX_PATH*2] = _T("");
+
+		//親ウィンドウのハンドル
+		ofn.hwndOwner = DxLib::GetMainWindowHandle();
+		//表示させるファイルのフィルタリング
+		ofn.lpstrFilter = _T(
+			"Cppファイル(*.cpp *.cxx)\0*.cpp;*.cxx\0"
+			"全てのファイル(*.*)\0*.*\0"
+			);
+		//パスを代入する配列
+		ofn.lpstrFile = szFile;
+		//パスの最大文字数
+		ofn.nMaxFile = MAX_PATH * 2;
+		//ファイル名で拡張子が指定されなかった場合に追加する文字列
+		ofn.lpstrDefExt = _T(".cpp");
+		//ウィンドウの名前
+		ofn.lpstrTitle = _T("提出するC++コードの選択");
+
+		//カレントディレクトリを保存（GetOpenFileNameはカレントディレクトリをいじる）
+		TCHAR old_current_directory[MAX_PATH * 3];
+		GetCurrentDirectory(sizeof(old_current_directory) / sizeof(old_current_directory[0]), old_current_directory);
+		//MessageBoxなみに処理を止めるので注意
+		auto open_state = GetOpenFileName(&ofn);
+		//カレントディレクトリを戻す
+		SetCurrentDirectory(old_current_directory);
+		if (open_state == 0) {
+			//ファイルオープンに失敗
+		}
+		else {
+			//成功
+			compile_taskmanager::set_test(selecting, szFile);
+		}
+
+	}
+}
+
+void Contest::draw_Menu() const
+{
+	to_result.draw(menu_font);
+	to_submit.draw(menu_font);
 }
 
 void Contest::update_Scroll()
@@ -183,15 +308,9 @@ void Contest::update_Scroll()
 		return;
 	}
 
-	//windowサイズ更新チェック
 	dxle::sizei32 window_size;
-	{
-		DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
-		if (window_size != last_window_size) {
-			reset_Scroll();
-			return;
-		}
-	}
+	DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
+
 	auto& key = KeyInputData::GetIns();
 	auto& mouse = Mouse::GetIns();
 
@@ -233,10 +352,12 @@ void Contest::update_Scroll()
 
 void Contest::reset_Scroll()
 {
-	assert(problem_load_finished);
+	if (!problem_load_finished) { return; }
+
 	auto prob_size = Data::GetIns().GetProblemSize(selecting) * extend_rate;
 	dxle::sizei32 page_size;
 	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
+
 	dxle::sizei32 window_size = page_size;
 
 	page_size.height -= title_space;
@@ -262,6 +383,7 @@ void Contest::reset_Scroll()
 	//バーの描画サイズセット
 	scrollbar_v.set_bar_size({ scrollbar_size, window_size.height - title_space - (scrollbar_h.is_active() ? scrollbar_size : 0) });
 	scrollbar_h.set_bar_size({ window_size.width - menu_space_size - (scrollbar_v.is_active() ? scrollbar_size : 0) , scrollbar_size});
+
 }
 
 void Contest::draw_Scroll() const
@@ -272,4 +394,17 @@ void Contest::draw_Scroll() const
 		DxLib::DrawFillBox(last_window_size.width - scrollbar_size, last_window_size.height - scrollbar_size
 			, last_window_size.width, last_window_size.height, DxLib::GetColor(230, 231, 232));
 	}
+}
+
+void Contest::reset_window_size()
+{
+	dxle::sizei32 window_size;
+	DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
+
+	//スクロール
+	reset_Scroll();
+
+	//問題切り替え矢印
+	//arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
+	arrow[1].set_area({ window_size.width - arrow_width,0 }, { arrow_width , title_space });
 }

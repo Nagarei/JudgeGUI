@@ -58,7 +58,7 @@ public:
 class Data final : boost::noncopyable
 {
 private:
-	dxle::tstring user_name;
+	const dxle::tstring user_name;
 
 	const dxle::tstring problems_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
 	const std::vector<Problem> problems;//InitProblem以外で要素数を変更しないこと（それによってスレッドセーフにしている為）
@@ -95,9 +95,8 @@ public:
 	static Data& GetIns(){
 		static Data ins; return ins;
 	}
-	void InitProblem(dxle::tstring path);//初回呼び出し限定！
-	void set_user_name(dxle::tstring name) { user_name = std::move(name); }
-	const dxle::tstring& get_user_name() { return user_name; }
+	void InitProblem(dxle::tstring path, dxle::tstring user_name);//初回呼び出し限定！
+	const dxle::tstring& get_user_name()const { return user_name; }//スレッドセーフ
 	void SetBuildProblemText(size_t index);
 	void update();
 	

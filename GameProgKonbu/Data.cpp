@@ -9,7 +9,7 @@ namespace {
 	const int linestart_space = 2;
 }
 
-void Data::InitProblem(dxle::tstring path)
+void Data::InitProblem(dxle::tstring path, dxle::tstring user_name_)
 {
 #ifdef _DEBUG
 	//初回しか呼ばれないので、problemsのスレッドセーフを保証できる
@@ -23,6 +23,11 @@ void Data::InitProblem(dxle::tstring path)
 		path.push_back('/');
 	}
 	path += _T("Problems/");
+	{//絶対パスに
+		TCHAR buf[MAX_PATH * 3];
+		GetFullPathName(path.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
+		path = buf;
+	}
 	const_cast<dxle::tstring&>(problems_directory) = std::move(path);
 
 	DxLib::FILEINFO fi;
@@ -61,6 +66,8 @@ void Data::InitProblem(dxle::tstring path)
 	problems_text.resize(problems.size());
 
 	InitBuildProblemText();
+
+	const_cast<dxle::tstring&>(user_name) = std::move(user_name_);
 }
 
 void Data::update()
@@ -326,6 +333,7 @@ Data::~Data()
 void Data::SetBuildProblemText(size_t index)
 {
 	DEBUG_NOTE;
+	viewing_problem = index;
 }
 
 //@param path:末尾に\又は/
@@ -388,6 +396,7 @@ void Problem::AddScores(Scores && new_data)
 
 void Data::update_ScoresSet()
 {
+	std::lock_guard<std::mutex> lock(new_scores_mtx);
 	for (auto& i : new_scores)
 	{
 		(*this)[i.first].AddScores(std::move(i.second));

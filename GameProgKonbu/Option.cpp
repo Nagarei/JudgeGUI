@@ -90,10 +90,10 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 		{
 		case Option_Sequence::Select::local:
 			//local
-			Data::GetIns().InitProblem(dxle::tstring{});
+			Data::GetIns().InitProblem(dxle::tstring{}, Option::ins.username);
 			return std::make_unique<Contest>();
 		case Option_Sequence::Select::server_contact:
-			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"));
+			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
 			return std::make_unique<Contest>();
 		case Option_Sequence::Select::contest:
 			MessageBox(NULL, _T("未実装です"), _T("情報"), MB_OK);
@@ -124,12 +124,12 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 		{
 			if (buttons[0].IsInArea(click.pos)) {
 				//local
-				Data::GetIns().InitProblem(dxle::tstring{});
+				Data::GetIns().InitProblem(dxle::tstring{}, Option::ins.username);
 				return std::make_unique<Contest>();
 			}
 			if (buttons[1].IsInArea(click.pos)) {
 				//server_contact
-				Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"));
+				Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
 				return std::make_unique<Contest>();
 			}
 			if (buttons[2].IsInArea(click.pos)) {
