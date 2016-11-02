@@ -367,6 +367,9 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 	}
 				
 	const_cast<uint32_t&>(sample_num) = get_numfile_num(path + _T("sample_in"), _T(".txt"), 1);
+	if(sample_num == (uint32_t)(-1)){
+		const_cast<uint32_t&>(sample_num) = 0;
+	}
 }
 
 void Problem::AddScores(Scores && new_data)

@@ -2,6 +2,7 @@
 #include "Data.h"
 #include "ScrollBar.h"
 #include "Button.h"
+#include "common.h"
 
 class Contest final : public Sequence
 {
@@ -34,7 +35,7 @@ private:
 	void update_SelectProblem();
 	void draw_SelectProblem()const;
 
-	void update_Menu();
+	std::unique_ptr<Sequence> update_Menu();
 	void draw_Menu()const;
 
 	void update_Scroll();

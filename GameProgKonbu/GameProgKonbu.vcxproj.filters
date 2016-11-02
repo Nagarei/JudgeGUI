@@ -43,6 +43,9 @@
     <Filter Include="ScrollBar">
       <UniqueIdentifier>{9b41938d-1b5c-4f47-bd7e-561b7f76d328}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sequence\Show_Score">
+      <UniqueIdentifier>{5a50630f-a437-4ef5-8c46-f6ed0ff55302}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -96,6 +99,12 @@
     <ClInclude Include="GetNumfileNum.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>Sequence</Filter>
+    </ClInclude>
+    <ClInclude Include="Show_Score.h">
+      <Filter>Sequence\Show_Score</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -130,6 +139,12 @@
     </ClCompile>
     <ClCompile Include="ScrollBar.cpp">
       <Filter>ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Show_Score.cpp">
+      <Filter>Sequence\Show_Score</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

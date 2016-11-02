@@ -134,8 +134,16 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="common.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="other_usefuls.h" />
     <ClInclude Include="Option.h" />
+    <ClInclude Include="Show_Score.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="ScrollBar.h" />
     <ClInclude Include="SetLocale.h" />
     <ClInclude Include="test.h" />
@@ -151,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="button.cpp" />
+    <ClCompile Include="common.cpp" />
     <ClCompile Include="Contest.cpp" />
     <ClCompile Include="Data.cpp" />
     <ClCompile Include="KeyInputData.cpp" />
@@ -161,6 +170,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VC_DEBUG|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Show_Score.cpp">
+      <SubType>
+      </SubType>
     </ClCompile>
     <ClCompile Include="ScrollBar.cpp" />
     <ClCompile Include="stdafx.cpp">

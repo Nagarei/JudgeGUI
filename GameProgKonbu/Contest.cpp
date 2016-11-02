@@ -4,14 +4,9 @@
 #include "Mouse.h"
 #include "test.h"
 #include "fps.h"
+#include "Show_Score.h"
 namespace
 {
-	const int title_space = 50;
-	const int arrow_width = 20;
-	const int button_edge_size = 2;
-	const int menu_space_size = 100;
-	const int menu_button_height = 50;
-	const int scrollbar_size = 17;
 }
 Contest::Contest()
 	: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
@@ -61,9 +56,10 @@ Contest::~Contest()
 	DeleteFontToHandle(menu_font);
 }
 
-
 std::unique_ptr<Sequence> Contest::update()
 {
+	std::unique_ptr<Sequence> next_sequence = nullptr;
+
 	dxle::sizei32 window_size;
 	{
 		DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
@@ -88,7 +84,7 @@ std::unique_ptr<Sequence> Contest::update()
 		//問題スクロール
 		update_Scroll();
 		//メニュー処理
-		update_Menu();
+		next_sequence = update_Menu();
 	}
 
 	if (!problem_load_finished) {
@@ -100,7 +96,7 @@ std::unique_ptr<Sequence> Contest::update()
 
 	DxLib::GetWindowSize(&last_window_size.width, &last_window_size.height);//@todo dxlibex
 
-	return nullptr;
+	return next_sequence;
 }
 void Contest::draw()const
 {
@@ -139,97 +135,19 @@ void Contest::draw()const
 
 void Contest::SetWindowTitle()
 {
-	auto& problems = Data::GetIns();
-	DxLib::SetMainWindowText(ToStringEx(
-		problems[selecting].GetName(),
-		_T(" ("),
-		problems[selecting].GetScore(),
-		_T('/'),
-		problems[selecting].GetMaxScore(),
-		_T(')')
-	).c_str());
+	::SetWindowTitle(selecting);
 }
 
 void Contest::update_SelectProblem()
 {
-	auto& problems = Data::GetIns();
-	auto& key = KeyInputData::GetIns();
-	auto& mouse = Mouse::GetIns();
-	int window_x, window_y;
-	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
+	auto old_selecting = selecting;
 
-	//マウス入力チェック
+	ここの部分はcommonに移しました.;
 
-	if (arrow[0].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-		//左
-		if (selecting <= 0) {
-			selecting = problems.size();
-		}
-		--selecting;
-		SetWindowTitle();
+	ここはcommonに書いてないので注意！！！;
+	if (selecting != old_selecting) {
 		problem_load_finished = false;
 	}
-	if (arrow[1].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-		//右
-		++selecting;
-		if (problems.size() <= (unsigned)selecting) {
-			selecting = 0;
-		}
-		SetWindowTitle();
-		problem_load_finished = false;
-	}
-#if 0
-	//@todo dxlibex
-	while(!mouse.click_log_is_empty())
-	{
-		auto click_state = mouse.click_log_front(); mouse.click_log_pop();
-		if ((click_state.type & MOUSE_INPUT_LEFT) && (click_state.pos.y < title_space))
-		{
-			if (0 <= click_state.pos.x && click_state.pos.x < side_space_size) {
-				//左
-				if (selecting <= 0) {
-					selecting = problems.size();
-				}
-				--selecting;
-				SetWindowTitle();
-				problem_load_finished = false;
-			}
-			else if (window_x - side_space_size <= click_state.pos.x && click_state.pos.x < window_x) {
-				//右
-				++selecting;
-				if (problems.size() <= (unsigned)selecting) {
-					selecting = 0;
-				}
-				SetWindowTitle();
-				problem_load_finished = false;
-			}
-		}
-	}
-#endif
-
-	//キーボード入力チェック
-	if (key.GetKeyInput(KEY_INPUT_LCONTROL) || key.GetKeyInput(KEY_INPUT_RCONTROL))
-	{
-		if (key.GetDirectionKeyInput(key.KEY_LEFT)) {
-			//左
-			if (selecting <= 0) {
-				selecting = problems.size();
-			}
-			--selecting;
-			SetWindowTitle();
-			problem_load_finished = false;
-		}
-		else if (key.GetDirectionKeyInput(key.KEY_RIGHT)) {
-			//右
-			++selecting;
-			if (problems.size() <= (unsigned)selecting) {
-				selecting = 0;
-			}
-			SetWindowTitle();
-			problem_load_finished = false;
-		}
-	}
-
 	problems.SetBuildProblemText(selecting);
 }
 
@@ -243,13 +161,15 @@ void Contest::draw_SelectProblem() const
 	DrawToRightArrow2(window_x - button_edge_size, title_space / 2, arrow_width - button_edge_size*2, dxle::color_tag::yellow);
 }
 
-void Contest::update_Menu()
+std::unique_ptr<Sequence> Contest::update_Menu()
 {
+	std::unique_ptr<Sequence> next_sequence = nullptr;
+
 	auto& key = KeyInputData::GetIns();
 	auto& mouse = Mouse::GetIns();
 
 	if (to_result.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-		DEBUG_NOTE;
+		next_sequence = std::make_unique<Show_Score>();
 	}
 	if (to_submit.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
 
@@ -292,6 +212,8 @@ void Contest::update_Menu()
 		}
 
 	}
+
+	return next_sequence;
 }
 
 void Contest::draw_Menu() const

@@ -196,3 +196,4 @@ Log.txt
 *.VC.opendb
 *.VC.db
 GameProgKonbu/Judge++/
+GameProgKonbu/Problems/*/*/
