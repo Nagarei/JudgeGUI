@@ -17,12 +17,10 @@ protected:
 	int score_font;
 	int selecting;
 	Button arrow[2];//left,right
+	dxle::sizei32 last_window_size;
 
 protected:
-	Sequence_Commom()
-		: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
-		, score_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
-	{}
+	Sequence_Commom(int selecting);
 	Sequence_Commom(const Sequence_Commom&) = delete;
 	Sequence_Commom& operator=(const Sequence_Commom&) = delete;
 	~Sequence_Commom() { DeleteFontToHandle(title_font); DeleteFontToHandle(score_font); }
@@ -41,5 +39,12 @@ protected:
 			problems[selecting].GetMaxScore(),
 			_T(')')
 		).c_str());
+	}
+	void reset_problemselect() {
+		dxle::sizei32 window_size;
+		DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
+		//問題切り替え矢印
+		//arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
+		arrow[1].set_area({ window_size.width - arrow_width,0 }, { arrow_width , title_space });
 	}
 };

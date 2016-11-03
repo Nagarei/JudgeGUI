@@ -35,7 +35,7 @@ public:
 	//@param mouse_left_input マウスの「掴む」ボタンの入力
 	//@param keyboard_input keyboard_input_maskで構成されたキーの入力状況
 	//@param arrow_value 矢印ボタンが押されたときの移動量(pix/sec)
-	void update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value = 100);
+	void update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value = 200);
 	void draw(dxle::pointi32 bar_pos)const;
 	
 	//どれだけずらすべきか取得

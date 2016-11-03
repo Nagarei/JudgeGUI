@@ -42,18 +42,21 @@ private:
 public:
 	struct init_error{};
 	//@param path:末尾に\又は/
-	Problem(dxle::tstring path, const TCHAR* name)throw(...);
+	Problem(dxle::tstring path, const TCHAR* name)noexcept(false);
 	Problem(const Problem&) = default;
 	Problem(Problem&&) = default;
 
 	//スレッドセーフ
 	const dxle::tstring& GetName()const { return name; }
-	//スレッドセーフでない
+	//メインスレッドからのみ呼び出し可
 	int GetScore()const { return my_socre; }
 	//スレッドセーフ
 	int GetMaxScore()const { return max_score; }
-	//スレッドセーフでない
+	//メインスレッドからのみ呼び出し可
 	void AddScores(Scores&& new_data);
+
+	//メインスレッドからのみ呼び出し可
+	const auto& GetScoresSet()const { return scores_set; }
 };
 class Data final : boost::noncopyable
 {

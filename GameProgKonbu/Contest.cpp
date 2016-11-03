@@ -8,23 +8,15 @@
 namespace
 {
 }
-Contest::Contest()
-	: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
-	, main_font (DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
+Contest::Contest(int selecting_)
+	: Sequence_Commom(selecting_)
+	, loading_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 32, 2))
 	, menu_font (DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
-	, selecting(0)
 	, problem_load_finished(false)
 	, extend_rate(1.0)
 {
 	DxLib::SetDragFileValidFlag(TRUE);
 	DxLib::DragFileInfoClear();
-	SetWindowTitle();
-
-	int window_x, window_y;
-	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
-
-	arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
-	arrow[1].set_area({ window_x - arrow_width,0 }, { arrow_width , title_space });
 
 	to_result.set_area({ 0, title_space }, { menu_space_size , menu_button_height });
 	to_result.set_str(_T("結果"));
@@ -38,21 +30,16 @@ Contest::Contest()
 	dxle::rgb on_string_color = dxle::color_tag::white;
 	dxle::rgb out_string_color = dxle::color_tag::white;
 
-	arrow[0].set_on_color(on_back_color, on_edge_color, on_string_color);
-	arrow[1].set_on_color(on_back_color, on_edge_color, on_string_color);
 	to_result.set_on_color(on_back_color, on_edge_color, on_string_color);
 	to_submit.set_on_color(on_back_color, on_edge_color, on_string_color);
 
-	arrow[0].set_out_color(out_back_color, out_edge_color, out_string_color);
-	arrow[1].set_out_color(out_back_color, out_edge_color, out_string_color);
 	to_result.set_out_color(out_back_color, out_edge_color, out_string_color);
 	to_submit.set_out_color(out_back_color, out_edge_color, out_string_color);
 }
 Contest::~Contest()
 {
 	DxLib::SetDragFileValidFlag(FALSE);
-	DeleteFontToHandle(title_font);
-	DeleteFontToHandle(main_font);
+	DeleteFontToHandle(loading_font);
 	DeleteFontToHandle(menu_font);
 }
 
@@ -79,12 +66,19 @@ std::unique_ptr<Sequence> Contest::update()
 
 	if (GetWindowActiveFlag())
 	{
+		auto old_selecting = selecting;
 		//問題選択
 		update_SelectProblem();
 		//問題スクロール
 		update_Scroll();
 		//メニュー処理
 		next_sequence = update_Menu();
+
+		//問題の変更確認
+		if (selecting != old_selecting) {
+			problem_load_finished = false;
+		}
+		Data::GetIns().SetBuildProblemText(selecting);
 	}
 
 	if (!problem_load_finished) {
@@ -100,20 +94,15 @@ std::unique_ptr<Sequence> Contest::update()
 }
 void Contest::draw()const
 {
-	const auto& problems = Data::GetIns();
-	int window_x, window_y;
-	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
-
-	//タイトル表示
-	DrawStringCenter({ 0,0 }, problems[selecting].GetName().c_str(), dxle::color_tag::white, title_font, window_x);
-	//スコア表示
-	DrawStringCenter({ 0,32 }, _T("%d/%d"), dxle::color_tag::white, main_font, window_x, problems[selecting].GetScore(), problems[selecting].GetMaxScore());
+	//タイトル、スコア標示
+	draw_problem_state();
 
 	if (problem_load_finished)
 	{
 		//問題表示
-		DxLib::SetDrawArea(menu_space_size, title_space, window_x, window_y);
-		DxLib::DrawFillBox(menu_space_size, title_space, window_x, window_y, dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
+		DxLib::SetDrawArea(menu_space_size, title_space, last_window_size.width, last_window_size.height);
+		DxLib::DrawFillBox(menu_space_size, title_space, last_window_size.width, last_window_size.height,
+			dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
 		Data::GetIns().DrawExtendProblem(selecting, problem_pos, extend_rate);
 		DxLib::SetDrawAreaFull();
 
@@ -122,8 +111,8 @@ void Contest::draw()const
 	}
 	else
 	{
-		int y = (window_y - 30) / 2;
-		DrawStringCenter({ 0,y }, _T("Now Loading"), dxle::color_tag::white, title_font, window_x);
+		int y = (last_window_size.height - 30) / 2;
+		DrawStringCenter({ 0,y }, _T("Now Loading"), dxle::color_tag::white, loading_font, last_window_size.width);
 	}
 
 	//問題選択矢印表示
@@ -131,34 +120,6 @@ void Contest::draw()const
 
 	//メニュー処理
 	draw_Menu();
-}
-
-void Contest::SetWindowTitle()
-{
-	::SetWindowTitle(selecting);
-}
-
-void Contest::update_SelectProblem()
-{
-	auto old_selecting = selecting;
-
-	ここの部分はcommonに移しました.;
-
-	ここはcommonに書いてないので注意！！！;
-	if (selecting != old_selecting) {
-		problem_load_finished = false;
-	}
-	problems.SetBuildProblemText(selecting);
-}
-
-void Contest::draw_SelectProblem() const
-{
-	int window_x, window_y;
-	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
-	arrow[0].draw();
-	DrawToLeftArrow2(button_edge_size, title_space / 2, arrow_width - button_edge_size*2, dxle::color_tag::yellow);
-	arrow[1].draw();
-	DrawToRightArrow2(window_x - button_edge_size, title_space / 2, arrow_width - button_edge_size*2, dxle::color_tag::yellow);
 }
 
 std::unique_ptr<Sequence> Contest::update_Menu()
@@ -169,7 +130,7 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 	auto& mouse = Mouse::GetIns();
 
 	if (to_result.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-		next_sequence = std::make_unique<Show_Score>();
+		next_sequence = std::make_unique<Show_Score>(selecting);
 	}
 	if (to_submit.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
 
@@ -256,12 +217,16 @@ void Contest::update_Scroll()
 	if (key.GetKeyInput(KEY_INPUT_LSHIFT) || key.GetKeyInput(KEY_INPUT_RSHIFT)) {
 		std::swap(v_wheel, h_wheel);
 	}
-	DEBUG_NOTE;//key_input
+	if (key.GetKeyInput(KEY_INPUT_UP)  ) { keyinput |= ScrollBar::keyboard_input_mask::up; }
+	if (key.GetKeyInput(KEY_INPUT_DOWN)) { keyinput |= ScrollBar::keyboard_input_mask::down; }
+	if (key.GetKeyInput(KEY_INPUT_PGUP)) { keyinput |= ScrollBar::keyboard_input_mask::page_up; }
+	if (key.GetKeyInput(KEY_INPUT_PGDN)) { keyinput |= ScrollBar::keyboard_input_mask::page_down; }
 	scrollbar_v.update(GetFrameTime(),
 		mouse.get_now_pos() - dxle::pointi32{ window_size.width - scrollbar_size, title_space },
 		v_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
 	keyinput = 0;
-	DEBUG_NOTE;//key_input
+	if (key.GetKeyInput(KEY_INPUT_LEFT) ) { keyinput |= ScrollBar::keyboard_input_mask::up; }
+	if (key.GetKeyInput(KEY_INPUT_RIGHT)) { keyinput |= ScrollBar::keyboard_input_mask::down; }
 	scrollbar_h.update(GetFrameTime(),
 		mouse.get_now_pos() - dxle::pointi32{ menu_space_size, window_size.height - scrollbar_size },
 		h_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
@@ -320,13 +285,9 @@ void Contest::draw_Scroll() const
 
 void Contest::reset_window_size()
 {
-	dxle::sizei32 window_size;
-	DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
-
 	//スクロール
 	reset_Scroll();
 
 	//問題切り替え矢印
-	//arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
-	arrow[1].set_area({ window_size.width - arrow_width,0 }, { arrow_width , title_space });
+	reset_problemselect();
 }

@@ -1,6 +1,33 @@
-#include "common.h"
+Ôªø#include "common.h"
 #include "KeyInputData.h"
 #include "Mouse.h"
+
+Sequence_Commom::Sequence_Commom(int selecting_)
+	: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
+	, score_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
+	, selecting(selecting_)
+{
+	SetWindowTitle();
+
+	DxLib::GetWindowSize(&last_window_size.width, &last_window_size.height);//@todo dxlibex
+
+	arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
+	arrow[1].set_area({ last_window_size.width - arrow_width,0 }, { arrow_width , title_space });
+
+	dxle::rgb out_back_color{ 154, 130, 0 };
+	dxle::rgb on_back_color{ 0, 197, 30 };
+	dxle::rgb out_edge_color = dxle::color_tag::white;
+	dxle::rgb on_edge_color = dxle::color_tag::white;
+	dxle::rgb on_string_color = dxle::color_tag::white;
+	dxle::rgb out_string_color = dxle::color_tag::white;
+
+	arrow[0].set_on_color(on_back_color, on_edge_color, on_string_color);
+	arrow[1].set_on_color(on_back_color, on_edge_color, on_string_color);
+
+	arrow[0].set_out_color(out_back_color, out_edge_color, out_string_color);
+	arrow[1].set_out_color(out_back_color, out_edge_color, out_string_color);
+
+}
 
 void Sequence_Commom::draw_problem_state() const
 {
@@ -8,10 +35,10 @@ void Sequence_Commom::draw_problem_state() const
 	int window_x, window_y;
 	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
 
-	//É^ÉCÉgÉãï\é¶
+	//„Çø„Ç§„Éà„É´Ë°®Á§∫
 	DrawStringCenter({ 0,0 }, problems[selecting].GetName().c_str(), dxle::color_tag::white,
 		title_font, window_x);
-	//ÉXÉRÉAï\é¶
+	//„Çπ„Ç≥„Ç¢Ë°®Á§∫
 	DrawStringCenter({ 0,32 }, _T("%d/%d"), dxle::color_tag::white, score_font, window_x,
 		problems[selecting].GetScore(), problems[selecting].GetMaxScore());
 }
@@ -24,10 +51,10 @@ void Sequence_Commom::update_SelectProblem()
 	int window_x, window_y;
 	DxLib::GetWindowSize(&window_x, &window_y);//@todo dxlibex
 
-	//É}ÉEÉXì¸óÕÉ`ÉFÉbÉN
+	//„Éû„Ç¶„ÇπÂÖ•Âäõ„ÉÅ„Çß„ÉÉ„ÇØ
 
 	if (arrow[0].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-		//ç∂
+		//Â∑¶
 		if (selecting <= 0) {
 			selecting = problems.size();
 		}
@@ -35,7 +62,7 @@ void Sequence_Commom::update_SelectProblem()
 		SetWindowTitle();
 	}
 	if (arrow[1].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-		//âE
+		//Âè≥
 		++selecting;
 		if (problems.size() <= (unsigned)selecting) {
 			selecting = 0;
@@ -50,7 +77,7 @@ void Sequence_Commom::update_SelectProblem()
 		if ((click_state.type & MOUSE_INPUT_LEFT) && (click_state.pos.y < title_space))
 		{
 			if (0 <= click_state.pos.x && click_state.pos.x < side_space_size) {
-				//ç∂
+				//Â∑¶
 				if (selecting <= 0) {
 					selecting = problems.size();
 				}
@@ -58,7 +85,7 @@ void Sequence_Commom::update_SelectProblem()
 				SetWindowTitle();
 			}
 			else if (window_x - side_space_size <= click_state.pos.x && click_state.pos.x < window_x) {
-				//âE
+				//Âè≥
 				++selecting;
 				if (problems.size() <= (unsigned)selecting) {
 					selecting = 0;
@@ -69,11 +96,11 @@ void Sequence_Commom::update_SelectProblem()
 	}
 #endif
 
-	//ÉLÅ[É{Å[Éhì¸óÕÉ`ÉFÉbÉN
+	//„Ç≠„Éº„Éú„Éº„ÉâÂÖ•Âäõ„ÉÅ„Çß„ÉÉ„ÇØ
 	if (key.GetKeyInput(KEY_INPUT_LCONTROL) || key.GetKeyInput(KEY_INPUT_RCONTROL))
 	{
 		if (key.GetDirectionKeyInput(key.KEY_LEFT)) {
-			//ç∂
+			//Â∑¶
 			if (selecting <= 0) {
 				selecting = problems.size();
 			}
@@ -81,7 +108,7 @@ void Sequence_Commom::update_SelectProblem()
 			SetWindowTitle();
 		}
 		else if (key.GetDirectionKeyInput(key.KEY_RIGHT)) {
-			//âE
+			//Âè≥
 			++selecting;
 			if (problems.size() <= (unsigned)selecting) {
 				selecting = 0;

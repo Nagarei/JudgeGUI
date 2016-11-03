@@ -29,13 +29,19 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 			Data::GetIns().update();
 			frame_time::GetIns().upadte();
 
+			//auto new_seq = seqence->update();
+			//if (new_seq){
+			//	seqence = std::move(new_seq);
+			//}
+			//else {
+			//	seqence->draw();
+			//}
 			auto new_seq = seqence->update();
-			if (new_seq){
+			while (new_seq) {
 				seqence = std::move(new_seq);
+				new_seq = seqence->update();
 			}
-			else {
-				seqence->draw();
-			}
+			seqence->draw();
 
 			ScreenFlip();
 			ClearDrawScreen();

@@ -4,36 +4,28 @@
 #include "Button.h"
 #include "common.h"
 
-class Contest final : public Sequence
+class Contest final : public Sequence, private Sequence_Commom
 {
 private:
-	int title_font;
-	int main_font;
+	int loading_font;
 	int menu_font;
 
-	int selecting;
 	dxle::pointi problem_pos;
 
 	bool problem_load_finished;
-	dxle::sizei32 last_window_size;
 	ScrollBar scrollbar_v;
 	ScrollBar scrollbar_h;
 	double extend_rate;//拡大/縮小率
-	Button arrow[2];//left,right
 	Button to_result;
 	Button to_submit;
 	std::vector<Button> samples;
 public:
-	Contest();
+	Contest(int selecting);
 	~Contest();
 
 	std::unique_ptr<Sequence> update()override;
 	void draw()const override;
 private:
-	void SetWindowTitle();
-
-	void update_SelectProblem();
-	void draw_SelectProblem()const;
 
 	std::unique_ptr<Sequence> update_Menu();
 	void draw_Menu()const;

@@ -8,20 +8,21 @@ class Show_Score final : public Sequence, private Sequence_Commom
 {
 private:
 	int menu_font;
+	int result_font;
 
 	dxle::sizei32 last_window_size;
 	ScrollBar scrollbar_v;
 	Button to_problem;
 	std::vector<Button> results;
 public:
-	Show_Score();
+	Show_Score(int selecting);
 	~Show_Score();
 
 	std::unique_ptr<Sequence> update()override;
 	void draw()const override;
 private:
 
-	void update_Menu();
+	std::unique_ptr<Sequence> update_Menu();
 	void draw_Menu()const;
 
 	void update_Scroll();

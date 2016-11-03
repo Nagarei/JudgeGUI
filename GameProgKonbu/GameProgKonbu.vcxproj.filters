@@ -140,11 +140,11 @@
     <ClCompile Include="ScrollBar.cpp">
       <Filter>ScrollBar</Filter>
     </ClCompile>
-    <ClCompile Include="common.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Show_Score.cpp">
       <Filter>Sequence\Show_Score</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>Sequence</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
