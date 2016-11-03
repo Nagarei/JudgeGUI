@@ -8,7 +8,6 @@ constexpr int arrow_width = 20;
 constexpr int button_edge_size = 2;
 constexpr int menu_space_size = 100;
 constexpr int menu_button_height = 50;
-constexpr int scrollbar_size = 17;
 
 class Sequence_Commom
 {
