@@ -2,6 +2,7 @@
 #include "Data.h"
 #include "other_usefuls.h"
 #include "GetNumfileNum.h"
+#include "SubmissionLog.h"
 
 std::mutex Data::new_scores_mtx;
 std::vector<std::pair<size_t, Scores>> Data::new_scores;//FIFO (first: pop, last: push)
@@ -9,7 +10,7 @@ namespace {
 	const int linestart_space = 2;
 }
 
-void Data::InitProblem(dxle::tstring path, dxle::tstring user_name_)
+void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_directory_, dxle::tstring user_name_)
 {
 #ifdef _DEBUG
 	//初回しか呼ばれないので、problemsのスレッドセーフを保証できる
@@ -19,16 +20,29 @@ void Data::InitProblem(dxle::tstring path, dxle::tstring user_name_)
 	is_finish = true;
 #endif
 
-	if (!path.empty() && path.back() != '/' && path.back() != '\\'){
-		path.push_back('/');
+	const_cast<dxle::tstring&>(user_name) = std::move(user_name_);
+
+	if (!problems_directory_.empty() && problems_directory_.back() != '/' && problems_directory_.back() != '\\'){
+		problems_directory_.push_back('/');
 	}
-	path += _T("Problems/");
+	problems_directory_ += _T("Problems/");
 	{//絶対パスに
 		TCHAR buf[MAX_PATH * 3];
-		GetFullPathName(path.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
-		path = buf;
+		GetFullPathName(problems_directory_.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
+		problems_directory_ = buf;
 	}
-	const_cast<dxle::tstring&>(problems_directory) = std::move(path);
+	const_cast<dxle::tstring&>(problems_directory) = std::move(problems_directory_);
+
+	if (!log_directory_.empty() && log_directory_.back() != '/' && log_directory_.back() != '\\'){
+		log_directory_.push_back('/');
+	}
+	log_directory_ += _T("Problems/");
+	{//絶対パスに
+		TCHAR buf[MAX_PATH * 3];
+		GetFullPathName(log_directory_.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
+		log_directory_ = buf;
+	}
+	const_cast<dxle::tstring&>(log_directory) = std::move(log_directory_);
 
 	DxLib::FILEINFO fi;
 	DWORD_PTR hFind = (DWORD_PTR)-1;
@@ -67,7 +81,7 @@ void Data::InitProblem(dxle::tstring path, dxle::tstring user_name_)
 
 	InitBuildProblemText();
 
-	const_cast<dxle::tstring&>(user_name) = std::move(user_name_);
+	LoadSubmissionAll();//提出データの初回読み込み
 }
 
 void Data::update()
@@ -320,6 +334,41 @@ void Data::BuildProblemText()
 		//一定時間たったら抜ける
 	} while ((DxLib::GetNowCount() - start_time) < load_time);
 }
+void Data::LoadSubmissionAll()
+{
+	dxle::tstring problem_user_directory;
+	dxle::tstring problem_directory;
+	//すべての問題のデータをロード
+	for (auto& prob : const_cast<std::vector<Problem>&>(problems))
+	{
+		problem_directory = log_directory + prob.GetName() + _T('/');
+
+		//すべてのユーザーのデータをロード
+		DxLib::FILEINFO fi;
+		DWORD_PTR hFind = (DWORD_PTR)-1;
+		FINALLY([&]() {if (hFind != -1) { FileRead_findClose(hFind); }});
+		hFind = DxLib::FileRead_findFirst((problem_directory + _T('*')).c_str(), &fi);
+		if (hFind == -1) { continue; }
+		do
+		{
+			if (fi.DirFlag == TRUE)
+			{
+				if (fi.Name[0] != '.')
+				{
+					//ユーザー名fi.Nameのユーザーの記録を取得
+					problem_user_directory = problem_directory + fi.Name + _T('/');
+					auto log_num = get_numdirectry_num(problem_user_directory, _T(""), 0);
+					if (log_num == (uint32_t)(-1)) { continue; }
+					TCHAR buf[20];
+					for (uint32_t i = 0; i <= log_num; ++i)
+					{
+						prob.AddScores(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), fi.Name));
+					}
+				}
+			}
+		} while (DxLib::FileRead_findNext(hFind, &fi) == 0);
+	}
+}
 Data::Data()
 	: load_state(Load_State::end)
 {
@@ -374,14 +423,19 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 
 void Problem::AddScores(Scores && new_data)
 {
-	if (new_data.get_type() != Scores::Type_T::normal) {
-		scores_set.emplace_back(std::move(new_data));
-		return;
+	scores_set.emplace_back(std::move(new_data));
+	my_socre = std::max(my_socre, GetScore_single(scores_set.size() - 1));
+}
+
+int32_t Problem::GetScore_single(size_t scores_set_index) const
+{
+	const auto& data = scores_set[scores_set_index];
+	if (data.get_type() != Scores::Type_T::normal) {
+		return 0;
 	}
-	//得点の更新
-	int temp_score = 0;
+	int32_t temp_score = 0;
 	size_t i = 0;
-	auto& new_raw_scores = new_data.get_scores();
+	auto& new_raw_scores = data.get_scores();
 	for (auto& partial : partial_scores) {
 		size_t end_n = std::min(new_raw_scores.size(), partial.second);
 		if (std::all_of(new_raw_scores.begin() + i, new_raw_scores.begin() + end_n,
@@ -390,11 +444,8 @@ void Problem::AddScores(Scores && new_data)
 		}
 		i = end_n;
 	}
-	if (my_socre < temp_score) {
-		my_socre = temp_score;
-	}
-	//scoreの登録
-	scores_set.emplace_back(std::move(new_data));
+
+	return temp_score;
 }
 
 void Data::update_ScoresSet()
@@ -411,4 +462,56 @@ void Data::AddScoresSet_threadsafe(size_t problem_num, Scores param_new_scores)
 {
 	std::lock_guard<std::mutex> lock(new_scores_mtx);
 	new_scores.emplace_back(problem_num, std::move(param_new_scores));
+}
+
+std::array<TCHAR, 10> get_result_type_str(const Scores& scores)
+{
+	std::array<TCHAR, 10> str;
+#define SET_grts_(message) DxLib::strcpy_sDx(str.data(), str.size(), _T(#message))
+	switch (scores.get_type())
+	{
+	case Scores::Type_T::normal: {
+		auto iter = std::find_if_not(scores.get_scores().begin(), scores.get_scores().end()
+			, [](const Score& s) {return s.type == Score::Type_T::AC; });
+		if (iter == scores.get_scores().end()) {
+			SET_grts_(AC);
+		}
+		else {
+			switch (iter->type)
+			{
+				break;
+			case Score::Type_T::WA:
+				SET_grts_(WA);
+				break;
+			case Score::Type_T::TLE:
+				SET_grts_(TLE);
+				break;
+			case Score::Type_T::MLE:
+				SET_grts_(MLE);
+				break;
+			case Score::Type_T::RE:
+				SET_grts_(RE);
+				break;
+			case Score::Type_T::AC:
+			default:
+				assert(false);
+				SET_grts_(IE);
+				break;
+			}
+		}
+	}
+		break;
+	case Scores::Type_T::CE:
+		SET_grts_(CE);
+		break;
+	case Scores::Type_T::IE:
+		SET_grts_(IE);
+		break;
+	default:
+		assert(false);
+		SET_grts_(IE);
+		break;
+	}
+	return str;
+#undef SET_grts_
 }

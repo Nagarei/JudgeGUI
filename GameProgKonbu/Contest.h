@@ -10,12 +10,10 @@ private:
 	int loading_font;
 	int menu_font;
 
-	dxle::pointi problem_pos;
+	dxle::pointi32 problem_pos;
 
 	bool problem_load_finished;
-	ScrollBar scrollbar_v;
-	ScrollBar scrollbar_h;
-	double extend_rate;//拡大/縮小率
+	ScrollBar2 scrollbar;
 	Button to_result;
 	Button to_submit;
 	std::vector<Button> samples;

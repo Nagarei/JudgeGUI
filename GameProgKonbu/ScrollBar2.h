@@ -6,6 +6,7 @@ class ScrollBar2 final
 {
 private:
 	dxle::pointi32 pos1;
+	dxle::sizei32 object_size;
 	dxle::sizei32 bar_area;
 	ScrollBar scrollbar_v;
 	ScrollBar scrollbar_h;
@@ -14,17 +15,24 @@ public:
 	ScrollBar2();
 	//@param pos1_ バーの描画位置
 	//@param bar_area_ バーの描画サイズ(バー含む物を表示する大きさ)
-	//@param object_size 動かすものの大きさ
-	ScrollBar2(const dxle::pointi32& pos1_, int32_t bar_width, dxle::sizei32 object_size) :ScrollBar2() {
-		reset_Scroll(bar_area_, bar_width, object_size);
+	//@param object_size_ 動かすものの大きさ
+	ScrollBar2(const dxle::pointi32& pos1_, const dxle::sizei32& bar_area_
+		, const dxle::sizei32& object_size_) :ScrollBar2() {
+		reset(bar_area_, object_size_);
 		set_pos(pos1_);
 	}
 	//@param bar_area_ バーの描画サイズ(バー含む物を表示する大きさ)
-	//@param bar_width バーの太さ(描画サイズ)
-	//@param object_size 動かすものの大きさ
-	void reset_Scroll(dxle::sizei32 bar_area_, dxle::sizei32 object_size);
+	//@param object_size_ 動かすものの大きさ
+	void reset(const dxle::sizei32& bar_area_, const dxle::sizei32& object_size_);
 
 	void set_pos(const dxle::pointi32& pos1_)noexcept { pos1 = pos1_; }
-	void update_Scroll();
-	void draw_Scroll()const;
+	bool update();//@return true:スクロールされた
+	void draw()const;
+
+	dxle::sizei32 get_value()const {
+		return{ scrollbar_h.get_value() , scrollbar_v.get_value() };
+	}
+	double get_extend_rate()const {
+		return extend_rate;
+	}
 };

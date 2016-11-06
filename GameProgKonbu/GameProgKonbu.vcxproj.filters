@@ -105,6 +105,15 @@
     <ClInclude Include="Show_Score.h">
       <Filter>Sequence\Show_Score</Filter>
     </ClInclude>
+    <ClInclude Include="ScrollBar2.h">
+      <Filter>ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="Unsafe_My_func.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SubmissionLog.h">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -145,6 +154,12 @@
     </ClCompile>
     <ClCompile Include="common.cpp">
       <Filter>Sequence</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollBar2.cpp">
+      <Filter>ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="SubmissionLog.cpp">
+      <Filter>Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

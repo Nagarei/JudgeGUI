@@ -18,17 +18,20 @@ private:
 	dxle::tstring source_name;
 	std::vector<Score> scores;
 	dxle::tstring C_message;//コンパイルメッセージ
+	dxle::tstring user_name;
 public:
 	Scores() = default;
-	Scores(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_, dxle::tstring C_message_)
-		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)), C_message(C_message_)
+	Scores(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_, dxle::tstring C_message_, dxle::tstring user_name_)
+		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)), C_message(std::move(C_message_)), user_name(std::move(user_name_))
 	{}
 	Scores(const Scores&) = default;
 	Scores(Scores&&) = default;
 
+	const dxle::tstring& get_user_name()const { return user_name; }
 	Type_T get_type()const { return type; }
 	const std::vector<Score>& get_scores()const { return scores; }
 };
+std::array<TCHAR, 10> get_result_type_str(const Scores& );
 
 class Problem final
 {
@@ -37,7 +40,7 @@ private:
 	const uint32_t sample_num = 0;
 	const std::vector<std::pair<int, size_t>> partial_scores;//部分点　first: 得点、　second：どこまでの問題か(<=)(入力ファイルの番号)
 	const dxle::tstring name;
-	int my_socre = 0;
+	int32_t my_socre = 0;
 	std::vector<Scores> scores_set;
 public:
 	struct init_error{};
@@ -49,12 +52,15 @@ public:
 	//スレッドセーフ
 	const dxle::tstring& GetName()const { return name; }
 	//メインスレッドからのみ呼び出し可
-	int GetScore()const { return my_socre; }
+	int32_t GetScore()const { return my_socre; }
 	//スレッドセーフ
 	int GetMaxScore()const { return max_score; }
 	//メインスレッドからのみ呼び出し可
 	void AddScores(Scores&& new_data);
 
+	//メインスレッドからのみ呼び出し可
+	//iの入力が何点相当か調べる
+	int32_t GetScore_single(size_t i)const;
 	//メインスレッドからのみ呼び出し可
 	const auto& GetScoresSet()const { return scores_set; }
 };
@@ -63,6 +69,7 @@ class Data final : boost::noncopyable
 private:
 	const dxle::tstring user_name;
 
+	const dxle::tstring log_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
 	const dxle::tstring problems_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
 	const std::vector<Problem> problems;//InitProblem以外で要素数を変更しないこと（それによってスレッドセーフにしている為）
 	std::vector<dxle::screen> problems_text;//問題文のキャッシュ
@@ -90,6 +97,7 @@ private:
 
 	void InitBuildProblemText();
 	void BuildProblemText();
+	void LoadSubmissionAll();//提出データの初回読み込み
 private:
 	Data();
 	Data(const Data&) = delete;
@@ -98,7 +106,7 @@ public:
 	static Data& GetIns(){
 		static Data ins; return ins;
 	}
-	void InitProblem(dxle::tstring path, dxle::tstring user_name);//初回呼び出し限定！
+	void InitProblem(dxle::tstring problems_directory, dxle::tstring log_directory, dxle::tstring user_name);//初回呼び出し限定！
 	const dxle::tstring& get_user_name()const { return user_name; }//スレッドセーフ
 	void SetBuildProblemText(size_t index);
 	void update();
@@ -119,6 +127,8 @@ public:
 	void ClearProblemsCash();
 	//スレッドセーフ
 	const dxle::tstring& GetProblemsDirectory()const { return problems_directory; }
+	//スレッドセーフ
+	const dxle::tstring& GetLogRootDirectory()const { return log_directory; }
 	//スレッドセーフ
 	const Problem& operator[](size_t i)const{
 		return problems[i];

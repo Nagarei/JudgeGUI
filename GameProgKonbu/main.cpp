@@ -48,6 +48,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 #ifdef _DEBUG
 			clsDx();
 #endif
+			if (!GetWindowActiveFlag()) {
+				DxLib::WaitTimer(50);
+			}
 		}
 
 		DxLib_End();

@@ -36,13 +36,13 @@ void ScrollBar::set_bar_size(dxle::sizei32 bar_size_)
 	reset_mouse_state();
 }
 
-void ScrollBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value)
+bool ScrollBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32_t wheel, bool mouse_left_input, uint32_t keyboard_input, uint32_t arrow_value)
 {
 	const auto arrow_size = bar_size.width;
 	assert(0 < bar_size.width && bar_size.width * 2 <= bar_size.height);
 	if (object_size <= page_size) {
 		now_pos = 0;
-		return;
+		return false;
 	}
 	if (is_horizontal) {
 		//x軸、y軸を入れ替えてやれば垂直と同じ
@@ -52,6 +52,8 @@ void ScrollBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32
 	FINALLY([&]() {
 		last_mouse_input = mouse_left_input;
 	});
+
+	auto old_nowpos = now_pos;
 
 	//マウス入力計算
 	if (is_holded)
@@ -136,6 +138,9 @@ void ScrollBar::update(uint32_t frame_time, dxle::pointi32 mouse_relative, int32
 	{
 		mouse_input_start_is_out = (on_mouse_pos == mouse_pos::out);
 	}
+
+
+	return old_nowpos != now_pos;
 }
 
 void ScrollBar::draw(dxle::pointi32 bar_pos) const

@@ -85,15 +85,16 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 		//一つ下に
 		++selecting;
 	}
-	if (key.GetNewKeyInput(KEY_INPUT_RETURN)) {
-		switch (selecting)
+
+	auto select_end = [this](Select input)->std::unique_ptr<Sequence> {
+		switch (input)
 		{
 		case Option_Sequence::Select::local:
 			//local
-			Data::GetIns().InitProblem(dxle::tstring{}, Option::ins.username);
+			Data::GetIns().InitProblem(_T(""), _T(""), Option::ins.username);
 			return std::make_unique<Contest>(0);
 		case Option_Sequence::Select::server_contact:
-			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
+			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), _T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
 			return std::make_unique<Contest>(0);
 		case Option_Sequence::Select::contest:
 			MessageBox(NULL, _T("未実装です"), _T("情報"), MB_OK);
@@ -103,7 +104,7 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 				name_input_handle = DxLib::MakeKeyInput(Option::username_length - 1, TRUE, FALSE, FALSE, FALSE, FALSE);
 				SetKeyInputString(Option::GetIns().username, name_input_handle);
 			}
-			else{
+			else {
 				ReStartKeyInput(name_input_handle);
 			}
 			is_username_inputing = true;
@@ -113,6 +114,11 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 			assert(false);
 			break;
 		}
+		return nullptr;
+	};
+
+	if (key.GetNewKeyInput(KEY_INPUT_RETURN)) {
+		return select_end(selecting);
 	}
 
 	//マウス入力
@@ -123,31 +129,16 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 		if (click.type == MOUSE_INPUT_LEFT)
 		{
 			if (buttons[0].IsInArea(click.pos)) {
-				//local
-				Data::GetIns().InitProblem(dxle::tstring{}, Option::ins.username);
-				return std::make_unique<Contest>(0);
+				return select_end(Select::local);
 			}
 			if (buttons[1].IsInArea(click.pos)) {
-				//server_contact
-				Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
-				return std::make_unique<Contest>(0);
+				return select_end(Select::server_contact);
 			}
 			if (buttons[2].IsInArea(click.pos)) {
-				//contest
-				MessageBox(NULL, _T("未実装です"), _T("情報"), MB_OK);
+				return select_end(Select::contest);
 			}
 			if (buttons[3].IsInArea(click.pos)) {
-				//name
-				if (name_input_handle == -1) {
-					name_input_handle = DxLib::MakeKeyInput(Option::username_length - 1, TRUE, FALSE, FALSE, FALSE, FALSE);
-					SetKeyInputString(Option::GetIns().username, name_input_handle);
-				}
-				else {
-					ReStartKeyInput(name_input_handle);
-				}
-				is_username_inputing = true;
-				SetActiveKeyInput(name_input_handle);
-				return nullptr;
+				return select_end(Select::name);
 			}
 		}
 	}

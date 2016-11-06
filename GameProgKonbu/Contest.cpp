@@ -13,8 +13,9 @@ Contest::Contest(int selecting_)
 	, loading_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 32, 2))
 	, menu_font (DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
 	, problem_load_finished(false)
-	, extend_rate(1.0)
 {
+	scrollbar.set_pos({ menu_space_size, title_space });
+
 	DxLib::SetDragFileValidFlag(TRUE);
 	DxLib::DragFileInfoClear();
 
@@ -45,6 +46,18 @@ Contest::~Contest()
 
 std::unique_ptr<Sequence> Contest::update()
 {
+	if (1 <= DxLib::GetDragFileNum())
+	{
+		auto str_buf = std::make_unique<TCHAR[]>(GetDragFilePath(nullptr)+1);
+		GetDragFilePath(str_buf.get());
+		DxLib::DragFileInfoClear();
+		DxLib::SetDragFileValidFlag(TRUE);
+		compile_taskmanager::set_test(selecting, str_buf.get());
+	}
+	if (!GetWindowActiveFlag()) {
+		return nullptr;
+	}
+
 	std::unique_ptr<Sequence> next_sequence = nullptr;
 
 	dxle::sizei32 window_size;
@@ -55,16 +68,6 @@ std::unique_ptr<Sequence> Contest::update()
 		}
 	}
 
-	if (1 <= DxLib::GetDragFileNum())
-	{
-		auto str_buf = std::make_unique<TCHAR[]>(GetDragFilePath(nullptr)+1);
-		GetDragFilePath(str_buf.get());
-		DxLib::DragFileInfoClear();
-		DxLib::SetDragFileValidFlag(TRUE);
-		compile_taskmanager::set_test(selecting, str_buf.get());
-	}
-
-	if (GetWindowActiveFlag())
 	{
 		auto old_selecting = selecting;
 		//問題選択
@@ -103,11 +106,11 @@ void Contest::draw()const
 		DxLib::SetDrawArea(menu_space_size, title_space, last_window_size.width, last_window_size.height);
 		DxLib::DrawFillBox(menu_space_size, title_space, last_window_size.width, last_window_size.height,
 			dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
-		Data::GetIns().DrawExtendProblem(selecting, problem_pos, extend_rate);
+		Data::GetIns().DrawExtendProblem(selecting, problem_pos, scrollbar.get_extend_rate());
 		DxLib::SetDrawAreaFull();
 
 		//スクロール系表示
-		draw_Scroll();
+		scrollbar.draw();
 	}
 	else
 	{
@@ -191,96 +194,23 @@ void Contest::update_Scroll()
 		return;
 	}
 
-	dxle::sizei32 window_size;
-	DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
-
-	auto& key = KeyInputData::GetIns();
-	auto& mouse = Mouse::GetIns();
-
-	//拡大/縮小入力
-	if (key.GetKeyInput(KEY_INPUT_LCONTROL) || key.GetKeyInput(KEY_INPUT_RCONTROL))
-	{
-		auto old_extend_rate = extend_rate;
-		extend_rate += mouse.get_now_wheel() * 10.0 / 100.0;
-		if (key.GetKeyInput(KEY_INPUT_0) || key.GetKeyInput(KEY_INPUT_NUMPAD0)) {
-			extend_rate = 1.0;
-		}
-		if (old_extend_rate != extend_rate) {
-			reset_Scroll();
-			return;
-		}
-	}
-	//スクロール
-	uint32_t keyinput = 0;
-	int32_t v_wheel = mouse.get_now_wheel() * -25;
-	int32_t h_wheel = mouse.get_now_H_wheel() * -25;
-	if (key.GetKeyInput(KEY_INPUT_LSHIFT) || key.GetKeyInput(KEY_INPUT_RSHIFT)) {
-		std::swap(v_wheel, h_wheel);
-	}
-	if (key.GetKeyInput(KEY_INPUT_UP)  ) { keyinput |= ScrollBar::keyboard_input_mask::up; }
-	if (key.GetKeyInput(KEY_INPUT_DOWN)) { keyinput |= ScrollBar::keyboard_input_mask::down; }
-	if (key.GetKeyInput(KEY_INPUT_PGUP)) { keyinput |= ScrollBar::keyboard_input_mask::page_up; }
-	if (key.GetKeyInput(KEY_INPUT_PGDN)) { keyinput |= ScrollBar::keyboard_input_mask::page_down; }
-	scrollbar_v.update(GetFrameTime(),
-		mouse.get_now_pos() - dxle::pointi32{ window_size.width - scrollbar_size, title_space },
-		v_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
-	keyinput = 0;
-	if (key.GetKeyInput(KEY_INPUT_LEFT) ) { keyinput |= ScrollBar::keyboard_input_mask::up; }
-	if (key.GetKeyInput(KEY_INPUT_RIGHT)) { keyinput |= ScrollBar::keyboard_input_mask::down; }
-	scrollbar_h.update(GetFrameTime(),
-		mouse.get_now_pos() - dxle::pointi32{ menu_space_size, window_size.height - scrollbar_size },
-		h_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
+	scrollbar.update();
 
 	//値セット
-	problem_pos.x = menu_space_size - scrollbar_h.get_value();
-	problem_pos.y = title_space - scrollbar_v.get_value();
-
+	problem_pos = dxle::pointi32{ menu_space_size, title_space }
+					- scrollbar.get_value();
 }
 
 void Contest::reset_Scroll()
 {
 	if (!problem_load_finished) { return; }
 
-	auto prob_size = Data::GetIns().GetProblemSize(selecting) * extend_rate;
+	auto prob_size = Data::GetIns().GetProblemSize(selecting);
 	dxle::sizei32 page_size;
 	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
-
-	dxle::sizei32 window_size = page_size;
-
 	page_size.height -= title_space;
 	page_size.width -= menu_space_size;
-
-	//バーの有効無効でpageサイズが変わってくるのに注意
-	scrollbar_v.set_bar_state(prob_size.height, page_size.height, false);
-	bool bar_v_p_all_active = scrollbar_v.is_active();
-	if (bar_v_p_all_active) {
-		page_size.width -= scrollbar_size;
-	}
-	scrollbar_h.set_bar_state(prob_size.width, page_size.width, true);
-	if (scrollbar_h.is_active()) {
-		page_size.height -= scrollbar_size;
-		scrollbar_v.set_bar_state(prob_size.height, page_size.height, false);
-		if (!bar_v_p_all_active && scrollbar_v.is_active()) {
-			//縦のバーが有効になった=>page_sizeの再計算発生
-			page_size.width -= scrollbar_size;
-			scrollbar_h.set_bar_state(prob_size.width, page_size.width, true);
-		}
-	}
-
-	//バーの描画サイズセット
-	scrollbar_v.set_bar_size({ scrollbar_size, window_size.height - title_space - (scrollbar_h.is_active() ? scrollbar_size : 0) });
-	scrollbar_h.set_bar_size({ window_size.width - menu_space_size - (scrollbar_v.is_active() ? scrollbar_size : 0) , scrollbar_size});
-
-}
-
-void Contest::draw_Scroll() const
-{
-	scrollbar_v.draw(dxle::pointi32{ last_window_size.width - scrollbar_size, title_space });
-	scrollbar_h.draw(dxle::pointi32{ menu_space_size, last_window_size.height - scrollbar_size });
-	if (scrollbar_v.is_active() && scrollbar_h.is_active()) {
-		DxLib::DrawFillBox(last_window_size.width - scrollbar_size, last_window_size.height - scrollbar_size
-			, last_window_size.width, last_window_size.height, DxLib::GetColor(230, 231, 232));
-	}
+	scrollbar.reset(page_size, prob_size);
 }
 
 void Contest::reset_window_size()

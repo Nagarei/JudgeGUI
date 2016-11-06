@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Data.h"
-#include "ScrollBar.h"
+#include "ScrollBar2.h"
 #include "Button.h"
 #include "common.h"
 
@@ -8,12 +8,12 @@ class Show_Score final : public Sequence, private Sequence_Commom
 {
 private:
 	int menu_font;
-	int result_font;
+	int submissions_font;
 
 	dxle::sizei32 last_window_size;
-	ScrollBar scrollbar_v;
+	ScrollBar2 scrollbar;
 	Button to_problem;
-	std::vector<Button> results;
+	std::vector<Button> submissions;
 public:
 	Show_Score(int selecting);
 	~Show_Score();
@@ -25,9 +25,9 @@ private:
 	std::unique_ptr<Sequence> update_Menu();
 	void draw_Menu()const;
 
-	void update_Scroll();
-	void reset_Scroll();//問題が変わった際のスクロールの再計算
-	void draw_Scroll()const;
+	std::unique_ptr<Sequence> update_Submit();
+	void reset_Scroll();//問題が変わった際のスクロール(とボタン)の再計算
+	void draw_Submit()const;
 
 	void reset_window_size();
 };

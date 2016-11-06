@@ -11,16 +11,17 @@ namespace {
 ScrollBar2::ScrollBar2()
 {}
 
-void ScrollBar2::reset_Scroll(dxle::sizei32 bar_area_param, dxle::sizei32 object_size)
+void ScrollBar2::reset(const dxle::sizei32& bar_area_param, const dxle::sizei32& object_size_)
 {
 	dxle::sizei32 page_size = bar_area_param;
 	if (bar_area_param != bar_area) {
 		extend_rate = 1.0;
 	}
-	object_size *= extend_rate;
+	bar_area = page_size;
+	object_size = static_cast<dxle::sizei32>(object_size_ * extend_rate);
 
 	//バーの有効無効でpageサイズが変わってくるのに注意
-	scrollbar_v.set_bar_state(object_size.height, bar_area.height, false);
+	scrollbar_v.set_bar_state(object_size.height, page_size.height, false);
 	bool bar_v_p_all_active = scrollbar_v.is_active();
 	if (bar_v_p_all_active) {
 		page_size.width -= bar_width;
@@ -42,8 +43,10 @@ void ScrollBar2::reset_Scroll(dxle::sizei32 bar_area_param, dxle::sizei32 object
 
 }
 
-void ScrollBar2::update_Scroll()
+bool ScrollBar2::update()
 {
+	bool is_moved = false;
+
 	auto& key = KeyInputData::GetIns();
 	auto& mouse = Mouse::GetIns();
 
@@ -56,8 +59,9 @@ void ScrollBar2::update_Scroll()
 			extend_rate = 1.0;
 		}
 		if (old_extend_rate != extend_rate) {
-			reset_Scroll();
-			return;
+			reset(bar_area,object_size);
+			is_moved |= true;
+			return is_moved;
 		}
 	}
 	//スクロール
@@ -71,25 +75,26 @@ void ScrollBar2::update_Scroll()
 	if (key.GetKeyInput(KEY_INPUT_DOWN)) { keyinput |= ScrollBar::keyboard_input_mask::down; }
 	if (key.GetKeyInput(KEY_INPUT_PGUP)) { keyinput |= ScrollBar::keyboard_input_mask::page_up; }
 	if (key.GetKeyInput(KEY_INPUT_PGDN)) { keyinput |= ScrollBar::keyboard_input_mask::page_down; }
-	scrollbar_v.update(GetFrameTime(),
+	is_moved |= scrollbar_v.update(GetFrameTime(),
 		mouse.get_now_pos() - (pos1 + dxle::sizei32{ bar_area.width - bar_width, 0}),
 		v_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
 	keyinput = 0;
 	if (key.GetKeyInput(KEY_INPUT_LEFT) ) { keyinput |= ScrollBar::keyboard_input_mask::up; }
 	if (key.GetKeyInput(KEY_INPUT_RIGHT)) { keyinput |= ScrollBar::keyboard_input_mask::down; }
-	scrollbar_h.update(GetFrameTime(),
+	is_moved |= scrollbar_h.update(GetFrameTime(),
 		mouse.get_now_pos() - (pos1 + dxle::sizei32{ 0, bar_area.height - bar_width }),
 		h_wheel, mouse.get_now_input() & MOUSE_INPUT_LEFT, keyinput);
 
+	return is_moved;
 }
 
-void ScrollBar2::draw_Scroll() const
+void ScrollBar2::draw() const
 {
 	scrollbar_v.draw(pos1 + dxle::sizei32{ bar_area.width - bar_width, 0 });
 	scrollbar_h.draw(pos1 + dxle::sizei32{ 0, bar_area.height - bar_width });
 	if (scrollbar_v.is_active() && scrollbar_h.is_active()) {
 		auto pos2 = pos1 + bar_area;
-		DxLib::DrawFillBox(pos2.width - bar_width, pos2.height - bar_width
-			, pos2.width, pos2.height, DxLib::GetColor(230, 231, 232));
+		DxLib::DrawFillBox(pos2.x - bar_width, pos2.y - bar_width
+			, pos2.x, pos2.y, DxLib::GetColor(230, 231, 232));
 	}
 }
