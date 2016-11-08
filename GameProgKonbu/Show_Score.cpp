@@ -133,6 +133,7 @@ void Show_Score::draw_Menu() const
 
 std::unique_ptr<Sequence> Show_Score::update_Submit()
 {
+	if (submissions.empty()) { return nullptr; }
 	if (scrollbar.update())
 	{
 		//ボタンの位置変更
@@ -190,6 +191,13 @@ void Show_Score::reset_Scroll()
 void Show_Score::draw_Submit() const
 {
 	DxLib::DrawFillBox(menu_space_size, title_space, last_window_size.width, last_window_size.height, dxle::dx_color(dxle::color_tag::white).get());//@todo dxlibex
+	if (submissions.empty())
+	{
+		int y = (last_window_size.height - title_space - 30) / 2;
+		DrawStringCenter({ menu_space_size,y }, _T("提出がありません"), dxle::color_tag::black, submissions_font, last_window_size.width - menu_space_size);
+		return;
+	}
+
 	{
 		const auto& prob = Data::GetIns()[selecting];
 		const int32_t draw_area_width = std::max(last_window_size.width - menu_space_size, submit::min_total_width);

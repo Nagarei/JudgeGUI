@@ -10,7 +10,6 @@ private:
 	int menu_font;
 	int submissions_font;
 
-	dxle::sizei32 last_window_size;
 	ScrollBar2 scrollbar;
 	Button to_problem;
 	std::vector<Button> submissions;

@@ -5,6 +5,7 @@
 #include "test.h"
 #include "fps.h"
 #include "Show_Score.h"
+#include "popup.h"
 namespace
 {
 }
@@ -88,6 +89,22 @@ std::unique_ptr<Sequence> Contest::update()
 		problem_load_finished = Data::GetIns().IsLoadFinesed(selecting);
 		if (problem_load_finished) {
 			reset_Scroll();
+			//サンプル入力のセット
+			samples.resize(Data::GetIns()[selecting].GetSampleNum());
+			for (size_t i = 0; i < samples.size(); ++i)
+			{
+				dxle::rgb out_back_color{ 154, 130, 0 };
+				dxle::rgb on_back_color{ 0, 197, 30 };
+				dxle::rgb out_edge_color = dxle::color_tag::white;
+				dxle::rgb on_edge_color = dxle::color_tag::white;
+				dxle::rgb on_string_color = dxle::color_tag::white;
+				dxle::rgb out_string_color = dxle::color_tag::white;
+
+				samples[i].set_area({ 0, title_space + menu_button_height * (i+2)}, { menu_space_size, menu_button_height });
+				samples[i].set_str(ToStringEx(_T("入力例"), i+1));
+				samples[i].set_on_color(on_back_color, on_edge_color, on_string_color);
+				samples[i].set_out_color(out_back_color, out_edge_color, out_string_color);
+			}
 		}
 	}
 
@@ -115,7 +132,7 @@ void Contest::draw()const
 	else
 	{
 		int y = (last_window_size.height - 30) / 2;
-		DrawStringCenter({ 0,y }, _T("Now Loading"), dxle::color_tag::white, loading_font, last_window_size.width);
+		DrawStringCenter({ menu_space_size,y }, _T("Now Loading"), dxle::color_tag::white, loading_font, last_window_size.width - menu_space_size);
 	}
 
 	//問題選択矢印表示
@@ -163,6 +180,8 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		//カレントディレクトリを保存（GetOpenFileNameはカレントディレクトリをいじる）
 		TCHAR old_current_directory[MAX_PATH * 3];
 		GetCurrentDirectory(sizeof(old_current_directory) / sizeof(old_current_directory[0]), old_current_directory);
+		//カレントディレクトリを初めに開くフォルダにする
+		ofn.lpstrInitialDir = old_current_directory;
 		//MessageBoxなみに処理を止めるので注意
 		auto open_state = GetOpenFileName(&ofn);
 		//カレントディレクトリを戻す
@@ -176,6 +195,12 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		}
 
 	}
+	for (auto& i : samples){
+		if (i.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)){
+			DEBUG_NOTE;
+			popup::set(_T("ボタンを押したよ！！！"));
+		}
+	}
 
 	return next_sequence;
 }
@@ -184,6 +209,9 @@ void Contest::draw_Menu() const
 {
 	to_result.draw(menu_font);
 	to_submit.draw(menu_font);
+	for (auto&i : samples){
+		i.draw(menu_font);
+	}
 }
 
 void Contest::update_Scroll()

@@ -39,11 +39,5 @@ protected:
 			_T(')')
 		).c_str());
 	}
-	void reset_problemselect() {
-		dxle::sizei32 window_size;
-		DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
-		//問題切り替え矢印
-		//arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
-		arrow[1].set_area({ window_size.width - arrow_width,0 }, { arrow_width , title_space });
-	}
+	void reset_problemselect();
 };

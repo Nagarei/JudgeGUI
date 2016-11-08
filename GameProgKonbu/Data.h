@@ -63,6 +63,10 @@ public:
 	int32_t GetScore_single(size_t i)const;
 	//メインスレッドからのみ呼び出し可
 	const auto& GetScoresSet()const { return scores_set; }
+
+
+	//スレッドセーフ
+	int GetSampleNum()const { return sample_num; }
 };
 class Data final : boost::noncopyable
 {

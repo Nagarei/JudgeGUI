@@ -46,6 +46,9 @@
     <Filter Include="Sequence\Show_Score">
       <UniqueIdentifier>{5a50630f-a437-4ef5-8c46-f6ed0ff55302}</UniqueIdentifier>
     </Filter>
+    <Filter Include="popup">
+      <UniqueIdentifier>{39a32ff7-e1f0-41b2-a39e-9fe7ee76891b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -114,6 +117,9 @@
     <ClInclude Include="SubmissionLog.h">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="popup.h">
+      <Filter>popup</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -160,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="SubmissionLog.cpp">
       <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="popup.cpp">
+      <Filter>popup</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,9 @@
 ﻿#include "common.h"
 #include "KeyInputData.h"
 #include "Mouse.h"
+#include "popup.h"
+
+constexpr dxle::sizei32 popup_size = { 200, 75 };
 
 Sequence_Commom::Sequence_Commom(int selecting_)
 	: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
@@ -14,6 +17,8 @@ Sequence_Commom::Sequence_Commom(int selecting_)
 		last_window_size.width = 320;
 		last_window_size.height = 240;
 	}
+
+	popup::GetIns().set_area({ last_window_size.width - popup_size.width, title_space }, popup_size);
 
 	arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
 	arrow[1].set_area({ last_window_size.width - arrow_width,0 }, { arrow_width , title_space });
@@ -101,3 +106,12 @@ void Sequence_Commom::draw_SelectProblem() const
 	DrawToRightArrow2(last_window_size.width - button_edge_size, title_space / 2, arrow_width - button_edge_size * 2, dxle::color_tag::yellow);
 }
 
+void Sequence_Commom::reset_problemselect() {
+	dxle::sizei32 window_size;
+	DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
+	//問題切り替え矢印
+	//arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
+	arrow[1].set_area({ window_size.width - arrow_width,0 }, { arrow_width , title_space });
+
+	popup::GetIns().set_area({ window_size.width - popup_size.width, title_space }, popup_size);
+}

@@ -5,6 +5,7 @@
 #include "Data.h"
 #include "SetLocale.h"
 #include "fps.h"
+#include "popup.h"
 
 namespace {
 	///DxLib初期化処理
@@ -42,6 +43,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 				new_seq = seqence->update();
 			}
 			seqence->draw();
+
+			popup::update();
 
 			ScreenFlip();
 			ClearDrawScreen();
