@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "useful_func_and_class.h"
+#include "Script.h"
 
 class Score final
 {
@@ -68,6 +69,10 @@ public:
 	//スレッドセーフ
 	int GetSampleNum()const { return sample_num; }
 };
+struct Script_Data {
+	std::vector<std::unique_ptr<Script::Script>> script;
+	dxle::sizeui32 size;
+};
 class Data final : boost::noncopyable
 {
 private:
@@ -76,25 +81,26 @@ private:
 	const dxle::tstring log_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
 	const dxle::tstring problems_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
 	const std::vector<Problem> problems;//InitProblem以外で要素数を変更しないこと（それによってスレッドセーフにしている為）
-	std::vector<dxle::screen> problems_text;//問題文のキャッシュ
+	std::vector<Script_Data> problems_text;//問題文のキャッシュ
 
 	//問題文の非同期読み込み
-	enum class Load_State{file_open, loading, size_checking, drawing, end}load_state;
-	size_t text_total_size;//問題文の合計サイズ(面積)
+	enum class Load_State{file_open, loading, end}load_state;
+	static constexpr uint32_t loading_max_num_div2 = 10;//問題のキャッシュをどこまでとるか[view-LMND2,view+LMND2]までとるLMND2=loading_max_num_div2
 	int viewing_problem;//最後に読み込みが要請された問題（index）
 	int now_loding_problem;//今読み込み中(loading)の問題（index）
 	tifstream problem_file;//今読み込み中(loading)の問題（file-stream）
-	dxle::pointi problem_text_next_start_pos;//今drawingの問題の次に描画を始める座標(X==0&&y==problem_text_newlinw_start_yのとき新しい行)
-	int problem_text_newlinw_start_y;//今drawingの問題の次の行の開始y座標
-	dxle::sizei problem_text_total_size;//今drawingの問題の最大サイズ
+	dxle::pointi problem_text_next_start_pos;//今loadingの問題の次に描画を始める座標(X==0&&y==problem_text_newlinw_start_yのとき新しい行)
+	dxle::sizeui32 problem_text_total_size;//今loadingの問題の最大サイズ
 	//スクリプト
 	//特殊命令
 	//@image[width hright][image-name] //画像を表示します(width,heightは -1 or 省略した場合デフォルトになります)
 	//@h[text]//見出しのように大きく、太く表示します
 	//@[text]//太く表示します
 	//@@ //@を表示します
-	std::vector<dxle::tstring> problem_script;//一つ一命令！！
-	decltype(problem_script)::iterator problem_script_iter;//今drawingの問題の次解析すべきスクリプト
+
+	std::vector<std::unique_ptr<Script::Script>> problem_script_temp;
+	dxle::tstring script_raw_temp;//解析中のスクリプト文字列
+
 	int font_normal;
 	int font_boldface;//太字
 	int font_h1;//大文字、太字

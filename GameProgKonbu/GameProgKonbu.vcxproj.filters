@@ -50,7 +50,10 @@
       <UniqueIdentifier>{39a32ff7-e1f0-41b2-a39e-9fe7ee76891b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sequence\Score_detail">
-      <UniqueIdentifier>{1ea7e967-3d38-4d4a-b0b2-33c027ac043d}</UniqueIdentifier>
+      <UniqueIdentifier>{bba4f5f1-5166-4c26-800e-8418949747ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Script">
+      <UniqueIdentifier>{22aefb7b-d8d7-46fa-a0de-cf30005ee18e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +129,9 @@
     <ClInclude Include="Score_detail.h">
       <Filter>Sequence\Score_detail</Filter>
     </ClInclude>
+    <ClInclude Include="Script.h">
+      <Filter>Data\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -176,8 +182,11 @@
     <ClCompile Include="popup.cpp">
       <Filter>popup</Filter>
     </ClCompile>
-    <ClCompile Include="Score_detail.cpp">
+    <ClCompile Include="Scoredetail.cpp">
       <Filter>Sequence\Score_detail</Filter>
+    </ClCompile>
+    <ClCompile Include="Script.cpp">
+      <Filter>Data\Script</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

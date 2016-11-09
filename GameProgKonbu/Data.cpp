@@ -119,6 +119,67 @@ void Data::BuildProblemText()
 	auto start_time = DxLib::GetNowCount();
 	do
 	{
+
+		switch (load_state)
+		{
+		case Data::Load_State::file_open: {
+			problem_script_temp.clear();
+			problem_text_next_start_pos.x = linestart_space; problem_text_next_start_pos.y = 0;
+			problem_text_total_size.width = problem_text_total_size.height = 0;
+			problem_text_newlinw_start_y = 0;
+			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
+			if (problem_file.fail() || problem_file.eof()) {
+				//読み込みエラー
+				//デフォルトメッセージ登録
+				auto default_message = _T("問題を読み込めませんでした。\nF5で再読み込みできます。"_ts);
+				problem_script_temp.emplace_back(
+					Script::Text::get_script(default_message)
+				);
+				//大きさチェック
+				DEBUG_NOTE;
+				ああああ;
+				//読み込み終了
+				load_state = Load_State::end;
+				break;
+			}
+			load_state = Load_State::loading;
+			//初回読み込み処理（先頭に@をつけない）
+			std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
+		}
+			break;
+		case Data::Load_State::loading:
+			if(script_raw_temp.empty() == false) {
+				//スクリプト解析
+				problem_script_temp.emplace_back(
+					Script::build_script(script_raw_temp)
+				);
+				//大きさチェック
+				DEBUG_NOTE;
+				ああああ;
+			}
+			else {
+				//スクリプト読み込み
+				if (problem_file.eof()) {
+					//読み込み終了
+					load_state = Load_State::end;
+					break;
+				}
+				else
+				{
+					std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
+					script_raw_temp.insert(script_raw_temp.begin(), _T('@'));//@追加
+				}
+			}
+			break;
+		case Data::Load_State::end:
+			//次読み込むのを探す
+			DEBUG_NOTE;
+			break;
+		default:
+			assert(false);
+			return;//読み込み中断
+		}
+#if 0
 		switch (load_state)
 		{
 		case Data::Load_State::file_open:{
@@ -331,6 +392,7 @@ void Data::BuildProblemText()
 			assert(false);
 			return;//読み込み中断
 		}
+#endif
 
 		//一定時間たったら抜ける
 	} while ((DxLib::GetNowCount() - start_time) < load_time);
