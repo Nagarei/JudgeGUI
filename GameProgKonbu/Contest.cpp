@@ -176,16 +176,17 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		ofn.lpstrDefExt = _T(".cpp");
 		//ウィンドウの名前
 		ofn.lpstrTitle = _T("提出するC++コードの選択");
+		//カレントディレクトリを変更しない
+		ofn.Flags |= OFN_NOCHANGEDIR;
 
 		//カレントディレクトリを保存（GetOpenFileNameはカレントディレクトリをいじる）
-		TCHAR old_current_directory[MAX_PATH * 3];
-		GetCurrentDirectory(sizeof(old_current_directory) / sizeof(old_current_directory[0]), old_current_directory);
+		TCHAR current_directory[MAX_PATH * 3];
+		GetCurrentDirectory(sizeof(current_directory) / sizeof(current_directory[0]), current_directory);
 		//カレントディレクトリを初めに開くフォルダにする
-		ofn.lpstrInitialDir = old_current_directory;
+		ofn.lpstrInitialDir = current_directory;
 		//MessageBoxなみに処理を止めるので注意
 		auto open_state = GetOpenFileName(&ofn);
-		//カレントディレクトリを戻す
-		SetCurrentDirectory(old_current_directory);
+
 		if (open_state == 0) {
 			//ファイルオープンに失敗
 		}
@@ -195,10 +196,31 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		}
 
 	}
-	for (auto& i : samples){
-		if (i.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)){
-			DEBUG_NOTE;
-			popup::set(_T("ボタンを押したよ！！！"));
+	for (size_t i = 0; i < samples.size(); ++i)
+	{
+		if (samples[i].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+			//ファイル読み込み
+			auto& data = Data::GetIns();
+			tifstream ifs(
+				(data.GetProblemsDirectory() + data[selecting].GetName() +
+					_T("/sample_in") + ToStringEx(i+1) + _T(".txt"))
+			);
+			if (ifs.bad()) {
+				popup::set(_T("コピー出来ませんでした"), dxle::color_tag::red);
+				continue;
+			}
+			ifs.seekg(0, std::ios::end);
+			auto str_len = ifs.tellg();
+			if (str_len <= 0) {
+				popup::set(_T("コピー出来ませんでした"), dxle::color_tag::red);
+				continue;
+			}
+			auto str_buf = std::make_unique<TCHAR[]>(str_len);
+			ifs.seekg(0, std::ios::beg);
+			ifs.read(str_buf.get(), str_len);
+			//クリップボードにコピー
+			SetClipboardText(str_buf.get());
+			popup::set(_T("コピーしました"));
 		}
 	}
 

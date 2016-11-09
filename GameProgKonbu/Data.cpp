@@ -3,6 +3,7 @@
 #include "other_usefuls.h"
 #include "GetNumfileNum.h"
 #include "SubmissionLog.h"
+#include "popup.h"
 
 std::mutex Data::new_scores_mtx;
 std::vector<std::pair<size_t, Scores>> Data::new_scores;//FIFO (first: pop, last: push)
@@ -453,6 +454,9 @@ void Data::update_ScoresSet()
 	std::lock_guard<std::mutex> lock(new_scores_mtx);
 	for (auto& i : new_scores)
 	{
+		auto type_str = get_result_type_str(i.second);
+		popup::set(_T("結果が出ました："_ts) + type_str.data(),
+			dxle::tstring(type_str.data()) == _T("AC"_ts) ? dxle::color_tag::green : dxle::color_tag::magenta);
 		(*this)[i.first].AddScores(std::move(i.second));
 	}
 	new_scores.clear();

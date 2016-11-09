@@ -142,6 +142,7 @@
     </ClInclude>
     <ClInclude Include="other_usefuls.h" />
     <ClInclude Include="Option.h" />
+    <ClInclude Include="Score_detail.h" />
     <ClInclude Include="ScrollBar2.h">
       <SubType>
       </SubType>
@@ -180,6 +181,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VC_DEBUG|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Score_detail.cpp" />
     <ClCompile Include="ScrollBar2.cpp" />
     <ClCompile Include="Show_Score.cpp">
       <SubType>
