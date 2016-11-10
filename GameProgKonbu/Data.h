@@ -89,7 +89,7 @@ private:
 	int viewing_problem;//最後に読み込みが要請された問題（index）
 	int now_loding_problem;//今読み込み中(loading)の問題（index）
 	tifstream problem_file;//今読み込み中(loading)の問題（file-stream）
-	dxle::pointi problem_text_next_start_pos;//今loadingの問題の次に描画を始める座標(X==0&&y==problem_text_newlinw_start_yのとき新しい行)
+	dxle::pointui32 problem_text_next_start_pos;//今loadingの問題の次に描画を始める座標(X==0&&y==problem_text_newlinw_start_yのとき新しい行)
 	dxle::sizeui32 problem_text_total_size;//今loadingの問題の最大サイズ
 	//スクリプト
 	//特殊命令
@@ -123,16 +123,14 @@ public:
 	
 	//@return true:finish
 	bool IsLoadFinesed(int index)const {
-		return problems_text[index].valid();
+		return !problems_text[index].script.empty();
 	}
+	void DrawExtendProblem(int index, const dxle::pointi& pos, double extend_rate)const;
 	void DrawProblem(int index, const dxle::pointi& pos)const {
-		problems_text[index].DrawGraph(pos, false);
+		DrawExtendProblem(index, pos, 1.0);
 	}
-	void DrawExtendProblem(int index, const dxle::pointi& pos, double extend_rate)const {
-		problems_text[index].DrawExtendGraph(pos, static_cast<dxle::pointi>(pos + GetProblemSize(index) * extend_rate), false);
-	}
-	dxle::sizei GetProblemSize(int index)const {
-		return problems_text[index].GetGraphSize();
+	dxle::sizeui32 GetProblemSize(int index)const {
+		return problems_text[index].size;
 	}
 	void ClearProblemsCash();
 	//スレッドセーフ

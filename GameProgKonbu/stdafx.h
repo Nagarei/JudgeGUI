@@ -32,6 +32,7 @@
 namespace dxle
 {
 	using pointi32 = dxle::point_c<int32_t>;
+	using pointui32 = dxle::point_c<uint32_t>;
 	using sizei32 = dxle::size_c<int32_t>;
 	using sizeui32 = dxle::size_c<uint32_t>;
 }

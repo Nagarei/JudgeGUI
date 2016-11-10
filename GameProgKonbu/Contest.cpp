@@ -260,7 +260,8 @@ void Contest::reset_Scroll()
 	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
 	page_size.height -= title_space;
 	page_size.width -= menu_space_size;
-	scrollbar.reset(page_size, prob_size);
+	assert(0 < page_size.height && 0 < page_size.width);
+	scrollbar.reset(static_cast<dxle::sizeui32>(page_size), prob_size);
 }
 
 void Contest::reset_window_size()

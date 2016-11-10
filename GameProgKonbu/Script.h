@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
 
 namespace Script
 {
 	class Script {
 	private:
-		std::array<dxle::sizeui32, 3> line_size;//n‚ß‚ÌsA^‚ñ’†‚Ìs(•¡”‰Â)AÅŒã‚Ìs
-		unsigned line_num = 0;//[0,3](3‚æ‚èã‚Í3‚ÉŠÛ‚ß‚é)
+		std::array<dxle::sizeui32, 3> line_size;//å§‹ã‚ã®è¡Œã€çœŸã‚“ä¸­ã®è¡Œ(è¤‡æ•°å¯)ã€æœ€å¾Œã®è¡Œ
+		unsigned line_num = 0;//[0,3](3ã‚ˆã‚Šä¸Šã¯3ã«ä¸¸ã‚ã‚‹)
 	protected:
 		void SetLineSize_first(const dxle::sizeui32& line_size_) {
 			assert(line_num == 0);
@@ -24,21 +24,21 @@ namespace Script
 			line_num = std::max(line_num, 3u);
 		}
 	public:
-		//n‚ß‚ÌsA^‚ñ’†‚Ìs(•¡”‰Â)AÅŒã‚Ìs
+		//å§‹ã‚ã®è¡Œã€çœŸã‚“ä¸­ã®è¡Œ(è¤‡æ•°å¯)ã€æœ€å¾Œã®è¡Œ
 		const auto& get_line_size()const noexcept { return line_size; }
 		//[0,3]
 		const auto& get_line_nums()const noexcept { return line_num; }
-		virtual void update(){}
 		virtual void draw() = 0;
 		virtual ~Script()noexcept {}
 	};
 
-	//@‚ª‚È‚¢ or ’N‚àó‚¯æ‚ç‚È‚©‚Á‚½ê‡‚ÌƒfƒtƒHƒ‹ƒg“®ì
+	//@ãŒãªã„ or èª°ã‚‚å—ã‘å–ã‚‰ãªã‹ã£ãŸå ´åˆã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå‹•ä½œ
 	class Text final : public Script
 	{
 	public:
 		Text(dxle::tstring& str);
 
+		void draw()override;
 		static std::unique_ptr<Script> get_script(dxle::tstring& str);
 	};
 

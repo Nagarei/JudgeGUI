@@ -97,7 +97,8 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), _T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
 			return std::make_unique<Contest>(0);
 		case Option_Sequence::Select::contest:
-			MessageBox(NULL, _T("未実装です"), _T("情報"), MB_OK);
+			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\contest\\"), _T(""), Option::ins.username);
+			return std::make_unique<Contest>(0);
 			break;
 		case Option_Sequence::Select::name:
 			if (name_input_handle == -1) {

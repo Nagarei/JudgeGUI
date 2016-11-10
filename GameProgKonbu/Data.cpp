@@ -102,15 +102,10 @@ void Data::InitBuildProblemText()
 void Data::ClearProblemsCash()
 {
 	for (auto& i : problems_text) {
-		i.delete_this();
+		i.size.width = i.size.height = 0;
+		i.script.clear();
 	}
-	load_state = Load_State::file_open;
-	text_total_size = 0;
-	now_loding_problem = 0;
-	problem_file.close();
-	problem_text_next_start_pos.x = problem_text_next_start_pos.y = 0;
-	problem_text_total_size.width = problem_text_total_size.height = 0;
-	problem_script.clear();
+	load_state = Load_State::end;
 }
 
 void Data::BuildProblemText()
@@ -119,27 +114,20 @@ void Data::BuildProblemText()
 	auto start_time = DxLib::GetNowCount();
 	do
 	{
-
 		switch (load_state)
 		{
 		case Data::Load_State::file_open: {
-			problem_script_temp.clear();
+			problem_file.clear();
 			problem_text_next_start_pos.x = linestart_space; problem_text_next_start_pos.y = 0;
 			problem_text_total_size.width = problem_text_total_size.height = 0;
-			problem_text_newlinw_start_y = 0;
+			problem_script_temp.clear();
+			script_raw_temp.clear();
 			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
 			if (problem_file.fail() || problem_file.eof()) {
 				//読み込みエラー
 				//デフォルトメッセージ登録
-				auto default_message = _T("問題を読み込めませんでした。\nF5で再読み込みできます。"_ts);
-				problem_script_temp.emplace_back(
-					Script::Text::get_script(default_message)
-				);
-				//大きさチェック
-				DEBUG_NOTE;
-				ああああ;
-				//読み込み終了
-				load_state = Load_State::end;
+				script_raw_temp = _T("問題を読み込めませんでした。\nF5で再読み込みできます。"_ts);
+				load_state = Load_State::loading;
 				break;
 			}
 			load_state = Load_State::loading;
@@ -154,15 +142,53 @@ void Data::BuildProblemText()
 					Script::build_script(script_raw_temp)
 				);
 				//大きさチェック
-				DEBUG_NOTE;
-				ああああ;
+				//改行&復帰
+				auto new_line = [this]() {
+					//改行
+					problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
+					//復帰
+					problem_text_next_start_pos.x = linestart_space;
+					problem_text_next_start_pos.y = problem_text_total_size.height;
+				};
+				//記述
+				auto add_to_thisline = [this](const dxle::sizeui32& size) {
+					//今の行の更新
+					problem_text_next_start_pos.x += size.width;
+					problem_text_total_size.height = std::max(problem_text_total_size.height,
+						problem_text_next_start_pos.y + size.height);
+				};
+				const auto& line_num  = problem_script_temp.back()->get_line_nums();
+				const auto& line_size = problem_script_temp.back()->get_line_size();
+				if (1 <= line_num) {
+					//今の行の更新
+					add_to_thisline(line_size[0]);
+				}
+				if (3 <= line_num) {
+					//改行&復帰
+					new_line();
+
+					//中央の塊の更新
+					add_to_thisline(line_size[1]);
+				}
+				if (2 <= line_num) {
+					//改行&復帰
+					new_line();
+
+					//末端の更新
+					add_to_thisline(line_size[2]);
+				}
 			}
 			else {
 				//スクリプト読み込み
 				if (problem_file.eof()) {
-					//読み込み終了
-					load_state = Load_State::end;
-					break;
+					if (problem_script_temp.empty()) {
+						script_raw_temp = _T("問題を読み込めませんでした。\nF5で再読み込みできます。");//ダミー登録
+					}
+					else{
+						//読み込み終了
+						load_state = Load_State::end;
+						break;
+					}
 				}
 				else
 				{
@@ -171,9 +197,39 @@ void Data::BuildProblemText()
 				}
 			}
 			break;
-		case Data::Load_State::end:
+		case Data::Load_State::end: {
 			//次読み込むのを探す
-			DEBUG_NOTE;
+			//次のロードに
+			const auto problem_num = problems.size();
+			//まだ、読み込んでないのを全探査
+			int b_index = viewing_problem;//デクリメントしていく
+			int a_index = viewing_problem;//インクリメントしていく
+			uint32_t find_count = 0;
+			for (; find_count < loading_max_num_div2; ++find_count)
+			{
+				++a_index;
+				a_index %= problem_num;
+				if (IsLoadFinesed(a_index) == false) {
+					now_loding_problem = a_index; break;
+				}
+				if (b_index == a_index) { break; }
+
+				--b_index;
+				if (b_index < 0) { b_index += problem_num; }
+				if (IsLoadFinesed(b_index) == false) {
+					now_loding_problem = b_index; break;
+				}
+				if (b_index == a_index) { break; }
+			}
+			if ((b_index != a_index) && (find_count < loading_max_num_div2)) {
+				//新規読み込みに遷移
+				load_state = Load_State::file_open;
+			}
+			else {
+				//読み込み終了
+				load_state = Load_State::end;
+			}
+		}
 			break;
 		default:
 			assert(false);

@@ -11,27 +11,30 @@ namespace {
 ScrollBar2::ScrollBar2()
 {}
 
-void ScrollBar2::reset(const dxle::sizei32& bar_area_param, const dxle::sizei32& object_size_)
+void ScrollBar2::reset(const dxle::sizeui32& bar_area_param, const dxle::sizeui32& object_size_)
 {
-	dxle::sizei32 page_size = bar_area_param;
+	dxle::sizeui32 page_size = bar_area_param;
 	if (bar_area_param != bar_area) {
 		extend_rate = 1.0;
 	}
 	bar_area = page_size;
-	object_size = static_cast<dxle::sizei32>(object_size_ * extend_rate);
+	object_size = static_cast<decltype(object_size)>(object_size_ * extend_rate);
 
 	//バーの有効無効でpageサイズが変わってくるのに注意
 	scrollbar_v.set_bar_state(object_size.height, page_size.height, false);
 	bool bar_v_p_all_active = scrollbar_v.is_active();
 	if (bar_v_p_all_active) {
+		assert(bar_width < page_size.width);
 		page_size.width -= bar_width;
 	}
 	scrollbar_h.set_bar_state(object_size.width, page_size.width, true);
 	if (scrollbar_h.is_active()) {
+		assert(bar_width < page_size.height);
 		page_size.height -= bar_width;
 		scrollbar_v.set_bar_state(object_size.height, page_size.height, false);
 		if (!bar_v_p_all_active && scrollbar_v.is_active()) {
 			//縦のバーが有効になった=>page_sizeの再計算発生
+			assert(bar_width < page_size.width);
 			page_size.width -= bar_width;
 			scrollbar_h.set_bar_state(object_size.width, page_size.width, true);
 		}

@@ -186,7 +186,8 @@ void Show_Score::reset_Scroll()
 		submissions[i].set_area(pos1 + dxle::sizei32{ left_space, submit::height*i }, { button_width, submit::height });
 	}
 	//スクロールバー調整
-	scrollbar.reset(page_size, { std::max(page_size.width, submit::min_total_width) , submit::height*submissions.size() });
+	assert(0 < page_size.height && 0 < page_size.width);
+	scrollbar.reset(static_cast<dxle::sizeui32>(page_size), { std::max(page_size.width, submit::min_total_width) , submit::height*submissions.size() });
 }
 void Show_Score::draw_Submit() const
 {
