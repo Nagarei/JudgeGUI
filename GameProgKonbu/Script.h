@@ -33,10 +33,12 @@ namespace Script
 	};
 
 	//@がない or 誰も受け取らなかった場合のデフォルト動作
-	class Text final : public Script
+	class Plain_Text final : public Script
 	{
+	private:
+		std::array<dxle::tstring, 3> line_str;
 	public:
-		Text(dxle::tstring& str);
+		Plain_Text(dxle::tstring& str);
 
 		void draw()override;
 		static std::unique_ptr<Script> get_script(dxle::tstring& str);
