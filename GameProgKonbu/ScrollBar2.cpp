@@ -11,14 +11,15 @@ namespace {
 ScrollBar2::ScrollBar2()
 {}
 
-void ScrollBar2::reset(const dxle::sizeui32& bar_area_param, const dxle::sizeui32& object_size_)
+void ScrollBar2::reset(const dxle::sizeui32& bar_area_param, const dxle::sizeui32& bace_object_size_)
 {
+	bace_object_size = bace_object_size_;
 	dxle::sizeui32 page_size = bar_area_param;
 	if (bar_area_param != bar_area) {
 		extend_rate = 1.0;
 	}
 	bar_area = page_size;
-	object_size = static_cast<decltype(object_size)>(object_size_ * extend_rate);
+	auto object_size = static_cast<dxle::sizeui32>(bace_object_size * extend_rate);
 
 	//バーの有効無効でpageサイズが変わってくるのに注意
 	scrollbar_v.set_bar_state(object_size.height, page_size.height, false);
@@ -61,8 +62,11 @@ bool ScrollBar2::update()
 		if (key.GetKeyInput(KEY_INPUT_0) || key.GetKeyInput(KEY_INPUT_NUMPAD0)) {
 			extend_rate = 1.0;
 		}
+		if (extend_rate <= 0.0001) {
+			extend_rate = 0.0001;
+		}
 		if (old_extend_rate != extend_rate) {
-			reset(bar_area,object_size);
+			reset(bar_area,bace_object_size);
 			is_moved |= true;
 			return is_moved;
 		}

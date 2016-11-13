@@ -78,6 +78,12 @@ std::unique_ptr<Sequence> Contest::update()
 		//メニュー処理
 		next_sequence = update_Menu();
 
+		//問題のリロード処理
+		if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_F5)) {
+			Data::GetIns().ClearProblemsCash();
+			problem_load_finished = false;
+		}
+
 		//問題の変更確認
 		if (selecting != old_selecting) {
 			problem_load_finished = false;

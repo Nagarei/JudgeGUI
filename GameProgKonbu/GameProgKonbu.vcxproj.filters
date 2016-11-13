@@ -182,11 +182,11 @@
     <ClCompile Include="popup.cpp">
       <Filter>popup</Filter>
     </ClCompile>
-    <ClCompile Include="Scoredetail.cpp">
-      <Filter>Sequence\Score_detail</Filter>
-    </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>Data\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Score_detail.cpp">
+      <Filter>Sequence\Score_detail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

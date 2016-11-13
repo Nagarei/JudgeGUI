@@ -92,18 +92,8 @@ private:
 	dxle::pointui32 problem_text_next_start_pos;//今loadingの問題の次に描画を始める座標(X==0&&y==problem_text_newlinw_start_yのとき新しい行)
 	dxle::sizeui32 problem_text_total_size;//今loadingの問題の最大サイズ
 	//スクリプト
-	//特殊命令
-	//@image[width hright][image-name] //画像を表示します(width,heightは -1 or 省略した場合デフォルトになります)
-	//@h[text]//見出しのように大きく、太く表示します
-	//@[text]//太く表示します
-	//@@ //@を表示します
-
 	std::vector<std::unique_ptr<Script::Script>> problem_script_temp;
 	dxle::tstring script_raw_temp;//解析中のスクリプト文字列
-
-	int font_normal;
-	int font_boldface;//太字
-	int font_h1;//大文字、太字
 
 	void InitBuildProblemText();
 	void BuildProblemText();
@@ -125,8 +115,8 @@ public:
 	bool IsLoadFinesed(int index)const {
 		return !problems_text[index].script.empty();
 	}
-	void DrawExtendProblem(int index, const dxle::pointi& pos, double extend_rate)const;
-	void DrawProblem(int index, const dxle::pointi& pos)const {
+	void DrawExtendProblem(int index, const dxle::pointi32& pos, double extend_rate)const;
+	void DrawProblem(int index, const dxle::pointi32& pos)const {
 		DrawExtendProblem(index, pos, 1.0);
 	}
 	dxle::sizeui32 GetProblemSize(int index)const {

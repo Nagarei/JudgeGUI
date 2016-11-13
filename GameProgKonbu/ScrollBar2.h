@@ -6,7 +6,7 @@ class ScrollBar2 final
 {
 private:
 	dxle::pointi32 pos1;
-	dxle::sizeui32 object_size;
+	dxle::sizeui32 bace_object_size;
 	dxle::sizeui32 bar_area;
 	ScrollBar scrollbar_v;
 	ScrollBar scrollbar_h;
