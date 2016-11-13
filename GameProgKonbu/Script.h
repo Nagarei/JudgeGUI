@@ -34,6 +34,17 @@ namespace Script
 		virtual void draw_extend(unsigned draw_line, const dxle::pointi32& pos, double extend_rate)const = 0;
 		virtual ~Script()noexcept {}
 	};
+	namespace impl
+	{
+		class Text_Bace : public Script
+		{
+		protected:
+			std::array<dxle::tstring, 3> line_str;
+			void Init(dxle::tstring& str, int font);
+			virtual ~Text_Bace(){}
+			void draw_extend_impl(unsigned draw_line, const dxle::pointi32& pos, double extend_rate, int font, dxle::dx_color_param color)const;
+		};
+	}
 
 	//@image<width hight>[image-name] //画像を表示します(サイズを省略した場合デフォルトになります)
 	class Image final : public Script
@@ -48,10 +59,9 @@ namespace Script
 		static std::unique_ptr<Script> get_script(dxle::tstring& str);
 	};
 	//@がない or 誰も受け取らなかった場合のデフォルト動作
-	class Plain_Text final : public Script
+	class Plain_Text final : public impl::Text_Bace
 	{
 	private:
-		std::array<dxle::tstring, 3> line_str;
 		static int font;//作りっぱなし
 	public:
 		static constexpr int32_t font_height = 22;

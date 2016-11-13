@@ -27,8 +27,8 @@ namespace
 
 Show_Score::Show_Score(int selecting_)
 	: Sequence_Commom(selecting_)
-	, menu_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
-	, submissions_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 20, 2))
+	, menu_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
+	, submissions_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 2))
 {
 	scrollbar.set_pos({ menu_space_size, title_space });
 

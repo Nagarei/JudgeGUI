@@ -1,4 +1,4 @@
-#include "popup.h"
+ï»¿#include "popup.h"
 #include "useful_func_and_class.h"
 
 namespace {
@@ -6,22 +6,22 @@ namespace {
 }
 
 popup::popup()
-	: font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
+	: font(DxLib::CreateFontToHandle(_T("ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"), 16, 2))
 {
 }
 
 void popup::update_()
 {
 	if (start_time == -1) {
-		//•\¦‚µ‚Ä‚¢‚È‚¢
-		//V‹K•\¦‚ğŠm”F
+		//è¡¨ç¤ºã—ã¦ã„ãªã„
+		//æ–°è¦è¡¨ç¤ºã‚’ç¢ºèª
 		if (!que.empty()) {
 			start_time = myGetNowCount();
 			draw_message();
 		}
 	}
 	else {
-		//•\¦’†
+		//è¡¨ç¤ºä¸­
 		if (start_time + show_time < myGetNowCount()) {
 			start_time = -1;
 			que.pop();

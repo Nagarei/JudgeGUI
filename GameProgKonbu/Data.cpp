@@ -92,8 +92,8 @@ void Data::update()
 
 void Data::InitBuildProblemText()
 {
-	//font_boldface = DxLib::CreateFontToHandle(_T("MS UI Gothic"), 20, 9);//太字
-	//font_h1       = DxLib::CreateFontToHandle(_T("MS UI Gothic"), 40, 9);//大文字、太字
+	//font_boldface = DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 9);//太字
+	//font_h1       = DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 40, 9);//大文字、太字
 
 	ClearProblemsCash();
 }

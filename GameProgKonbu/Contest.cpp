@@ -11,8 +11,8 @@ namespace
 }
 Contest::Contest(int selecting_)
 	: Sequence_Commom(selecting_)
-	, loading_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 32, 2))
-	, menu_font (DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
+	, loading_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 32, 2))
+	, menu_font (DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
 	, problem_load_finished(false)
 {
 	scrollbar.set_pos({ menu_space_size, title_space });

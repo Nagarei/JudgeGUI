@@ -46,48 +46,63 @@ namespace
 
 namespace Script
 {
+	namespace impl
+	{
+//---------------------------impl::Text_Bace------------------------------------------------//
+
+		void Text_Bace::Init(dxle::tstring& str, int font)
+		{
+			FINALLY([&str]() {
+				//すべて処理する
+				str.clear();
+			});
+
+			//文字サイズ取得
+			auto get_str_size = [font](const dxle::tstring& str_) {
+				dxle::sizei str_size;
+				DxLib::GetDrawStringSizeToHandle(&str_size.width, &str_size.height, nullptr,
+					str_.c_str(), str_.size(), font);//@todo dxlibex
+				return static_cast<dxle::sizeui32>(str_size);
+			};
+			//一行目
+			auto first_eiter = std::find(str.begin(), str.end(), _T('\n'));
+			line_str[0].assign(str.begin(), first_eiter);
+			SetLineSize_first(get_str_size(line_str[0]));
+			//末端行
+			if (first_eiter == str.end()) { return; }
+			auto last_siter = str.end() - 1;
+			for (; *last_siter != _T('\n'); --last_siter) {}
+			++last_siter;
+			line_str[2].assign(last_siter, str.end());
+			SetLineSize_last(get_str_size(line_str[2]));
+			//中間部分
+			if (first_eiter == last_siter - 1) { return; }
+			line_str[1].assign(first_eiter + 1, last_siter - 1);
+			auto temp_size = get_str_size(line_str[1]);
+			if (temp_size.height <= 0) { temp_size.height = font_height; }
+			SetLineSize_middle(temp_size);
+		}
+		void Text_Bace::draw_extend_impl(unsigned draw_line, const dxle::pointi32 & pos, double extend_rate, int font, dxle::dx_color_param color)const
+		{
+			DrawExtendStringToHandle(pos.x, pos.y, extend_rate, extend_rate,
+				line_str[draw_line].c_str(), color.get(), font);
+		}
+	}//namespace impl
+
 //---------------------------Plain_Text------------------------------------------------//
+
 	int Plain_Text::font = -1;
 	Plain_Text::Plain_Text(dxle::tstring& str)
 	{
-		FINALLY([&str]() {
-			//すべて処理する
-			str.clear();
-		});
-
 		if (font == -1) {
-			font = DxLib::CreateFontToHandle(_T("MS UI Gothic"), 20, 1);
+			font = DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 1);
 		}
-
-		//文字サイズ取得
-		auto get_str_size = [](const dxle::tstring& str_) {
-			dxle::sizei str_size;
-			DxLib::GetDrawStringSizeToHandle(&str_size.width, &str_size.height, nullptr,
-				str_.c_str(), str_.size(), font);//@todo dxlibex
-			return static_cast<dxle::sizeui32>(str_size);
-		};
-		//一行目
-		auto first_eiter = std::find(str.begin(), str.end(), _T('\n'));
-		line_str[0].assign(str.begin(), first_eiter);
-		SetLineSize_first(get_str_size(line_str[0]));
-		//末端行
-		if (first_eiter == str.end()){ return; }
-		auto last_siter = str.end() - 1;
-		for (;*last_siter != _T('\n'); --last_siter) {}
-		++last_siter;
-		line_str[2].assign(last_siter, str.end());
-		SetLineSize_last(get_str_size(line_str[2]));
-		//中間部分
-		if (first_eiter == last_siter - 1) { return; }
-		line_str[1].assign(first_eiter+1, last_siter - 1);
-		auto temp_size = get_str_size(line_str[1]);
-		if (temp_size.height <= 0) { temp_size.height = font_height; }
-		SetLineSize_middle(temp_size);
+		//すべて処理する
+		Init(str, font);
 	}
 	void Plain_Text::draw_extend(unsigned draw_line, const dxle::pointi32 & pos, double extend_rate)const
 	{
-		DrawExtendStringToHandle(pos.x, pos.y, extend_rate, extend_rate, line_str[draw_line].c_str(),
-			dxle::dx_color(dxle::color_tag::black).get(), font);
+		draw_extend_impl(draw_line, pos, extend_rate, font, dxle::color_tag::black);
 	}
 	std::unique_ptr<Script> Plain_Text::get_script(dxle::tstring& str)
 	{

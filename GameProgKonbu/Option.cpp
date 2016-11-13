@@ -13,7 +13,7 @@ Option_Sequence::Option_Sequence()
 	, buttons()
 	, is_username_inputing(false)
 {
-	DxLib::SetDefaultFontState(_T("MS UI Gothic"), 35, 2);
+	DxLib::SetDefaultFontState(_T("ＭＳ ゴシック"), 35, 2);
 	DxLib::SetKeyInputCursorBrinkFlag(TRUE);
 	DxLib::SetKeyInputCursorBrinkTime(500);
 

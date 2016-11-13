@@ -6,8 +6,8 @@
 constexpr dxle::sizei32 popup_size = { 200, 75 };
 
 Sequence_Commom::Sequence_Commom(int selecting_)
-	: title_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 30, 2))
-	, score_font(DxLib::CreateFontToHandle(_T("MS UI Gothic"), 16, 2))
+	: title_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 30, 2))
+	, score_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
 	, selecting(selecting_)
 {
 	SetWindowTitle();
