@@ -10,12 +10,13 @@ namespace
 		constexpr int32_t height = 30;
 		//全体に対する比率
 		constexpr int32_t min_leftspace_width = 30;
+		constexpr int32_t min_sbumittime_width = 100;
 		constexpr int32_t min_problemname_width = 200;
 		constexpr int32_t min_user_width = 150;
 		constexpr int32_t min_score_width = 50;
 		constexpr int32_t min_type_width = 30;
 		constexpr int32_t min_rightspace_width = 30;
-		constexpr int32_t min_total_width = min_leftspace_width+ min_problemname_width
+		constexpr int32_t min_total_width = min_leftspace_width + min_sbumittime_width + min_problemname_width
 			+ min_user_width + min_score_width + min_type_width + min_rightspace_width;
 
 		constexpr dxle::rgb out_back_color{ 249,249,249 };
@@ -219,6 +220,14 @@ void Show_Score::draw_Submit() const
 			//左スペース
 			//set_next_area(submit::min_leftspace_width);//余計な線が入ってしまうので
 			draw_area.width = std::max(submit::min_leftspace_width, draw_area_width*submit::min_leftspace_width / submit::min_total_width);
+			//提出時間
+			set_next_area(submit::min_sbumittime_width);
+			{
+				const auto& stime = score.get_submit_time();
+				DrawStringRight(pos1,
+					ToStringEx(stime.Year%1000,_T('/'), stime.Mon, _T('/'), stime.Day, _T('['), stime.Hour, _T(':'), stime.Min, _T(']')).c_str(),
+					dxle::color_tag::black, submissions_font, draw_area);
+			}
 			//問題名
 			set_next_area(submit::min_problemname_width);
 			DrawStringCenter2(pos1, prob.GetName().c_str(), dxle::color_tag::black, submissions_font, draw_area);

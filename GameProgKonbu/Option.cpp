@@ -97,7 +97,7 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), _T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
 			return std::make_unique<Contest>(0);
 		case Option_Sequence::Select::contest:
-			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\contest\\"), _T(""), Option::ins.username);
+			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\contest\\"), _T("Z:\\競技プログラミング\\contest\\LOGLOGLOG"), Option::ins.username);
 			return std::make_unique<Contest>(0);
 			break;
 		case Option_Sequence::Select::name:

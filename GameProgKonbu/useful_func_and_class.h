@@ -22,6 +22,14 @@ inline typename std::enable_if<
 }
 
 
+inline void DrawStringRight(dxle::pointi pos, const TCHAR*const str, dxle::dx_color_param color, int font, dxle::sizei area)
+{
+	dxle::sizei temp_size;
+	DxLib::GetDrawStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
+		str, -1, font);//@todo dxlibex
+	auto diff = (area - temp_size); diff.height /= 2;
+	DrawStringToHandle(pos.x + diff.width, pos.y + diff.height, str, color.get(), font);
+}
 inline void DrawStringCenter2(dxle::pointi pos, const TCHAR*const str, dxle::dx_color_param color, int font, dxle::sizei area)
 {
 	dxle::sizei temp_size;

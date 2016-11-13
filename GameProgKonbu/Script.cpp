@@ -79,7 +79,6 @@ namespace Script
 			if (first_eiter == last_siter - 1) { return; }
 			line_str[1].assign(first_eiter + 1, last_siter - 1);
 			auto temp_size = get_str_size(line_str[1]);
-			if (temp_size.height <= 0) { temp_size.height = font_height; }
 			SetLineSize_middle(temp_size);
 		}
 		void Text_Bace::draw_extend_impl(unsigned draw_line, const dxle::pointi32 & pos, double extend_rate, int font, dxle::dx_color_param color)const

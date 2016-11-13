@@ -112,12 +112,29 @@ Scores BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 			}
 		}
 	}
+	//提出時間取得
+	DATEDATA sbumit_time;
+	sbumit_time.Year = sbumit_time.Mon = sbumit_time.Day = sbumit_time.Hour = sbumit_time.Min = sbumit_time.Sec = 0;
+	{
+		auto file_handle = FileRead_createInfo((log_directory + LOG_RESULT_NAME).c_str());
+		if (file_handle != -1) {
+			//読み込み成功
+			FINALLY([&file_handle]() { DxLib::FileRead_deleteInfo(file_handle); });
+			//ワイルドカード使ってないので一つしかないはず
+			FILEINFO Buffer;
+			Buffer.CreationTime.Year = Buffer.CreationTime.Mon = Buffer.CreationTime.Day
+				= Buffer.CreationTime.Hour = Buffer.CreationTime.Min = Buffer.CreationTime.Sec = 0;
+			DxLib::FileRead_getInfo(0, &Buffer, file_handle);
+			sbumit_time = Buffer.CreationTime;
+		}
+	}
+
 	//結果の解析
 	tifstream ifs(log_directory + LOG_RESULT_NAME);
 	if (ifs.fail()) {
 		//IE
 		return Scores(Scores::Type_T::IE, log_directory + LOG_SOURCE_NAME
-			, std::vector<Score>{}, std::move(compile_message), std::move(user_name));
+			, std::vector<Score>{}, std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 	}
 	dxle::tstring buf;
 	//CEチェック
@@ -125,7 +142,7 @@ Scores BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	if (buf == _T("CE")) {
 		//CE
 		return Scores(Scores::Type_T::CE, log_directory + LOG_SOURCE_NAME
-			, std::vector<Score>{}, std::move(compile_message), std::move(user_name));
+			, std::vector<Score>{}, std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 	}
 	//結果を取得
 	uint32_t counter = 1;
@@ -152,16 +169,16 @@ Scores BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 		std::basic_stringstream<TCHAR> ss(buf);
 		if (get_score(ss)) {
 			return Scores(Scores::Type_T::IE, log_directory + LOG_SOURCE_NAME
-				, std::move(score_temp), std::move(compile_message), std::move(user_name));
+				, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 		}
 	}
 	while (!ifs.eof()) {
 		if (get_score(ifs)) {
 			return Scores(Scores::Type_T::IE, log_directory + LOG_SOURCE_NAME
-				, std::move(score_temp), std::move(compile_message), std::move(user_name));
+				, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 		}
 	}
 
 	return Scores(Scores::Type_T::normal, log_directory + LOG_SOURCE_NAME
-		, std::move(score_temp), std::move(compile_message), std::move(user_name));
+		, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 }

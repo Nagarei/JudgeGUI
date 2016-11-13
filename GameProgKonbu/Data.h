@@ -20,10 +20,13 @@ private:
 	std::vector<Score> scores;
 	dxle::tstring C_message;//コンパイルメッセージ
 	dxle::tstring user_name;
+	DxLib::DATEDATA submit_time;
 public:
 	Scores() = default;
-	Scores(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_, dxle::tstring C_message_, dxle::tstring user_name_)
-		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)), C_message(std::move(C_message_)), user_name(std::move(user_name_))
+	Scores(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_,
+		dxle::tstring C_message_, dxle::tstring user_name_, DxLib::DATEDATA submit_time_)
+		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)),
+		 C_message(std::move(C_message_)), user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
 	{}
 	Scores(const Scores&) = default;
 	Scores(Scores&&) = default;
@@ -31,6 +34,7 @@ public:
 	const dxle::tstring& get_user_name()const { return user_name; }
 	Type_T get_type()const { return type; }
 	const std::vector<Score>& get_scores()const { return scores; }
+	const DxLib::DATEDATA& get_submit_time()const { return submit_time; }
 };
 std::array<TCHAR, 10> get_result_type_str(const Scores& );
 
