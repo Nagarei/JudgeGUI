@@ -1,5 +1,6 @@
 ﻿#include "Script.h"
 #include "useful_func_and_class.h"
+#include "Data.h"
 
 namespace
 {
@@ -136,7 +137,7 @@ namespace Script
 			dxle::tstring file_path{ iter, path_end };
 			if (PathIsRelative(file_path.c_str())) {
 				//相対パスなので、問題フォルダからの相対パスに
-				あああ;
+				file_path.insert(0, Data::GetIns().GetLoadingProblemDir());
 			}
 			graph = dxle::LoadGraph(file_path);
 			iter = path_end; if (path_end != str.end()) { ++iter; }

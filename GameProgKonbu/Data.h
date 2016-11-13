@@ -138,6 +138,10 @@ public:
 	//スレッドセーフ
 	size_t size()const { return problems.size(); }
 
+	dxle::tstring GetLoadingProblemDir()const {
+		return GetProblemsDirectory() + problems[now_loding_problem].GetName() + _T('/');
+	}
+
 private:
 	//problemsのScoreの更新キャッシュ
 	static std::mutex new_scores_mtx;
