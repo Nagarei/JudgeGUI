@@ -6,7 +6,7 @@
 #include "popup.h"
 
 std::mutex Data::new_scores_mtx;
-std::vector<std::pair<size_t, Scores>> Data::new_scores;//FIFO (first: pop, last: push)
+std::vector<std::pair<size_t, Submission>> Data::new_scores;//FIFO (first: pop, last: push)
 namespace {
 }
 
@@ -69,7 +69,6 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 				}
 				catch (Problem::init_error) {
 					//読み込み失敗
-					problems_.pop_back();
 				}
 			}
 		}
@@ -121,6 +120,9 @@ void Data::BuildProblemText()
 			problem_script_temp.clear();
 			script_raw_temp.clear();
 			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
+			DEBUG_NOTE;
+			printfDx((problems[now_loding_problem].GetName() + _T("/Statement.txt")).c_str());
+			printfDx(_T(":%d\n"), (problem_file ? 1 : 0));
 			load_state = Load_State::loading;
 			//初回読み込み処理（先頭に@をつけない）
 			std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
@@ -288,7 +290,7 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 	}
 }
 
-void Problem::AddScores(Scores && new_data)
+void Problem::AddScores(Submission && new_data)
 {
 	scores_set.emplace_back(std::move(new_data));
 	my_socre = std::max(my_socre, GetScore_single(scores_set.size() - 1));
@@ -297,7 +299,7 @@ void Problem::AddScores(Scores && new_data)
 int32_t Problem::GetScore_single(size_t scores_set_index) const
 {
 	const auto& data = scores_set[scores_set_index];
-	if (data.get_type() != Scores::Type_T::normal) {
+	if (data.get_type() != Submission::Type_T::normal) {
 		return 0;
 	}
 	int32_t temp_score = 0;
@@ -328,19 +330,19 @@ void Data::update_ScoresSet()
 	new_scores.clear();
 }
 
-void Data::AddScoresSet_threadsafe(size_t problem_num, Scores param_new_scores)
+void Data::AddScoresSet_threadsafe(size_t problem_num, Submission param_new_scores)
 {
 	std::lock_guard<std::mutex> lock(new_scores_mtx);
 	new_scores.emplace_back(problem_num, std::move(param_new_scores));
 }
 
-std::array<TCHAR, 10> get_result_type_str(const Scores& scores)
+std::array<TCHAR, 10> get_result_type_str(const Submission& scores)
 {
 	std::array<TCHAR, 10> str;
 #define SET_grts_(message) DxLib::strcpy_sDx(str.data(), str.size(), _T(#message))
 	switch (scores.get_type())
 	{
-	case Scores::Type_T::normal: {
+	case Submission::Type_T::normal: {
 		auto iter = std::find_if_not(scores.get_scores().begin(), scores.get_scores().end()
 			, [](const Score& s) {return s.type == Score::Type_T::AC; });
 		if (iter == scores.get_scores().end()) {
@@ -371,10 +373,10 @@ std::array<TCHAR, 10> get_result_type_str(const Scores& scores)
 		}
 	}
 		break;
-	case Scores::Type_T::CE:
+	case Submission::Type_T::CE:
 		SET_grts_(CE);
 		break;
-	case Scores::Type_T::IE:
+	case Submission::Type_T::IE:
 		SET_grts_(IE);
 		break;
 	default:

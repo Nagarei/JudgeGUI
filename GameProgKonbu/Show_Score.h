@@ -12,7 +12,10 @@ private:
 
 	ScrollBar2 scrollbar;
 	Button to_problem;
-	std::vector<Button> submissions;
+	bool show_myscore_only;
+	size_t last_submissions_size;
+	std::vector<size_t> submissions_index;
+	std::vector<Button> submissions_button;
 public:
 	Show_Score(int selecting);
 	~Show_Score();
@@ -28,5 +31,6 @@ private:
 	void reset_Scroll();//問題が変わった際のスクロール(とボタン)の再計算
 	void draw_Submit()const;
 
+	void get_submissions_copy();
 	void reset_window_size();
 };

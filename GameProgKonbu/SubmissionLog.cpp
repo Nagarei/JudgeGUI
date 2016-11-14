@@ -96,7 +96,7 @@ void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const d
 #endif
 }
 //結果の解析
-Scores BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
+Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 {
 	//コンパイルメッセージの取得
 	dxle::tstring compile_message;
@@ -133,7 +133,7 @@ Scores BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	tifstream ifs(log_directory + LOG_RESULT_NAME);
 	if (ifs.fail()) {
 		//IE
-		return Scores(Scores::Type_T::IE, log_directory + LOG_SOURCE_NAME
+		return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
 			, std::vector<Score>{}, std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 	}
 	dxle::tstring buf;
@@ -141,7 +141,7 @@ Scores BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	std::getline(ifs, buf);
 	if (buf == _T("CE")) {
 		//CE
-		return Scores(Scores::Type_T::CE, log_directory + LOG_SOURCE_NAME
+		return Submission(Submission::Type_T::CE, log_directory + LOG_SOURCE_NAME
 			, std::vector<Score>{}, std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 	}
 	//結果を取得
@@ -168,17 +168,17 @@ Scores BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	{//初めの一行だけもう読み込んでしまったので別処理
 		std::basic_stringstream<TCHAR> ss(buf);
 		if (get_score(ss)) {
-			return Scores(Scores::Type_T::IE, log_directory + LOG_SOURCE_NAME
+			return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
 				, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 		}
 	}
 	while (!ifs.eof()) {
 		if (get_score(ifs)) {
-			return Scores(Scores::Type_T::IE, log_directory + LOG_SOURCE_NAME
+			return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
 				, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 		}
 	}
 
-	return Scores(Scores::Type_T::normal, log_directory + LOG_SOURCE_NAME
+	return Submission(Submission::Type_T::normal, log_directory + LOG_SOURCE_NAME
 		, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
 }

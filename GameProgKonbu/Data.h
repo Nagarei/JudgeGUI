@@ -10,7 +10,7 @@ public:
 	enum class Type_T{ AC,WA,TLE,MLE,RE }type;
 	TCHAR input_name[10];//入力ファイルの名前
 };
-class Scores final
+class Submission final
 {
 public:
 	enum class Type_T { normal, CE, IE };
@@ -22,21 +22,21 @@ private:
 	dxle::tstring user_name;
 	DxLib::DATEDATA submit_time;
 public:
-	Scores() = default;
-	Scores(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_,
+	Submission() = default;
+	Submission(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_,
 		dxle::tstring C_message_, dxle::tstring user_name_, DxLib::DATEDATA submit_time_)
 		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)),
 		 C_message(std::move(C_message_)), user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
 	{}
-	Scores(const Scores&) = default;
-	Scores(Scores&&) = default;
+	Submission(const Submission&) = default;
+	Submission(Submission&&) = default;
 
 	const dxle::tstring& get_user_name()const { return user_name; }
 	Type_T get_type()const { return type; }
 	const std::vector<Score>& get_scores()const { return scores; }
 	const DxLib::DATEDATA& get_submit_time()const { return submit_time; }
 };
-std::array<TCHAR, 10> get_result_type_str(const Scores& );
+std::array<TCHAR, 10> get_result_type_str(const Submission& );
 
 class Problem final
 {
@@ -46,7 +46,7 @@ private:
 	const std::vector<std::pair<int, size_t>> partial_scores;//部分点　first: 得点、　second：どこまでの問題か(<=)(入力ファイルの番号)
 	const dxle::tstring name;
 	int32_t my_socre = 0;
-	std::vector<Scores> scores_set;
+	std::vector<Submission> scores_set;
 public:
 	struct init_error{};
 	//@param path:末尾に\又は/
@@ -61,7 +61,7 @@ public:
 	//スレッドセーフ
 	int GetMaxScore()const { return max_score; }
 	//メインスレッドからのみ呼び出し可
-	void AddScores(Scores&& new_data);
+	void AddScores(Submission&& new_data);
 
 	//メインスレッドからのみ呼び出し可
 	//iの入力が何点相当か調べる
@@ -149,8 +149,8 @@ public:
 private:
 	//problemsのScoreの更新キャッシュ
 	static std::mutex new_scores_mtx;
-	static std::vector<std::pair<size_t, Scores>> new_scores;//FIFO (first: pop, last: push)
+	static std::vector<std::pair<size_t, Submission>> new_scores;//FIFO (first: pop, last: push)
 	void update_ScoresSet();
 public:
-	static void AddScoresSet_threadsafe(size_t problem_num, Scores new_scores);
+	static void AddScoresSet_threadsafe(size_t problem_num, Submission new_scores);
 };
