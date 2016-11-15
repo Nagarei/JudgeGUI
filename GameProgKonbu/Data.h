@@ -33,6 +33,7 @@ public:
 
 	const dxle::tstring& get_user_name()const { return user_name; }
 	Type_T get_type()const { return type; }
+	const dxle::tstring& get_source_name()const { return source_name; }
 	const std::vector<Score>& get_scores()const { return scores; }
 	const DxLib::DATEDATA& get_submit_time()const { return submit_time; }
 };
@@ -46,7 +47,7 @@ private:
 	const std::vector<std::pair<int, size_t>> partial_scores;//部分点　first: 得点、　second：どこまでの問題か(<=)(入力ファイルの番号)
 	const dxle::tstring name;
 	int32_t my_socre = 0;
-	std::vector<Submission> scores_set;
+	std::vector<Submission> submission_set;
 public:
 	struct init_error{};
 	//@param path:末尾に\又は/
@@ -61,13 +62,13 @@ public:
 	//スレッドセーフ
 	int GetMaxScore()const { return max_score; }
 	//メインスレッドからのみ呼び出し可
-	void AddScores(Submission&& new_data);
+	void AddSubmission(Submission&& new_data);
 
 	//メインスレッドからのみ呼び出し可
 	//iの入力が何点相当か調べる
 	int32_t GetScore_single(size_t i)const;
 	//メインスレッドからのみ呼び出し可
-	const auto& GetScoresSet()const { return scores_set; }
+	const auto& GetSubmissionSet()const { return submission_set; }
 
 
 	//スレッドセーフ
@@ -81,6 +82,7 @@ class Data final : boost::noncopyable
 {
 private:
 	const dxle::tstring user_name;
+	const bool is_contest_mode;
 
 	const dxle::tstring log_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
 	const dxle::tstring problems_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
@@ -110,8 +112,9 @@ public:
 	static Data& GetIns(){
 		static Data ins; return ins;
 	}
-	void InitProblem(dxle::tstring problems_directory, dxle::tstring log_directory, dxle::tstring user_name);//初回呼び出し限定！
+	void InitProblem(dxle::tstring problems_directory, dxle::tstring log_directory, dxle::tstring user_name, bool is_contest_mode);//初回呼び出し限定！
 	const dxle::tstring& get_user_name()const { return user_name; }//スレッドセーフ
+	bool get_is_contest_mode()const { return this->is_contest_mode; }//スレッドセーフ
 	void SetBuildProblemText(size_t index);
 	void update();
 	

@@ -10,7 +10,7 @@ std::vector<std::pair<size_t, Submission>> Data::new_scores;//FIFO (first: pop, 
 namespace {
 }
 
-void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_directory_, dxle::tstring user_name_)
+void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_directory_, dxle::tstring user_name_, bool is_contest_mode_)
 {
 #ifdef _DEBUG
 	//初回しか呼ばれないので、problemsのスレッドセーフを保証できる
@@ -21,6 +21,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 #endif
 
 	const_cast<dxle::tstring&>(user_name) = std::move(user_name_);
+	const_cast<bool&>(is_contest_mode) = std::move(is_contest_mode_);
 
 	if (!problems_directory_.empty() && problems_directory_.back() != '/' && problems_directory_.back() != '\\'){
 		problems_directory_.push_back('/');
@@ -120,9 +121,6 @@ void Data::BuildProblemText()
 			problem_script_temp.clear();
 			script_raw_temp.clear();
 			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
-			DEBUG_NOTE;
-			printfDx((problems[now_loding_problem].GetName() + _T("/Statement.txt")).c_str());
-			printfDx(_T(":%d\n"), (problem_file ? 1 : 0));
 			load_state = Load_State::loading;
 			//初回読み込み処理（先頭に@をつけない）
 			std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
@@ -233,6 +231,7 @@ void Data::LoadSubmissionAll()
 }
 Data::Data()
 	: load_state(Load_State::end)
+	, is_contest_mode(false)
 {
 }
 Data::~Data()
@@ -290,15 +289,15 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 	}
 }
 
-void Problem::AddScores(Submission && new_data)
+void Problem::AddSubmission(Submission && new_data)
 {
-	scores_set.emplace_back(std::move(new_data));
-	my_socre = std::max(my_socre, GetScore_single(scores_set.size() - 1));
+	submission_set.emplace_back(std::move(new_data));
+	my_socre = std::max(my_socre, GetScore_single(submission_set.size() - 1));
 }
 
 int32_t Problem::GetScore_single(size_t scores_set_index) const
 {
-	const auto& data = scores_set[scores_set_index];
+	const auto& data = submission_set[scores_set_index];
 	if (data.get_type() != Submission::Type_T::normal) {
 		return 0;
 	}

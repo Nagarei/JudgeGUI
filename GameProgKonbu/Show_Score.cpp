@@ -30,7 +30,7 @@ Show_Score::Show_Score(int selecting_)
 	: Sequence_Commom(selecting_)
 	, menu_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
 	, submissions_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 2))
-	, show_myscore_only(true)
+	, show_myscore_only(Data::GetIns().get_is_contest_mode())
 	, last_submissions_size(0)
 {
 	scrollbar.set_pos({ menu_space_size, title_space });
@@ -92,7 +92,7 @@ std::unique_ptr<Sequence> Show_Score::update()
 		reset_Scroll();
 	}
 
-	if (last_submissions_size != Data::GetIns()[selecting].GetScoresSet().size()) {
+	if (last_submissions_size != Data::GetIns()[selecting].GetSubmissionSet().size()) {
 		get_submissions_copy();
 		reset_Scroll();
 	}
@@ -212,7 +212,7 @@ void Show_Score::draw_Submit() const
 		{
 			submissions_button[i].draw();
 
-			const auto& score = prob.GetScoresSet()[submissions_index[i]];
+			const auto& score = prob.GetSubmissionSet()[submissions_index[i]];
 			dxle::pointi32 pos1{ menu_space_size, title_space + submit::height*i };
 			pos1 -= scrollbar.get_value();
 			dxle::sizei32 draw_area{ 0, submit::height };
@@ -257,10 +257,10 @@ void Show_Score::draw_Submit() const
 
 void Show_Score::get_submissions_copy()
 {
-	auto& submissions = Data::GetIns()[selecting].GetScoresSet();
+	auto& submissions = Data::GetIns()[selecting].GetSubmissionSet();
 	last_submissions_size = submissions.size();
 	submissions_index.resize(last_submissions_size);
-	std::iota(submissions_index.begin(), submissions_index.end(), 0u);
+	std::iota(submissions_index.rbegin(), submissions_index.rend(), 0u);//新しいのを前にするため、逆順
 	if (show_myscore_only) {
 		submissions_index.erase(
 			std::remove_if(submissions_index.begin(), submissions_index.end(),
