@@ -10,7 +10,7 @@ std::vector<std::pair<size_t, Submission>> Data::new_scores;//FIFO (first: pop, 
 namespace {
 }
 
-void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_directory_, dxle::tstring user_name_)
+void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_directory_, dxle::tstring user_name_, bool is_contest_mode_)
 {
 #ifdef _DEBUG
 	//初回しか呼ばれないので、problemsのスレッドセーフを保証できる
@@ -21,6 +21,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 #endif
 
 	const_cast<dxle::tstring&>(user_name) = std::move(user_name_);
+	const_cast<bool&>(is_contest_mode) = std::move(is_contest_mode_);
 
 	if (!problems_directory_.empty() && problems_directory_.back() != '/' && problems_directory_.back() != '\\'){
 		problems_directory_.push_back('/');
@@ -120,9 +121,6 @@ void Data::BuildProblemText()
 			problem_script_temp.clear();
 			script_raw_temp.clear();
 			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
-			DEBUG_NOTE;
-			printfDx((problems[now_loding_problem].GetName() + _T("/Statement.txt")).c_str());
-			printfDx(_T(":%d\n"), (problem_file ? 1 : 0));
 			load_state = Load_State::loading;
 			//初回読み込み処理（先頭に@をつけない）
 			std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
@@ -224,7 +222,7 @@ void Data::LoadSubmissionAll()
 					TCHAR buf[20];
 					for (uint32_t i = 0; i <= log_num; ++i)
 					{
-						prob.AddScores(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), fi.Name));
+						prob.AddSubmission(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), fi.Name));
 					}
 				}
 			}
@@ -232,7 +230,8 @@ void Data::LoadSubmissionAll()
 	}
 }
 Data::Data()
-	: load_state(Load_State::end)
+	: is_contest_mode(false)
+	, load_state(Load_State::end)
 {
 }
 Data::~Data()
@@ -290,15 +289,15 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 	}
 }
 
-void Problem::AddScores(Submission && new_data)
+void Problem::AddSubmission(Submission && new_data)
 {
-	scores_set.emplace_back(std::move(new_data));
-	my_socre = std::max(my_socre, GetScore_single(scores_set.size() - 1));
+	submission_set.emplace_back(std::move(new_data));
+	my_socre = std::max(my_socre, GetScore_single(submission_set.size() - 1));
 }
 
 int32_t Problem::GetScore_single(size_t scores_set_index) const
 {
-	const auto& data = scores_set[scores_set_index];
+	const auto& data = submission_set[scores_set_index];
 	if (data.get_type() != Submission::Type_T::normal) {
 		return 0;
 	}
@@ -322,10 +321,9 @@ void Data::update_ScoresSet()
 	std::lock_guard<std::mutex> lock(new_scores_mtx);
 	for (auto& i : new_scores)
 	{
-		auto type_str = get_result_type_str(i.second);
-		popup::set(_T("結果が出ました："_ts) + type_str.data(),
-			dxle::tstring(type_str.data()) == _T("AC"_ts) ? dxle::color_tag::green : dxle::color_tag::magenta);
-		(*this)[i.first].AddScores(std::move(i.second));
+		auto type_draw = get_result_type_fordraw(i.second);
+		popup::set(_T("結果が出ました："_ts) + type_draw.first.data(), type_draw.second, dxle::color_tag::black);
+		(*this)[i.first].AddSubmission(std::move(i.second));
 	}
 	new_scores.clear();
 }
@@ -336,9 +334,10 @@ void Data::AddScoresSet_threadsafe(size_t problem_num, Submission param_new_scor
 	new_scores.emplace_back(problem_num, std::move(param_new_scores));
 }
 
-std::array<TCHAR, 10> get_result_type_str(const Submission& scores)
+std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission& scores)
 {
 	std::array<TCHAR, 10> str;
+	dxle::rgb color;
 #define SET_grts_(message) DxLib::strcpy_sDx(str.data(), str.size(), _T(#message))
 	switch (scores.get_type())
 	{
@@ -347,6 +346,7 @@ std::array<TCHAR, 10> get_result_type_str(const Submission& scores)
 			, [](const Score& s) {return s.type == Score::Type_T::AC; });
 		if (iter == scores.get_scores().end()) {
 			SET_grts_(AC);
+			color = dxle::rgb{70,136,71};
 		}
 		else {
 			switch (iter->type)
@@ -354,20 +354,25 @@ std::array<TCHAR, 10> get_result_type_str(const Submission& scores)
 				break;
 			case Score::Type_T::WA:
 				SET_grts_(WA);
+				color = dxle::rgb{ 248,148,6 };
 				break;
 			case Score::Type_T::TLE:
 				SET_grts_(TLE);
+				color = dxle::rgb{ 248,148,6 };
 				break;
 			case Score::Type_T::MLE:
 				SET_grts_(MLE);
+				color = dxle::rgb{ 248,148,6 };
 				break;
 			case Score::Type_T::RE:
 				SET_grts_(RE);
+				color = dxle::rgb{ 248,148,6 };
 				break;
 			case Score::Type_T::AC:
 			default:
 				assert(false);
 				SET_grts_(IE);
+				color = dxle::color_tag::white;
 				break;
 			}
 		}
@@ -375,15 +380,18 @@ std::array<TCHAR, 10> get_result_type_str(const Submission& scores)
 		break;
 	case Submission::Type_T::CE:
 		SET_grts_(CE);
+		color = dxle::color_tag::red;
 		break;
 	case Submission::Type_T::IE:
 		SET_grts_(IE);
+		color = dxle::color_tag::white;
 		break;
 	default:
 		assert(false);
 		SET_grts_(IE);
+		color = dxle::color_tag::white;
 		break;
 	}
-	return str;
+	return{ str,color };
 #undef SET_grts_
 }

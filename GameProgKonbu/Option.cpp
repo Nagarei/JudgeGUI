@@ -91,13 +91,13 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 		{
 		case Option_Sequence::Select::local:
 			//local
-			Data::GetIns().InitProblem(_T(""), _T(""), Option::ins.username);
+			Data::GetIns().InitProblem(_T(""), _T(""), Option::ins.username, false);
 			return std::make_unique<Contest>(0);
 		case Option_Sequence::Select::server_contact:
-			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), _T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username);
+			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\"), _T("Z:\\競技プログラミング\\問題セット\\"), Option::ins.username, false);
 			return std::make_unique<Contest>(0);
 		case Option_Sequence::Select::contest:
-			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\contest\\"), _T("Z:\\競技プログラミング\\contest\\LOGLOGLOG"), Option::ins.username);
+			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\contest\\"), _T("Z:\\競技プログラミング\\contest\\LOGLOGLOG"), Option::ins.username, true);
 			return std::make_unique<Contest>(0);
 			break;
 		case Option_Sequence::Select::name:

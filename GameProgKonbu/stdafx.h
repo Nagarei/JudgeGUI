@@ -36,6 +36,9 @@ namespace dxle
 	using pointui32 = dxle::point_c<uint32_t>;
 	using sizei32 = dxle::size_c<int32_t>;
 	using sizeui32 = dxle::size_c<uint32_t>;
+	inline int DrawBox(dxle::pointi pos1, dxle::pointi pos2, dxle::dx_color_param color, bool fill_flag) {
+		return DxLib::DrawBox(pos1.x, pos1.y, pos2.x, pos2.y, color.get(), fill_flag);
+	}
 }
 
 #endif

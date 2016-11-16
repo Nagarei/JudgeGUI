@@ -29,8 +29,8 @@ namespace
 Show_Score::Show_Score(int selecting_)
 	: Sequence_Commom(selecting_)
 	, menu_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
-	, submissions_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 2))
-	, show_myscore_only(true)
+	, submissions_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 5))
+	, show_myscore_only(Data::GetIns().get_is_contest_mode())
 	, last_submissions_size(0)
 {
 	scrollbar.set_pos({ menu_space_size, title_space });
@@ -92,7 +92,7 @@ std::unique_ptr<Sequence> Show_Score::update()
 		reset_Scroll();
 	}
 
-	if (last_submissions_size != Data::GetIns()[selecting].GetScoresSet().size()) {
+	if (last_submissions_size != Data::GetIns()[selecting].GetSubmissionSet().size()) {
 		get_submissions_copy();
 		reset_Scroll();
 	}
@@ -154,7 +154,7 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 		
 		for (size_t i = 0; i < submissions_button.size(); ++i)
 		{
-			submissions_button[i].set_area(pos1 + dxle::sizei32{ left_space, submit::height*i } , { button_width, submit::height });
+			submissions_button[i].set_area(pos1 + dxle::sizei32{ left_space, submit::height*(i+1) } , { button_width, submit::height });
 		}
 	}
 	else
@@ -189,11 +189,11 @@ void Show_Score::reset_Scroll()
 		using namespace submit;
 		submissions_button[i].set_on_color(on_back_color, edge_color, on_back_color);
 		submissions_button[i].set_out_color(out_back_color, edge_color, out_back_color);
-		submissions_button[i].set_area(pos1 + dxle::sizei32{ left_space, submit::height*i }, { button_width, submit::height });
+		submissions_button[i].set_area(pos1 + dxle::sizei32{ left_space,submit::height + submit::height*i }, { button_width, submit::height });
 	}
 	//スクロールバー調整
 	assert(0 < page_size.height && 0 < page_size.width);
-	scrollbar.reset(static_cast<dxle::sizeui32>(page_size), { std::max(page_size.width, submit::min_total_width) , submit::height*submissions_button.size() });
+	scrollbar.reset(static_cast<dxle::sizeui32>(page_size), { std::max(page_size.width, submit::min_total_width) , submit::height + submit::height*submissions_button.size() });
 }
 void Show_Score::draw_Submit() const
 {
@@ -204,16 +204,15 @@ void Show_Score::draw_Submit() const
 		DrawStringCenter({ menu_space_size,y }, _T("提出がありません"), dxle::color_tag::black, submissions_font, last_window_size.width - menu_space_size);
 		return;
 	}
-
 	{
-		const auto& prob = Data::GetIns()[selecting];
 		const int32_t draw_area_width = std::max(last_window_size.width - menu_space_size, submit::min_total_width);
+		const auto& prob = Data::GetIns()[selecting];
 		for (size_t i = 0; i < submissions_index.size(); ++i)
 		{
 			submissions_button[i].draw();
 
-			const auto& score = prob.GetScoresSet()[submissions_index[i]];
-			dxle::pointi32 pos1{ menu_space_size, title_space + submit::height*i };
+			const auto& score = prob.GetSubmissionSet()[submissions_index[i]];
+			dxle::pointi32 pos1{ menu_space_size, title_space + submit::height*(i+1) };
 			pos1 -= scrollbar.get_value();
 			dxle::sizei32 draw_area{ 0, submit::height };
 			auto set_next_area = [&pos1, &draw_area, &draw_area_width](int32_t min_width) {
@@ -244,9 +243,56 @@ void Show_Score::draw_Submit() const
 			DrawStringCenter2(pos1, _T("%d"), dxle::color_tag::black, submissions_font, draw_area, prob.GetScore_single(i));
 			//タイプ
 			set_next_area(submit::min_type_width);
-			DrawStringCenter2(pos1, get_result_type_str(score).data(), dxle::color_tag::black, submissions_font, draw_area);
+			{
+				auto&& type_draw = get_result_type_fordraw(score);
+				dxle::DrawBox(pos1 + dxle::sizei{3, 1}, pos1 + draw_area - dxle::sizei{ 0, 1 }, type_draw.second, true);
+				dxle::DrawBox(pos1 + dxle::sizei{3, 1}, pos1 + draw_area - dxle::sizei{ 0, 1 }, dxle::color_tag::black, false);
+				DrawStringCenter2(pos1, type_draw.first.data(), dxle::color_tag::black, submissions_font, draw_area);
+			}
 			//右スペース
 			//set_next_area(submit::min_rightspace_width);//余計な線が入ってしまうので
+
+			DxLib::SetDrawAreaFull();
+		}
+
+		//ガイド
+		{
+			dxle::pointi32 pos1{ menu_space_size, title_space };
+			pos1.x -= scrollbar.get_value().width;
+
+			//背景表示
+			[](dxle::pointi pos1, dxle::sizei size) {
+				dxle::pointi pos2 = pos1 + size;
+				DxLib::DrawFillBox(pos1.x, pos1.y, pos2.x, pos2.y, dxle::dx_color(submit::out_back_color).get());
+				DxLib::DrawLineBox(pos1.x, pos1.y, pos2.x, pos2.y, dxle::dx_color(submit::edge_color).get());
+			}(dxle::pointi{ submissions_button[0].get_area().first.x, title_space }, submissions_button[0].get_area().second);
+
+			dxle::sizei32 draw_area{ 0, submit::height };
+			auto set_next_area = [&pos1, &draw_area, &draw_area_width](int32_t min_width) {
+				pos1.x += draw_area.width;
+				draw_area.width = std::max(min_width, draw_area_width*min_width / submit::min_total_width);
+				DxLib::SetDrawArea(pos1.x, pos1.y, pos1.x + draw_area.width, pos1.y + draw_area.height);
+				DxLib::DrawLine(pos1.x, pos1.y, pos1.x, pos1.y + submit::height, dxle::dx_color(submit::edge_color).get());
+			};
+			//左スペース
+			//set_next_area(submit::min_leftspace_width);//余計な線が入ってしまうので
+			draw_area.width = std::max(submit::min_leftspace_width, draw_area_width*submit::min_leftspace_width / submit::min_total_width);
+			//提出時間
+			set_next_area(submit::min_sbumittime_width);
+			DrawStringCenter2(pos1, _T("提出日時"), dxle::color_tag::black, submissions_font, draw_area);
+			//問題名
+			set_next_area(submit::min_problemname_width);
+			DrawStringCenter2(pos1, _T("問題名"), dxle::color_tag::black, submissions_font, draw_area);
+			//ユーザー名
+			set_next_area(submit::min_user_width);
+			DrawStringCenter2(pos1, _T("ユーザ名"), dxle::color_tag::black, submissions_font, draw_area);
+			//スコア
+			set_next_area(submit::min_score_width);
+			DrawStringCenter2(pos1, _T("得点"), dxle::color_tag::black, submissions_font, draw_area);
+			//タイプ
+			set_next_area(submit::min_type_width);
+			DrawStringCenter2(pos1, _T("状態"), dxle::color_tag::black, submissions_font, draw_area);
+			//右スペース
 
 			DxLib::SetDrawAreaFull();
 		}
@@ -257,10 +303,10 @@ void Show_Score::draw_Submit() const
 
 void Show_Score::get_submissions_copy()
 {
-	auto& submissions = Data::GetIns()[selecting].GetScoresSet();
+	auto& submissions = Data::GetIns()[selecting].GetSubmissionSet();
 	last_submissions_size = submissions.size();
 	submissions_index.resize(last_submissions_size);
-	std::iota(submissions_index.begin(), submissions_index.end(), 0u);
+	std::iota(submissions_index.rbegin(), submissions_index.rend(), 0u);//新しいのを前にするため、逆順
 	if (show_myscore_only) {
 		submissions_index.erase(
 			std::remove_if(submissions_index.begin(), submissions_index.end(),

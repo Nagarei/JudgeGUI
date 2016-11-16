@@ -6,7 +6,7 @@ namespace {
 }
 
 popup::popup()
-	: font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
+	: font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 5))
 {
 }
 
@@ -46,5 +46,5 @@ void popup::draw_message() const
 		dxle::dx_color(std::get<1>(que.front())).get());
 	DxLib::DrawLineBox(pos.x, pos.y, pos.x + size.width, pos.y + size.height,
 		dxle::dx_color(dxle::rgb{ 0,0,0 }).get());
-	DrawStringCenter2(pos, std::get<0>(que.front()).c_str(), dxle::color_tag::black, font, size);
+	DrawStringCenter2(pos, std::get<0>(que.front()).c_str(), std::get<2>(que.front()), font, size);
 }
