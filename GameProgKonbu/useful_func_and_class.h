@@ -22,6 +22,19 @@ inline typename std::enable_if<
 }
 
 
+inline void DrawBoxWithFrame(dxle::pointi pos1, dxle::pointi pos2, dxle::dx_color_param color, dxle::dx_color_param edge_color) {
+	dxle::DrawBox(pos1, pos2, color, true);
+	dxle::DrawBox(pos1, pos2, edge_color, false);
+};
+template<typename... Args>
+inline void DrawStringRight(dxle::pointi pos, const TCHAR*const str, dxle::dx_color_param color, int font, dxle::sizei area, Args&&... args)
+{
+	dxle::sizei temp_size;
+	DxLib::GetDrawFormatStringSizeToHandle(&temp_size.width, &temp_size.height, nullptr,
+		font, str, args...);//@todo dxlibex
+	auto diff = (area - temp_size); diff.height /= 2;
+	DrawFormatStringToHandle(pos.x + diff.width, pos.y + diff.height, color.get(), font, str, std::forward<Args>(args)...);
+}
 inline void DrawStringRight(dxle::pointi pos, const TCHAR*const str, dxle::dx_color_param color, int font, dxle::sizei area)
 {
 	dxle::sizei temp_size;

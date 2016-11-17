@@ -20,12 +20,19 @@ private:
 	//Button source_on_off;
 	dxle::tstring source_str_raw;
 	dxle::sizei32 source_size;//行カウントを含むようになる予定
-	uint32_t source_line_num;
+	int source_line_num;
+	dxle::tstring compile_str_raw;
+	dxle::sizei32 compile_size;
 private:
+	void reset_scrolled_obj();
+
 	std::unique_ptr<Sequence> update_Menu();
 	void draw_Menu()const;
 
+	dxle::sizeui32 get_display_total_size();
 	void reset_Scroll();
+
+	void reset_window_size(){ reset_Scroll(); }
 public:
 	Score_detail(int selecting, size_t submissions_index);
 	~Score_detail();

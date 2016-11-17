@@ -71,12 +71,9 @@ std::unique_ptr<Sequence> Show_Score::update()
 		if (param) { next_sequence = std::move(param); }
 	};
 
-	dxle::sizei32 window_size;
-	{
-		DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
-		if (window_size != last_window_size) {
-			reset_window_size();
-		}
+	dxle::sizei32 window_size = My_GetWindowSize();
+	if (window_size != last_window_size) {
+		reset_window_size();
 	}
 
 	auto old_selecting = selecting;
@@ -168,9 +165,8 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 void Show_Score::reset_button_area()
 {
 	//ボタンの位置変更
-	dxle::sizei32 page_size;
 	dxle::pointi32 pos1{ menu_space_size, title_space };
-	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
+	dxle::sizei32 page_size = My_GetWindowSize();
 	page_size -= pos1;
 	pos1 -= scrollbar.get_value();//ボタン表示エリアの左上座標
 	int32_t submit_area_width = std::max(page_size.width - submit::rightspace_width, submit::min_total_width);
@@ -189,9 +185,8 @@ void Show_Score::reset_Scroll()
 	submissions_button.resize(submissions_index.size());
 	if (submissions_button.empty()) { return; }
 
-	dxle::sizei32 page_size;
 	dxle::pointi32 pos1{ menu_space_size, title_space };
-	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
+	dxle::sizei32 page_size = My_GetWindowSize();
 	page_size -= pos1;
 	//スクロールバー調整
 	assert(0 < page_size.height && 0 < page_size.width);
