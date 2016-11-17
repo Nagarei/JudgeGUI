@@ -8,8 +8,9 @@
 #define LOG_TEMPBAT_NAME _T("__temp.bat")
 #define LOG_RESULT_NAME _T("result.txt")
 
-//メインスレッドでカレントディレクトリが変更される為
-//相対パス使用禁止！！！
+const TCHAR* get_compile_out_filename()noexcept {
+	return LOG_COMPILE_NAME;
+}
 
 
 void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const dxle::tstring& cppfile_full_name)
@@ -98,20 +99,23 @@ void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const d
 //結果の解析
 Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 {
+#if 0
 	//コンパイルメッセージの取得
 	dxle::tstring compile_message;
 	{
 		tifstream ifs(log_directory + LOG_COMPILE_NAME);
 		if (!ifs.fail()) {
 			dxle::tstring buf;
-			while (!ifs.eof())
+			std::getline(ifs, buf);
+			while (ifs)
 			{
-				std::getline(ifs, buf);
 				compile_message += buf;
 				compile_message += '\n';
+				std::getline(ifs, buf);
 			}
 		}
 	}
+#endif
 	//提出時間取得
 	DATEDATA sbumit_time;
 	sbumit_time.Year = sbumit_time.Mon = sbumit_time.Day = sbumit_time.Hour = sbumit_time.Min = sbumit_time.Sec = 0;
@@ -134,7 +138,7 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	if (ifs.fail()) {
 		//IE
 		return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
-			, std::vector<Score>{}, std::move(compile_message), std::move(user_name), std::move(sbumit_time));
+			, std::vector<Score>{}, std::move(user_name), std::move(sbumit_time));
 	}
 	dxle::tstring buf;
 	//CEチェック
@@ -142,7 +146,7 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	if (buf == _T("CE")) {
 		//CE
 		return Submission(Submission::Type_T::CE, log_directory + LOG_SOURCE_NAME
-			, std::vector<Score>{}, std::move(compile_message), std::move(user_name), std::move(sbumit_time));
+			, std::vector<Score>{}, std::move(user_name), std::move(sbumit_time));
 	}
 	//結果を取得
 	uint32_t counter = 1;
@@ -151,7 +155,13 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	auto get_score = [&](std::basic_istream<TCHAR>& is) {//@return true:error
 		score_temp.emplace_back();
 		my_strcpy(score_temp.back().input_name, _T("input"_ts) + my_itoa(counter, itoa_buf) + _T(".txt"));
+		buf.resize(0);
 		is >> score_temp.back().use_memory >> score_temp.back().use_time >> buf; is.ignore(-1, _T('\n'));
+		if (is.fail()) {
+			//読み込み終わった
+			score_temp.pop_back();
+			return false;
+		}
 		if (buf == _T("AC")) { score_temp.back().type = Score::Type_T::AC; }
 		else if (buf == _T("WA")) { score_temp.back().type = Score::Type_T::WA; }
 		else if (buf == _T("TLE")) { score_temp.back().type = Score::Type_T::TLE; }
@@ -165,20 +175,20 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 		++counter;
 		return false;
 	};
-	{//初めの一行だけもう読み込んでしまったので別処理
+	if(ifs){//初めの一行だけもう読み込んでしまったので別処理
 		std::basic_stringstream<TCHAR> ss(buf);
 		if (get_score(ss)) {
 			return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
-				, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
+				, std::move(score_temp), std::move(user_name), std::move(sbumit_time));
 		}
 	}
-	while (!ifs.eof()) {
+	while (ifs) {
 		if (get_score(ifs)) {
 			return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
-				, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
+				, std::move(score_temp), std::move(user_name), std::move(sbumit_time));
 		}
 	}
 
 	return Submission(Submission::Type_T::normal, log_directory + LOG_SOURCE_NAME
-		, std::move(score_temp), std::move(compile_message), std::move(user_name), std::move(sbumit_time));
+		, std::move(score_temp), std::move(user_name), std::move(sbumit_time));
 }

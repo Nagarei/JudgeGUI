@@ -24,4 +24,6 @@ inline void my_strcpy(TCHAR(&buf)[N], const dxle::tstring str) {
 	while (str_iter != str_iter_end && iter != iter_end) {
 		*iter++ = *str_iter++;
 	}
+	if (iter == iter_end) { --iter; }
+	*iter = _T('\0');
 }

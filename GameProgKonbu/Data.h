@@ -8,7 +8,7 @@ public:
 	uint32_t use_memory;
 	uint32_t use_time;
 	enum class Type_T{ AC,WA,TLE,MLE,RE }type;
-	TCHAR input_name[10];//入力ファイルの名前
+	TCHAR input_name[20];//入力ファイルの名前
 };
 class Submission final
 {
@@ -18,15 +18,14 @@ private:
 	Type_T type;
 	dxle::tstring source_name;
 	std::vector<Score> scores;
-	dxle::tstring C_message;//コンパイルメッセージ
 	dxle::tstring user_name;
 	DxLib::DATEDATA submit_time;
 public:
 	Submission() = default;
 	Submission(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_,
-		dxle::tstring C_message_, dxle::tstring user_name_, DxLib::DATEDATA submit_time_)
+		dxle::tstring user_name_, DxLib::DATEDATA submit_time_)
 		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)),
-		 C_message(std::move(C_message_)), user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
+		 user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
 	{}
 	Submission(const Submission&) = default;
 	Submission(Submission&&) = default;
@@ -37,6 +36,7 @@ public:
 	const std::vector<Score>& get_scores()const { return scores; }
 	const DxLib::DATEDATA& get_submit_time()const { return submit_time; }
 };
+std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission& );
 
 class Problem final
@@ -70,6 +70,8 @@ public:
 	//メインスレッドからのみ呼び出し可
 	const auto& GetSubmissionSet()const { return submission_set; }
 
+	//メインスレッドからのみ呼び出し可
+	void ClearSubmissionCache() { submission_set.clear(); }
 
 	//スレッドセーフ
 	int GetSampleNum()const { return sample_num; }
@@ -103,7 +105,6 @@ private:
 
 	void InitBuildProblemText();
 	void BuildProblemText();
-	void LoadSubmissionAll();//提出データの初回読み込み
 private:
 	Data();
 	Data(const Data&) = delete;
@@ -112,6 +113,7 @@ public:
 	static Data& GetIns(){
 		static Data ins; return ins;
 	}
+	void LoadSubmissionAll();//提出データの読み込み
 	void InitProblem(dxle::tstring problems_directory, dxle::tstring log_directory, dxle::tstring user_name, bool is_contest_mode);//初回呼び出し限定！
 	const dxle::tstring& get_user_name()const { return user_name; }//スレッドセーフ
 	bool get_is_contest_mode()const { return this->is_contest_mode; }//スレッドセーフ
@@ -129,7 +131,7 @@ public:
 	dxle::sizeui32 GetProblemSize(int index)const {
 		return problems_text[index].size;
 	}
-	void ClearProblemsCash();
+	void ClearProblemsCache();
 	//スレッドセーフ
 	const dxle::tstring& GetProblemsDirectory()const { return problems_directory; }
 	//スレッドセーフ

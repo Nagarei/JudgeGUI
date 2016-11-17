@@ -94,9 +94,9 @@ void Data::InitBuildProblemText()
 {
 	//font_boldface = DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 9);//太字
 	//font_h1       = DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 40, 9);//大文字、太字
-	ClearProblemsCash();
+	ClearProblemsCache();
 }
-void Data::ClearProblemsCash()
+void Data::ClearProblemsCache()
 {
 	for (auto& i : problems_text) {
 		i.size.width = i.size.height = 0;
@@ -138,7 +138,7 @@ void Data::BuildProblemText()
 			}
 			else {
 				//スクリプト読み込み
-				if (problem_file.fail() || problem_file.eof()) {
+				if (problem_file.fail()) {
 					if (problem_script_temp.empty()) {
 						script_raw_temp = _T("問題を読み込めませんでした。\nF5で再読み込みできます。");//ダミー登録
 					}
@@ -154,7 +154,12 @@ void Data::BuildProblemText()
 				else
 				{
 					std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
-					script_raw_temp.insert(script_raw_temp.begin(), _T('@'));//@追加
+					if (problem_file.fail()) {
+						script_raw_temp.clear();
+					}
+					else {
+						script_raw_temp.insert(script_raw_temp.begin(), _T('@'));//@追加
+					}
 				}
 			}
 			break;
@@ -201,6 +206,7 @@ void Data::LoadSubmissionAll()
 	//すべての問題のデータをロード
 	for (auto& prob : const_cast<std::vector<Problem>&>(problems))
 	{
+		prob.ClearSubmissionCache();
 		problem_directory = log_directory + prob.GetName() + _T('/');
 
 		//すべてのユーザーのデータをロード
@@ -265,13 +271,18 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 		MessageBox(GetMainWindowHandle(), (_T("問題["_ts) + name + _T("]のpartial_scores.txtがないため、問題を読み込めません")).c_str(), _T("警告"), MB_OK);
 		throw init_error{};//読み込み失敗
 	}
-	while (!ifs.eof())
+	while (!ifs.fail())
 	{
 		auto& partial_scores_ = const_cast<std::vector<std::pair<int, size_t>>&>(partial_scores);
 		partial_scores_.emplace_back();
 		ifs >> partial_scores_.back().first >> partial_scores_.back().second;
 		//partial_scores.back().second -= 1;//番号->index
 		ifs.ignore(-1, '\n');
+		if (ifs.fail()) {
+			//読み込み終了
+			partial_scores_.pop_back();
+			break;
+		}
 		if (2 <= partial_scores.size()) {
 			auto i = partial_scores.rbegin();
 			if (i->second <= (i + 1)->second) {
@@ -292,7 +303,10 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 void Problem::AddSubmission(Submission && new_data)
 {
 	submission_set.emplace_back(std::move(new_data));
-	my_socre = std::max(my_socre, GetScore_single(submission_set.size() - 1));
+	if (Data::GetIns().get_user_name() == submission_set.back().get_user_name())
+	{
+		my_socre = std::max(my_socre, GetScore_single(submission_set.size() - 1));
+	}
 }
 
 int32_t Problem::GetScore_single(size_t scores_set_index) const
@@ -334,6 +348,43 @@ void Data::AddScoresSet_threadsafe(size_t problem_num, Submission param_new_scor
 	new_scores.emplace_back(problem_num, std::move(param_new_scores));
 }
 
+std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& score)
+{
+	std::array<TCHAR, 10> str;
+	dxle::rgb color;
+#define SET_grts_(message) DxLib::strcpy_sDx(str.data(), str.size(), _T(#message))
+	switch (score.type)
+	{
+	case Score::Type_T::AC:
+		SET_grts_(AC);
+		color = dxle::rgb{ 70,136,71 };
+		break;
+	case Score::Type_T::WA:
+		SET_grts_(WA);
+		color = dxle::rgb{ 248,148,6 };
+		break;
+	case Score::Type_T::TLE:
+		SET_grts_(TLE);
+		color = dxle::rgb{ 248,148,6 };
+		break;
+	case Score::Type_T::MLE:
+		SET_grts_(MLE);
+		color = dxle::rgb{ 248,148,6 };
+		break;
+	case Score::Type_T::RE:
+		SET_grts_(RE);
+		color = dxle::rgb{ 248,148,6 };
+		break;
+	default:
+		assert(false);
+		SET_grts_(IE);
+		color = dxle::color_tag::white;
+		break;
+	}
+	return{ str,color };
+#undef SET_grts_
+}
+
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission& scores)
 {
 	std::array<TCHAR, 10> str;
@@ -349,32 +400,8 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 			color = dxle::rgb{70,136,71};
 		}
 		else {
-			switch (iter->type)
-			{
-				break;
-			case Score::Type_T::WA:
-				SET_grts_(WA);
-				color = dxle::rgb{ 248,148,6 };
-				break;
-			case Score::Type_T::TLE:
-				SET_grts_(TLE);
-				color = dxle::rgb{ 248,148,6 };
-				break;
-			case Score::Type_T::MLE:
-				SET_grts_(MLE);
-				color = dxle::rgb{ 248,148,6 };
-				break;
-			case Score::Type_T::RE:
-				SET_grts_(RE);
-				color = dxle::rgb{ 248,148,6 };
-				break;
-			case Score::Type_T::AC:
-			default:
-				assert(false);
-				SET_grts_(IE);
-				color = dxle::color_tag::white;
-				break;
-			}
+			//再帰じゃなくてScoreのオーバーロードを呼び出す
+			return get_result_type_fordraw(*iter);
 		}
 	}
 		break;

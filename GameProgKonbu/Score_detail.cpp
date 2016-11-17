@@ -7,6 +7,7 @@
 #include "SetClipboardText.h"
 #include "popup.h"
 
+		using int32_t = int;
 constexpr TCHAR EOF_STR[] = _T("[EOF]");
 constexpr size_t EOF_STR_SIZE = sizeof(EOF_STR) / sizeof(EOF_STR[0]) - 1;//NULL文字を除く
 
@@ -19,10 +20,10 @@ namespace{
 	constexpr int32_t basic_data_heght_total = data_height*(int32_t)(show_data_enum::ENUM_SIZE);
 	//全体に対する比率
 	constexpr int32_t min_leftspace_width = 10;
-	constexpr int32_t min_typename_width = 138;//項目幅
-	constexpr int32_t min_type_width = 61;
-	constexpr int32_t min_time_width = 66;
-	constexpr int32_t min_memory_width = 85;
+	constexpr int32_t min_typename_width = 184;//項目幅
+	constexpr int32_t min_type_width = 81;
+	constexpr int32_t min_time_width = 88;
+	constexpr int32_t min_memory_width = 113;
 	constexpr int32_t min_value_width = min_type_width + min_time_width + min_memory_width;//値幅
 	constexpr int32_t min_middle_total_width = min_typename_width + min_value_width;
 	constexpr int32_t min_total_width = min_leftspace_width + min_middle_total_width;
@@ -32,6 +33,9 @@ namespace{
 	constexpr int32_t linenum_space = 60;//行番号の行の幅
 	constexpr int32_t main_font_handle_size = 20;
 	constexpr int32_t box_frame_thickness = 2;//淵付きボックスの淵の大きさ
+
+	constexpr int32_t type_icon_width = 30;
+	static_assert(type_icon_width < min_type_width, "");
 
 	constexpr dxle::rgb box_back_color{ 249,249,249 };
 	constexpr dxle::rgb box_on_back_color{ 249,249,0 };
@@ -275,11 +279,10 @@ void Score_detail::draw() const
 		my_draw_box_WF();
 		{
 			draw_subject(_T("状態"));
-			constexpr int32_t width = 30;
-			int32_t x1 = pos2_x + (value_width - width) / 2;
+			int32_t x1 = pos2_x + (value_width - type_icon_width) / 2;
 			auto for_draw = get_result_type_fordraw(submission);
-			DxLib::DrawFillBox(x1, pos1.y, x1 + width, pos1.y + data_height, dxle::dx_color(for_draw.second).get());
-			DrawStringCenter2({ x1, pos1.y }, for_draw.first.data(), dxle::color_tag::black, main_font, { width, data_height });
+			DxLib::DrawFillBox(x1, pos1.y, x1 + type_icon_width, pos1.y + data_height, dxle::dx_color(for_draw.second).get());
+			DrawStringCenter2({ x1, pos1.y }, for_draw.first.data(), dxle::color_tag::black, main_font, { type_icon_width, data_height });
 			pos1.y += data_height;
 		}
 		//得点
@@ -291,7 +294,70 @@ void Score_detail::draw() const
 		//仕切り線
 		DxLib::DrawLine(pos2_x, old_posy, pos2_x, pos1.y, dxle::dx_color(box_edge_color).get());
 	}
+	pos1.y += data_height;
 	//個々の入力表示
+	{
+		const auto old_posy = pos1.y;
+		const int32_t typename_width = draw_area_width*min_typename_width / min_total_width;
+		const int32_t type_width = draw_area_width*min_type_width / min_total_width;
+		const int32_t time_width = draw_area_width*min_time_width / min_total_width;
+		const int32_t memory_width = draw_area_width*min_memory_width / min_total_width;
+		const int32_t middle_total_width = draw_area_width*min_middle_total_width / min_total_width;
+		const auto& problem = Data::GetIns()[selecting];
+		const auto& submission = problem.GetSubmissionSet()[submissions_index];
+		const auto& scores = submission.get_scores();
+		int32_t pos_x = pos1.x;
+		int32_t width = 0;
+		auto my_draw_box_WF = [&pos1,&middle_total_width]() {
+			DrawBoxWithFrame(pos1, { pos1.x + middle_total_width, pos1.y + data_height }, box_back_color, box_edge_color);
+		};
+		auto draw_str = [&pos_x, &pos1, &width, font = this->main_font](const TCHAR* str, auto... args) {
+			DrawStringCenter2({ pos_x,pos1.y }, str, dxle::color_tag::black, font, { width, data_height }, std::forward<decltype(args)>(args)...);
+		};
+		auto set_next = [&pos_x, &old_posy, &pos1, &width](int32_t new_width) {
+			pos_x += width; width = new_width;
+			DxLib::SetDrawArea(pos_x, old_posy, pos_x + width, pos1.y + data_height);//縦線を引く為に少し多めにyをとっておく
+		};
+		//項目
+		my_draw_box_WF();
+		set_next(typename_width);   draw_str(_T("入力"));
+		set_next(type_width);       draw_str(_T("状態"));
+		set_next(time_width);       draw_str(_T("実行時間"));
+		set_next(memory_width);     draw_str(_T("メモリ使用量"));
+		pos1.y += data_height;
+		//値
+		for (auto& i : scores)
+		{
+			DxLib::SetDrawAreaFull();
+			my_draw_box_WF();
+			pos_x = pos1.x;
+			width = 0;
+			set_next(typename_width); draw_str(i.input_name);
+			{//状態
+				set_next(type_width);
+				int32_t x1 = pos_x + (type_width - type_icon_width) / 2;
+				auto for_draw = get_result_type_fordraw(i);
+				DxLib::DrawFillBox(x1, pos1.y, x1 + type_icon_width, pos1.y + data_height, dxle::dx_color(for_draw.second).get());
+				DrawStringCenter2({ x1, pos1.y }, for_draw.first.data(), dxle::color_tag::black, main_font, { type_icon_width, data_height });
+			}
+			set_next(time_width);   draw_str(ToStringEx(i.use_time, _T(" ms")).c_str());
+			set_next(memory_width); draw_str(ToStringEx(i.use_memory, _T(" KB")).c_str());
+			pos1.y += data_height;
+		}
+
+		//仕切り線
+		auto draw_v_line = [&pos_x, &old_posy, &pos1, &width]() {
+			DxLib::DrawLine(pos_x, old_posy, pos_x, pos1.y, dxle::dx_color(box_edge_color).get());
+		};
+		pos_x = pos1.x;
+		width = 0;
+		set_next(typename_width);                 //draw_str(_T("入力"));
+		set_next(type_width);       draw_v_line();//draw_str(_T("状態"));
+		set_next(time_width);       draw_v_line();//draw_str(_T("実行時間	"));
+		set_next(memory_width);     draw_v_line();//draw_str(_T("メモリ使用量"));
+
+		DxLib::SetDrawAreaFull();
+	}
 
 	//スクロール系表示
 	scrollbar.draw();
@@ -313,16 +379,16 @@ void Score_detail::reset_scrolled_obj()
 	//コピーボタン
 	const int32_t draw_area_width = std::max(window_size.width - menu_space_size - rightspace_width, min_total_width);
 	const int32_t left_space_width = draw_area_width*min_leftspace_width / min_total_width;
-	const int32_t min_display_width = draw_area_width - left_space_width;
+	const int32_t middle_total_width = draw_area_width*min_middle_total_width / min_total_width;
 	dxle::pointi32 pos1{ menu_space_size + left_space_width, title_space };
 	pos1 -= scrollbar.get_value();
 	//copy_code
-	copy_code.set_area(pos1, { std::max(min_display_width, source_size.width), data_height });
+	copy_code.set_area(pos1, { std::max(middle_total_width, source_size.width), data_height });
 	pos1.y += data_height;
 	pos1.y += source_size.height;
 	pos1.y += data_height;
 	//copy_compile
-	copy_compile.set_area(pos1, { std::max(min_display_width, compile_size.width), data_height });
+	copy_compile.set_area(pos1, { std::max(middle_total_width, compile_size.width), data_height });
 }
 
 void Score_detail::update_copybutton()
