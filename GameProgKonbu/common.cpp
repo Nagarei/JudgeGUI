@@ -12,11 +12,7 @@ Sequence_Commom::Sequence_Commom(int selecting_)
 {
 	SetWindowTitle();
 
-	DxLib::GetWindowSize(&last_window_size.width, &last_window_size.height);//@todo dxlibex
-	if (last_window_size.width < 320 || last_window_size.height < 240) {
-		last_window_size.width = 320;
-		last_window_size.height = 240;
-	}
+	last_window_size = My_GetWindowSize();
 
 	popup::GetIns().set_area({ last_window_size.width - popup_size.width, title_space }, popup_size);
 
@@ -57,15 +53,15 @@ void Sequence_Commom::update_SelectProblem()
 	auto& key = KeyInputData::GetIns();
 	auto& mouse = Mouse::GetIns();
 
-	//マウス入力チェック
+	auto old_selecting = selecting;
 
+	//マウス入力チェック
 	if (arrow[0].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
 		//左
 		if (selecting <= 0) {
 			selecting = problems.size();
 		}
 		--selecting;
-		SetWindowTitle();
 	}
 	if (arrow[1].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
 		//右
@@ -73,7 +69,6 @@ void Sequence_Commom::update_SelectProblem()
 		if (problems.size() <= (unsigned)selecting) {
 			selecting = 0;
 		}
-		SetWindowTitle();
 	}
 
 	//キーボード入力チェック
@@ -85,7 +80,6 @@ void Sequence_Commom::update_SelectProblem()
 				selecting = problems.size();
 			}
 			--selecting;
-			SetWindowTitle();
 		}
 		else if (key.GetDirectionKeyInput(key.KEY_RIGHT)) {
 			//右
@@ -93,8 +87,10 @@ void Sequence_Commom::update_SelectProblem()
 			if (problems.size() <= (unsigned)selecting) {
 				selecting = 0;
 			}
-			SetWindowTitle();
 		}
+	}
+	if (old_selecting != selecting) {
+		SetWindowTitle();
 	}
 }
 
@@ -107,11 +103,12 @@ void Sequence_Commom::draw_SelectProblem() const
 }
 
 void Sequence_Commom::reset_problemselect() {
-	dxle::sizei32 window_size;
-	DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
+	dxle::sizei32 window_size = My_GetWindowSize();
 	//問題切り替え矢印
 	//arrow[0].set_area({ 0,0 }, { arrow_width, title_space });
 	arrow[1].set_area({ window_size.width - arrow_width,0 }, { arrow_width , title_space });
-
+}
+void Sequence_Commom::reset_popup() {
+	dxle::sizei32 window_size = My_GetWindowSize();
 	popup::GetIns().set_area({ window_size.width - popup_size.width, title_space }, popup_size);
 }

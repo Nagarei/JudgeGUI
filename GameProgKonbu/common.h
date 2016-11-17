@@ -40,4 +40,5 @@ protected:
 		).c_str());
 	}
 	void reset_problemselect();
+	void reset_popup();
 };

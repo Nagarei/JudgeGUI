@@ -93,6 +93,7 @@ std::unique_ptr<Sequence> Show_Score::update()
 	//問題の変更確認
 	if (selecting != old_selecting) {
 		get_submissions_copy();
+		scrollbar.set_value({ 0, 0 });
 		reset_Scroll();
 	}
 
@@ -322,4 +323,7 @@ void Show_Score::reset_window_size()
 
 	//問題切り替え矢印
 	reset_problemselect();
+
+	//ポップアップ
+	reset_popup();
 }

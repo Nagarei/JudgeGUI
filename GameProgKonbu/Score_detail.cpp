@@ -4,6 +4,11 @@
 #include "SubmissionLog.h"
 #include "other_usefuls.h"
 #include "Mouse.h"
+#include "SetClipboardText.h"
+#include "popup.h"
+
+constexpr TCHAR EOF_STR[] = _T("[EOF]");
+constexpr size_t EOF_STR_SIZE = sizeof(EOF_STR) / sizeof(EOF_STR[0]) - 1;//NULL文字を除く
 
 namespace{
 	constexpr int32_t data_height = 30;
@@ -29,6 +34,7 @@ namespace{
 	constexpr int32_t box_frame_thickness = 2;//淵付きボックスの淵の大きさ
 
 	constexpr dxle::rgb box_back_color{ 249,249,249 };
+	constexpr dxle::rgb box_on_back_color{ 249,249,0 };
 	constexpr dxle::rgb box_edge_color{ 221,221,221 };
 }
 Score_detail::Score_detail(int selecting_, size_t submissions_index_)
@@ -46,7 +52,7 @@ Score_detail::Score_detail(int selecting_, size_t submissions_index_)
 	{
 		tifstream ifs(submission.get_source_name());
 		if (ifs.bad()) {
-			source_str_raw = _T("読み込みに失敗しました");
+			source_str = _T("読み込みに失敗しました");
 		}
 		else {
 			ifs.seekg(0, std::ios::end);
@@ -57,23 +63,23 @@ Score_detail::Score_detail(int selecting_, size_t submissions_index_)
 				str_buf[0] = _T('\0');
 				ifs.seekg(0, std::ios::beg);
 				ifs.read(str_buf.get(), str_len);
-				source_str_raw.reserve(str_len * 2);
-				//source_str_raw = str_buf.get();
+				source_str.reserve(str_len * 2);
+				//source_str = str_buf.get();
 				for (auto iter = str_buf.get(); *iter != _T('\0'); ++iter) {
 					if (*iter == _T('\t')) {
 						for (size_t i = 0; i < 4; ++i) {
-							source_str_raw.push_back(_T(' '));
+							source_str.push_back(_T(' '));
 						}
 					}
 					else {
-						source_str_raw.push_back(*iter);
+						source_str.push_back(*iter);
 					}
 				}
 			}
-			source_str_raw += _T("[EOF]");
+			source_str += EOF_STR;
 		}
 		DxLib::GetDrawStringSizeToHandle(&source_size.width, &source_size.height, &source_line_num,
-			source_str_raw.c_str(), source_str_raw.size(), main_font);//@todo dxlibex
+			source_str.c_str(), source_str.size(), main_font);//@todo dxlibex
 		source_size.height += box_frame_thickness*2;//ボックスの淵分
 		source_size.width += box_frame_thickness * 2;//ボックスの淵分
 		source_size.width += linenum_space;
@@ -82,7 +88,7 @@ Score_detail::Score_detail(int selecting_, size_t submissions_index_)
 	{
 		tifstream ifs(submission.get_source_name() + _T("/../") + get_compile_out_filename());
 		if (ifs.bad()) {
-			compile_str_raw = _T("読み込みに失敗しました");
+			compile_str = _T("読み込みに失敗しました");
 		}
 		else {
 			ifs.seekg(0, std::ios::end);
@@ -93,28 +99,39 @@ Score_detail::Score_detail(int selecting_, size_t submissions_index_)
 				str_buf[0] = _T('\0');
 				ifs.seekg(0, std::ios::beg);
 				ifs.read(str_buf.get(), str_len);
-				compile_str_raw.reserve(str_len * 2);
-				//source_str_raw = str_buf.get();
+				compile_str.reserve(str_len * 2);
+				//source_str = str_buf.get();
 				for (auto iter = str_buf.get(); *iter != _T('\0'); ++iter) {
 					if (*iter == _T('\t')) {
 						for (size_t i = 0; i < 4; ++i) {
-							compile_str_raw.push_back(_T(' '));
+							compile_str.push_back(_T(' '));
 						}
 					}
 					else {
-						compile_str_raw.push_back(*iter);
+						compile_str.push_back(*iter);
 					}
 				}
 			}
-			compile_str_raw += _T("[EOF]");
+			compile_str += EOF_STR;
 		}
 		DxLib::GetDrawStringSizeToHandle(&compile_size.width, &compile_size.height, nullptr,
-			compile_str_raw.c_str(), compile_str_raw.size(), main_font);//@todo dxlibex
+			compile_str.c_str(), compile_str.size(), main_font);//@todo dxlibex
 		compile_size.height += box_frame_thickness * 2;//ボックスの淵分
 		compile_size.width += box_frame_thickness * 2;//ボックスの淵分
 	}
 	reset_Scroll();
+	reset_scrolled_obj();
 
+	//コピーボタン
+	copy_code.set_str(_T("ソースコード    [コピー]"));
+	copy_compile.set_str(_T("コンパイルメッセージ   [コピー]"));
+	copy_code.set_on_color(box_on_back_color, box_edge_color, dxle::color_tag::black);
+	copy_code.set_out_color(box_back_color, dxle::color_tag::black, dxle::color_tag::black);
+	copy_compile.set_on_color(box_on_back_color, box_edge_color, dxle::color_tag::black);
+	copy_compile.set_out_color(box_back_color, dxle::color_tag::black, dxle::color_tag::black);
+	//reset_scrolled_obj();
+
+	//メニュー配置
 	to_problem.set_area({ 0, title_space }, { menu_space_size , menu_button_height });
 	to_problem.set_str(_T("問題文"));
 	to_submissions.set_area({ 0, title_space+ menu_button_height }, { menu_space_size , menu_button_height });
@@ -157,9 +174,11 @@ std::unique_ptr<Sequence> Score_detail::update()
 		reset_window_size();
 	}
 
-	if (scrollbar.update())
-	{
-		//コピペボタン処理
+	//コピペボタン処理
+	update_copybutton();
+	//スクロール
+	if (scrollbar.update()) {
+		reset_scrolled_obj();
 	}
 	//メニュー処理
 	set_next(update_Menu());
@@ -174,45 +193,52 @@ void Score_detail::draw() const
 
 	const int32_t draw_area_width = std::max(last_window_size.width - menu_space_size - rightspace_width, min_total_width);
 	const int32_t left_space_width = draw_area_width*min_leftspace_width / min_total_width;
-	dxle::pointi32 pos1{ menu_space_size + +left_space_width, title_space };
+	dxle::pointi32 pos1{ menu_space_size + left_space_width, title_space };
 	pos1 -= scrollbar.get_value();
 	//コード表示
 	{
+		dxle::sizei32 source_size_temp{ copy_code.get_area().second.width, source_size.height };
+
+		copy_code.draw(main_font);
 		pos1.y += data_height;
-		DxLib::SetDrawArea(menu_space_size, pos1.y, pos1.x + source_size.width, pos1.y + source_size.height);
+		DxLib::SetDrawArea(menu_space_size, pos1.y, pos1.x + source_size_temp.width, pos1.y + source_size_temp.height);
 		//背景
-		dxle::DrawBox(pos1, pos1 + source_size, dxle::rgb{ 245,245,245 }, true);
+		dxle::DrawBox(pos1, pos1 + source_size_temp, dxle::rgb{ 245,245,245 }, true);
 		//行番号&行仕切り線
 		for (int i = 0; i < source_line_num; ++i)
 		{
-			const auto height = source_size.height / source_line_num;
-			auto y = pos1.y + source_size.height * i / source_line_num;
-			DxLib::DrawLine(pos1.x, y, pos1.x + source_size.width, y, dxle::dx_color(box_edge_color).get());
+			const auto height = source_size_temp.height / source_line_num;
+			auto y = pos1.y + source_size_temp.height * i / source_line_num;
+			DxLib::DrawLine(pos1.x, y, pos1.x + source_size_temp.width, y, dxle::dx_color(box_edge_color).get());
 			DrawStringRight({ pos1.x + box_frame_thickness,y }, _T("%d"), dxle::color_tag::black,
 				main_font, { linenum_space - box_frame_thickness, height }, i+1);
 		}
 		//行番号とコードの区切りの縦線
 		DxLib::DrawLine(pos1.x + linenum_space, pos1.y,
-						pos1.x + linenum_space, pos1.y + source_size.height, dxle::dx_color(box_edge_color).get());
+						pos1.x + linenum_space, pos1.y + source_size_temp.height, dxle::dx_color(box_edge_color).get());
 		//コード
 		DxLib::DrawStringToHandle(pos1.x + box_frame_thickness + linenum_space, pos1.y + box_frame_thickness,
-			source_str_raw.c_str(), dxle::dx_color(dxle::color_tag::black).get(), main_font);
+			source_str.c_str(), dxle::dx_color(dxle::color_tag::black).get(), main_font);
 		//枠
-		dxle::DrawBox(pos1, pos1 + source_size, dxle::color_tag::black, false);
+		dxle::DrawBox(pos1, pos1 + source_size_temp, dxle::color_tag::black, false);
 		DxLib::SetDrawAreaFull();
-		pos1.y += source_size.height;
+		pos1.y += source_size_temp.height;
 	}
+	pos1.y += data_height;
 	//コンパイルメッセージ表示
 	{
+		dxle::sizei32 compile_size_temp{ copy_compile.get_area().second.width, compile_size.height };
+
+		copy_compile.draw(main_font);
 		pos1.y += data_height;
-		DxLib::SetDrawArea(menu_space_size, pos1.y, pos1.x + compile_size.width, pos1.y + compile_size.height);
-		DrawBoxWithFrame(pos1, pos1 + compile_size, dxle::rgb{ 245,245,245 }, dxle::color_tag::black);
+		DxLib::SetDrawArea(menu_space_size, pos1.y, pos1.x + compile_size_temp.width, pos1.y + compile_size_temp.height);
+		DrawBoxWithFrame(pos1, pos1 + compile_size_temp, dxle::rgb{ 245,245,245 }, dxle::color_tag::black);
 		DxLib::DrawStringToHandle(pos1.x + box_frame_thickness, pos1.y + box_frame_thickness,
-			compile_str_raw.c_str(), dxle::dx_color(dxle::color_tag::black).get(), main_font);
+			compile_str.c_str(), dxle::dx_color(dxle::color_tag::black).get(), main_font);
 		DxLib::SetDrawAreaFull();
-		pos1.y += compile_size.height;
+		pos1.y += compile_size_temp.height;
 	}
-	pos1.y += compile_size.height;
+	pos1.y += data_height;
 	//基本情報表示
 	{
 		const auto old_posy = pos1.y;
@@ -265,6 +291,7 @@ void Score_detail::draw() const
 		//仕切り線
 		DxLib::DrawLine(pos2_x, old_posy, pos2_x, pos1.y, dxle::dx_color(box_edge_color).get());
 	}
+	//個々の入力表示
 
 	//スクロール系表示
 	scrollbar.draw();
@@ -274,6 +301,41 @@ void Score_detail::draw() const
 
 	//メニュー処理
 	draw_Menu();
+}
+
+void Score_detail::reset_scrolled_obj()
+{
+	dxle::sizei32 window_size = My_GetWindowSize();
+
+	//ポップアップ
+	reset_popup();
+
+	//コピーボタン
+	const int32_t draw_area_width = std::max(window_size.width - menu_space_size - rightspace_width, min_total_width);
+	const int32_t left_space_width = draw_area_width*min_leftspace_width / min_total_width;
+	const int32_t min_display_width = draw_area_width - left_space_width;
+	dxle::pointi32 pos1{ menu_space_size + left_space_width, title_space };
+	pos1 -= scrollbar.get_value();
+	//copy_code
+	copy_code.set_area(pos1, { std::max(min_display_width, source_size.width), data_height });
+	pos1.y += data_height;
+	pos1.y += source_size.height;
+	pos1.y += data_height;
+	//copy_compile
+	copy_compile.set_area(pos1, { std::max(min_display_width, compile_size.width), data_height });
+}
+
+void Score_detail::update_copybutton()
+{
+	auto& mouse = Mouse::GetIns();
+
+	if (copy_code.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+		//クリップボードにコピー
+		My_SetClipboardText(source_str.substr(0, source_str.size() - EOF_STR_SIZE));
+	}
+	if (copy_compile.update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+		My_SetClipboardText(compile_str.substr(0, compile_str.size() - EOF_STR_SIZE));
+	}
 }
 
 std::unique_ptr<Sequence> Score_detail::update_Menu()
@@ -308,6 +370,7 @@ dxle::sizeui32 Score_detail::get_display_total_size()
 	result.height += data_height;
 	result.height += source_size.height;
 	result.height += data_height;
+	result.height += data_height;
 	result.height += compile_size.height;
 	result.height += data_height;
 	result.height += basic_data_heght_total;
@@ -316,7 +379,8 @@ dxle::sizeui32 Score_detail::get_display_total_size()
 	result.height += data_height * submission.get_scores().size();
 	//width
 	int page_size_width = My_GetWindowSize().width;
-	result.width = std::max(page_size_width - menu_space_size - rightspace_width, min_total_width);
+	result.width = std::max<int32_t>({ page_size_width - menu_space_size - rightspace_width,
+		min_total_width, source_size.width, compile_size.width});
 
 	return result;
 }
@@ -329,4 +393,6 @@ void Score_detail::reset_Scroll()
 	page_size.width -= menu_space_size;
 	assert(0 < page_size.height && 0 < page_size.width);
 	scrollbar.reset(static_cast<dxle::sizeui32>(page_size), object_size);
+
+	reset_scrolled_obj();
 }

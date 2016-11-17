@@ -5,6 +5,7 @@
 #include "test.h"
 #include "fps.h"
 #include "Show_Score.h"
+#include "SetClipboardText.h"
 #include "popup.h"
 namespace
 {
@@ -61,12 +62,9 @@ std::unique_ptr<Sequence> Contest::update()
 
 	std::unique_ptr<Sequence> next_sequence = nullptr;
 
-	dxle::sizei32 window_size;
-	{
-		DxLib::GetWindowSize(&window_size.width, &window_size.height);//@todo dxlibex
-		if (window_size != last_window_size) {
-			reset_window_size();
-		}
+	dxle::sizei32 window_size = My_GetWindowSize();
+	if (window_size != last_window_size) {
+		reset_window_size();
 	}
 
 	{
@@ -94,6 +92,7 @@ std::unique_ptr<Sequence> Contest::update()
 	if (!problem_load_finished) {
 		problem_load_finished = Data::GetIns().IsLoadFinesed(selecting);
 		if (problem_load_finished) {
+			scrollbar.set_value({ 0, 0 });
 			reset_Scroll();
 			//サンプル入力のセット
 			samples.resize(Data::GetIns()[selecting].GetSampleNum());
@@ -114,7 +113,7 @@ std::unique_ptr<Sequence> Contest::update()
 		}
 	}
 
-	DxLib::GetWindowSize(&last_window_size.width, &last_window_size.height);//@todo dxlibex
+	last_window_size = My_GetWindowSize();
 
 	return next_sequence;
 }
@@ -218,23 +217,16 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 			ifs.seekg(0, std::ios::end);
 			auto str_len = ifs.tellg();
 			if (str_len <= 0) {
-				popup::set(_T("コピー出来ませんでした"), dxle::color_tag::red);
-				continue;
+				//クリップボードにコピー
+				My_SetClipboardText(_T(""));
 			}
-			auto str_raw_buf = std::make_unique<TCHAR[]>(str_len);
-			ifs.seekg(0, std::ios::beg);
-			ifs.read(str_raw_buf.get(), str_len);
-			dxle::tstring str_buf;
-			str_buf.reserve(str_len * 2);
-			for (auto iter = str_raw_buf.get(); *iter != _T('\0'); ++iter) {
-				if (*iter == _T('\n')) {
-					str_buf.push_back(_T('\r'));
-				}
-				str_buf.push_back(*iter);
+			else {
+				auto str_raw_buf = std::make_unique<TCHAR[]>(str_len);
+				ifs.seekg(0, std::ios::beg);
+				ifs.read(str_raw_buf.get(), str_len);
+				//クリップボードにコピー
+				My_SetClipboardText(str_raw_buf.get());
 			}
-			//クリップボードにコピー
-			SetClipboardText(str_buf.c_str());
-			popup::set(_T("コピーしました"));
 		}
 	}
 
@@ -270,8 +262,7 @@ void Contest::reset_Scroll()
 	if (!problem_load_finished) { return; }
 
 	auto prob_size = Data::GetIns().GetProblemSize(selecting);
-	dxle::sizei32 page_size;
-	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
+	dxle::sizei32 page_size = My_GetWindowSize();
 	page_size.height -= title_space;
 	page_size.width -= menu_space_size;
 	assert(0 < page_size.height && 0 < page_size.width);
@@ -285,4 +276,7 @@ void Contest::reset_window_size()
 
 	//問題切り替え矢印
 	reset_problemselect();
+
+	//ポップアップ
+	reset_popup();
 }
