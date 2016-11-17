@@ -182,7 +182,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VC_DEBUG|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Score_detail.cpp" />
+    <ClCompile Include="Score_detail.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VC_DEBUG|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="ScrollBar2.cpp" />
     <ClCompile Include="Show_Score.cpp">

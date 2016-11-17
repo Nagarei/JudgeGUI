@@ -3,21 +3,22 @@
 #include "Mouse.h"
 #include "KeyInputData.h"
 #include "Contest.h"
+#include "Score_detail.h"
 
 namespace
 {
 	namespace submit {
 		constexpr int32_t height = 30;
 		//全体に対する比率
-		constexpr int32_t min_leftspace_width = 30;
-		constexpr int32_t min_sbumittime_width = 100;
-		constexpr int32_t min_problemname_width = 200;
-		constexpr int32_t min_user_width = 150;
+		constexpr int32_t min_leftspace_width = 10;
+		constexpr int32_t min_sbumittime_width = 120;
+		constexpr int32_t min_problemname_width = 170;
+		constexpr int32_t min_user_width = 120;
 		constexpr int32_t min_score_width = 50;
-		constexpr int32_t min_type_width = 30;
-		constexpr int32_t min_rightspace_width = 30;
+		constexpr int32_t min_type_width = 35;
 		constexpr int32_t min_total_width = min_leftspace_width + min_sbumittime_width + min_problemname_width
-			+ min_user_width + min_score_width + min_type_width + min_rightspace_width;
+			+ min_user_width + min_score_width + min_type_width;
+		constexpr int32_t rightspace_width = 20;//固定値
 
 		constexpr dxle::rgb out_back_color{ 249,249,249 };
 		constexpr dxle::rgb on_back_color{ 249,249,0 };
@@ -86,6 +87,12 @@ std::unique_ptr<Sequence> Show_Score::update()
 	//メニュー処理
 	set_next(update_Menu());
 
+	//リロード処理
+	if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_F5)) {
+		Data::GetIns().LoadSubmissionAll();
+		get_submissions_copy();
+		reset_Scroll();
+	}
 	//問題の変更確認
 	if (selecting != old_selecting) {
 		get_submissions_copy();
@@ -143,19 +150,7 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 	if (scrollbar.update())
 	{
 		//ボタンの位置変更
-		dxle::sizei32 page_size;
-		dxle::pointi32 pos1{ menu_space_size, title_space };
-		DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
-		page_size -= pos1;
-		pos1 -= scrollbar.get_value();//ボタン表示エリアの左上座標
-		int32_t submit_area_width = std::max(page_size.width, submit::min_total_width);
-		int32_t left_space = submit_area_width * submit::min_leftspace_width / submit::min_total_width;
-		int32_t button_width = submit_area_width - left_space - submit_area_width * submit::min_rightspace_width / submit::min_total_width;
-		
-		for (size_t i = 0; i < submissions_button.size(); ++i)
-		{
-			submissions_button[i].set_area(pos1 + dxle::sizei32{ left_space, submit::height*(i+1) } , { button_width, submit::height });
-		}
+		reset_button_area();
 	}
 	else
 	{
@@ -164,11 +159,30 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 		for (size_t i = 0; i < submissions_button.size(); ++i)
 		{
 			if (submissions_button[i].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-				DEBUG_NOTE;
+				return std::make_unique<Score_detail>(selecting, submissions_index[i]);
 			}
 		}
 	}
 	return nullptr;
+}
+void Show_Score::reset_button_area()
+{
+	//ボタンの位置変更
+	dxle::sizei32 page_size;
+	dxle::pointi32 pos1{ menu_space_size, title_space };
+	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
+	page_size -= pos1;
+	pos1 -= scrollbar.get_value();//ボタン表示エリアの左上座標
+	int32_t submit_area_width = std::max(page_size.width - submit::rightspace_width, submit::min_total_width);
+	int32_t left_space = submit_area_width * submit::min_leftspace_width / submit::min_total_width;
+	int32_t button_width = submit_area_width - left_space;
+
+	for (size_t i = 0; i < submissions_button.size(); ++i)
+	{
+		submissions_button[i].set_on_color(submit::on_back_color, submit::edge_color, submit::on_back_color);
+		submissions_button[i].set_out_color(submit::out_back_color, submit::edge_color, submit::out_back_color);
+		submissions_button[i].set_area(pos1 + dxle::sizei32{ left_space, submit::height*(i + 1) }, { button_width, submit::height });
+	}
 }
 void Show_Score::reset_Scroll()
 {
@@ -176,24 +190,15 @@ void Show_Score::reset_Scroll()
 	if (submissions_button.empty()) { return; }
 
 	dxle::sizei32 page_size;
-	constexpr dxle::pointi32 pos1{ menu_space_size, title_space };
+	dxle::pointi32 pos1{ menu_space_size, title_space };
 	DxLib::GetWindowSize(&page_size.width, &page_size.height);//@todo dxlibex
 	page_size -= pos1;
-	int32_t submit_area_width = std::max(page_size.width, submit::min_total_width);
-	int32_t left_space = submit_area_width * submit::min_leftspace_width / submit::min_total_width;
-	int32_t button_width = submit_area_width - left_space - submit_area_width * submit::min_rightspace_width / submit::min_total_width;
-
-	//ボタン調整
-	for (size_t i = 0; i < submissions_button.size(); ++i)
-	{
-		using namespace submit;
-		submissions_button[i].set_on_color(on_back_color, edge_color, on_back_color);
-		submissions_button[i].set_out_color(out_back_color, edge_color, out_back_color);
-		submissions_button[i].set_area(pos1 + dxle::sizei32{ left_space,submit::height + submit::height*i }, { button_width, submit::height });
-	}
 	//スクロールバー調整
 	assert(0 < page_size.height && 0 < page_size.width);
-	scrollbar.reset(static_cast<dxle::sizeui32>(page_size), { std::max(page_size.width, submit::min_total_width) , submit::height + submit::height*submissions_button.size() });
+	scrollbar.reset(static_cast<dxle::sizeui32>(page_size), { std::max(page_size.width - submit::rightspace_width, submit::min_total_width) , submit::height + submit::height*submissions_button.size() });
+
+	//ボタン調整
+	reset_button_area();
 }
 void Show_Score::draw_Submit() const
 {
@@ -205,7 +210,7 @@ void Show_Score::draw_Submit() const
 		return;
 	}
 	{
-		const int32_t draw_area_width = std::max(last_window_size.width - menu_space_size, submit::min_total_width);
+		const int32_t draw_area_width = std::max(last_window_size.width - menu_space_size - submit::rightspace_width, submit::min_total_width);
 		const auto& prob = Data::GetIns()[selecting];
 		for (size_t i = 0; i < submissions_index.size(); ++i)
 		{
@@ -240,7 +245,7 @@ void Show_Score::draw_Submit() const
 			DrawStringCenter2(pos1, score.get_user_name().c_str(), dxle::color_tag::black, submissions_font, draw_area);
 			//スコア
 			set_next_area(submit::min_score_width);
-			DrawStringCenter2(pos1, _T("%d"), dxle::color_tag::black, submissions_font, draw_area, prob.GetScore_single(i));
+			DrawStringCenter2(pos1, _T("%d"), dxle::color_tag::black, submissions_font, draw_area, prob.GetScore_single(submissions_index[i]));
 			//タイプ
 			set_next_area(submit::min_type_width);
 			{

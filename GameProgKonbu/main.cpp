@@ -56,6 +56,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 			}
 		}
 
+		DxLib::InitFontToHandle();
 		DxLib_End();
 
 		return 0;

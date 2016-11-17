@@ -6,8 +6,8 @@
 #ifndef STDAFX_H_201505121652_1_6_5_8_
 #define STDAFX_H_201505121652_1_6_5_8_
 
-#include "dxlibex/graph2d.hpp"
-#include "dxlibex/color.hpp"
+#include <dxlibex/graph2d.hpp>
+#include <dxlibex/color.hpp>
 #include <Windows.h>
 #include <boost/utility.hpp>
 #include <vector>

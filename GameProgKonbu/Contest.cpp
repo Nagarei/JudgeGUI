@@ -80,7 +80,7 @@ std::unique_ptr<Sequence> Contest::update()
 
 		//問題のリロード処理
 		if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_F5)) {
-			Data::GetIns().ClearProblemsCash();
+			Data::GetIns().ClearProblemsCache();
 			problem_load_finished = false;
 		}
 
@@ -221,11 +221,19 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 				popup::set(_T("コピー出来ませんでした"), dxle::color_tag::red);
 				continue;
 			}
-			auto str_buf = std::make_unique<TCHAR[]>(str_len);
+			auto str_raw_buf = std::make_unique<TCHAR[]>(str_len);
 			ifs.seekg(0, std::ios::beg);
-			ifs.read(str_buf.get(), str_len);
+			ifs.read(str_raw_buf.get(), str_len);
+			dxle::tstring str_buf;
+			str_buf.reserve(str_len * 2);
+			for (auto iter = str_raw_buf.get(); *iter != _T('\0'); ++iter) {
+				if (*iter == _T('\n')) {
+					str_buf.push_back(_T('\r'));
+				}
+				str_buf.push_back(*iter);
+			}
 			//クリップボードにコピー
-			SetClipboardText(str_buf.get());
+			SetClipboardText(str_buf.c_str());
 			popup::set(_T("コピーしました"));
 		}
 	}
