@@ -81,7 +81,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 
 	InitBuildProblemText();
 
-	LoadSubmissionAll();//提出データの初回読み込み
+	ReloadSubmission();//提出データの初回読み込み
 }
 
 void Data::update()
@@ -120,7 +120,7 @@ void Data::BuildProblemText()
 			problem_text_total_size.width = problem_text_total_size.height = 0;
 			problem_script_temp.clear();
 			script_raw_temp.clear();
-			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"));
+			problem_file.open(problems_directory + problems[now_loding_problem].GetName() + _T("/Statement.txt"), std::ios::in | std::ios::binary);
 			load_state = Load_State::loading;
 			//初回読み込み処理（先頭に@をつけない）
 			std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
@@ -199,40 +199,14 @@ void Data::BuildProblemText()
 		//一定時間たったら抜ける
 	} while ((DxLib::GetNowCount() - start_time) < load_time);
 }
-void Data::LoadSubmissionAll()
+void Data::ReloadSubmission()
 {
 	dxle::tstring problem_user_directory;
 	dxle::tstring problem_directory;
 	//すべての問題のデータをロード
 	for (auto& prob : const_cast<std::vector<Problem>&>(problems))
 	{
-		prob.ClearSubmissionCache();
-		problem_directory = log_directory + prob.GetName() + _T('/');
-
-		//すべてのユーザーのデータをロード
-		DxLib::FILEINFO fi;
-		DWORD_PTR hFind = (DWORD_PTR)-1;
-		FINALLY([&]() {if (hFind != -1) { FileRead_findClose(hFind); }});
-		hFind = DxLib::FileRead_findFirst((problem_directory + _T('*')).c_str(), &fi);
-		if (hFind == -1) { continue; }
-		do
-		{
-			if (fi.DirFlag == TRUE)
-			{
-				if (fi.Name[0] != '.')
-				{
-					//ユーザー名fi.Nameのユーザーの記録を取得
-					problem_user_directory = problem_directory + fi.Name + _T('/');
-					auto log_num = get_numdirectry_num(problem_user_directory, _T(""), 0);
-					if (log_num == (uint32_t)(-1)) { continue; }
-					TCHAR buf[20];
-					for (uint32_t i = 0; i <= log_num; ++i)
-					{
-						prob.AddSubmission(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), fi.Name));
-					}
-				}
-			}
-		} while (DxLib::FileRead_findNext(hFind, &fi) == 0);
+		prob.ReloadSubmission();
 	}
 }
 Data::Data()
@@ -300,18 +274,16 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 	}
 }
 
-void Problem::AddSubmission(Submission && new_data)
+void Problem::AddSubmission(const Submission& new_data)
 {
-	submission_set.emplace_back(std::move(new_data));
-	if (Data::GetIns().get_user_name() == submission_set.back().get_user_name())
+	if (Data::GetIns().get_user_name() == new_data.get_user_name())
 	{
-		my_socre = std::max(my_socre, GetScore_single(submission_set.size() - 1));
+		my_socre = std::max(my_socre, GetScore_single(new_data));
 	}
 }
 
-int32_t Problem::GetScore_single(size_t scores_set_index) const
+int32_t Problem::GetScore_single(const Submission& data) const
 {
-	const auto& data = submission_set[scores_set_index];
 	if (data.get_type() != Submission::Type_T::normal) {
 		return 0;
 	}
@@ -329,6 +301,59 @@ int32_t Problem::GetScore_single(size_t scores_set_index) const
 
 	return temp_score;
 }
+void Problem::ReloadSubmission()
+{
+	ClearSubmissionCache();
+
+	//自分のデータをロード
+	dxle::tstring user_name = Data::GetIns().get_user_name();
+	dxle::tstring problem_user_directory =
+		Data::GetIns().GetLogRootDirectory() +
+		this->GetName() + _T('/') +
+		user_name + _T('/');
+	auto log_num = get_numdirectry_num(problem_user_directory, _T(""), 0);
+	if (log_num == (uint32_t)(-1)) { return; }
+	TCHAR buf[20];
+	for (uint32_t i = 0; i <= log_num; ++i)
+	{
+		this->AddSubmission(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), user_name));
+	}
+}
+std::vector<Submission> Problem::LoadSubmissionAll()const
+{
+	std::vector<Submission> submissions;
+	auto problem_directory = Data::GetIns().GetLogRootDirectory() + this->GetName() + _T('/');
+	dxle::tstring problem_user_directory;
+
+	//すべてのユーザーのデータをロード
+	DxLib::FILEINFO fi;
+	DWORD_PTR hFind = (DWORD_PTR)-1;
+	FINALLY([&]() {if (hFind != -1) { FileRead_findClose(hFind); }});
+	hFind = DxLib::FileRead_findFirst((problem_directory + _T('*')).c_str(), &fi);
+	if (hFind == -1) {  }
+	else
+	{
+		do
+		{
+			if (fi.DirFlag == TRUE)
+			{
+				if (fi.Name[0] != '.')
+				{
+					//ユーザー名fi.Nameのユーザーの記録を取得
+					problem_user_directory = problem_directory + fi.Name + _T('/');
+					auto log_num = get_numdirectry_num(problem_user_directory, _T(""), 0);
+					if (log_num == (uint32_t)(-1)) { continue; }
+					TCHAR buf[20];
+					for (uint32_t i = 0; i <= log_num; ++i)
+					{
+						submissions.emplace_back(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), fi.Name));
+					}
+				};
+			}
+		} while (DxLib::FileRead_findNext(hFind, &fi) == 0);
+	}
+	return submissions;
+}
 
 void Data::update_ScoresSet()
 {
@@ -336,7 +361,7 @@ void Data::update_ScoresSet()
 	for (auto& i : new_scores)
 	{
 		auto type_draw = get_result_type_fordraw(i.second);
-		popup::set(_T("結果が出ました："_ts) + type_draw.first.data(), type_draw.second, dxle::color_tag::black);
+		popup::set(_T("結果が出ました："_ts) + type_draw.first.data(), type_draw.second, dxle::color_tag::black, 3000);
 		(*this)[i.first].AddSubmission(std::move(i.second));
 	}
 	new_scores.clear();

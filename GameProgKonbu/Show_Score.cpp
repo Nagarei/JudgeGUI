@@ -86,7 +86,7 @@ std::unique_ptr<Sequence> Show_Score::update()
 
 	//リロード処理
 	if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_F5)) {
-		Data::GetIns().LoadSubmissionAll();
+		Data::GetIns().ReloadSubmission();
 		get_submissions_copy();
 		reset_Scroll();
 	}
@@ -97,7 +97,7 @@ std::unique_ptr<Sequence> Show_Score::update()
 		reset_Scroll();
 	}
 
-	if (last_submissions_size != Data::GetIns()[selecting].GetSubmissionSet().size()) {
+	if (last_submissions_size != submissions_data.size()) {
 		get_submissions_copy();
 		reset_Scroll();
 	}
@@ -157,7 +157,7 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 		for (size_t i = 0; i < submissions_button.size(); ++i)
 		{
 			if (submissions_button[i].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-				return std::make_unique<Score_detail>(selecting, submissions_index[i]);
+				return std::make_unique<Score_detail>(selecting, std::move(submissions_data[submissions_index[i]]));
 			}
 		}
 	}
@@ -212,7 +212,7 @@ void Show_Score::draw_Submit() const
 		{
 			submissions_button[i].draw();
 
-			const auto& score = prob.GetSubmissionSet()[submissions_index[i]];
+			const auto& score = submissions_data[submissions_index[i]];
 			dxle::pointi32 pos1{ menu_space_size, title_space + submit::height*(i+1) };
 			pos1 -= scrollbar.get_value();
 			dxle::sizei32 draw_area{ 0, submit::height };
@@ -241,7 +241,8 @@ void Show_Score::draw_Submit() const
 			DrawStringCenter2(pos1, score.get_user_name().c_str(), dxle::color_tag::black, submissions_font, draw_area);
 			//スコア
 			set_next_area(submit::min_score_width);
-			DrawStringCenter2(pos1, _T("%d"), dxle::color_tag::black, submissions_font, draw_area, prob.GetScore_single(submissions_index[i]));
+			DrawStringCenter2(pos1, _T("%d"), dxle::color_tag::black, submissions_font, draw_area,
+				prob.GetScore_single(submissions_data[submissions_index[i]]));
 			//タイプ
 			set_next_area(submit::min_type_width);
 			{
@@ -304,14 +305,15 @@ void Show_Score::draw_Submit() const
 
 void Show_Score::get_submissions_copy()
 {
-	auto& submissions = Data::GetIns()[selecting].GetSubmissionSet();
-	last_submissions_size = submissions.size();
+	submissions_data = Data::GetIns()[selecting].LoadSubmissionAll();
+	last_submissions_size = submissions_data.size();
 	submissions_index.resize(last_submissions_size);
 	std::iota(submissions_index.rbegin(), submissions_index.rend(), 0u);//新しいのを前にするため、逆順
 	if (show_myscore_only) {
 		submissions_index.erase(
 			std::remove_if(submissions_index.begin(), submissions_index.end(),
-				[&submissions](const size_t& i) { return submissions[i].get_user_name() != Data::GetIns().get_user_name(); })
+				[&submissions_data = this->submissions_data](const size_t& i) {
+				return submissions_data[i].get_user_name() != Data::GetIns().get_user_name(); })
 			, submissions_index.end());
 	}
 }

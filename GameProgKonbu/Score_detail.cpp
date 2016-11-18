@@ -7,7 +7,6 @@
 #include "SetClipboardText.h"
 #include "popup.h"
 
-		using int32_t = int;
 constexpr TCHAR EOF_STR[] = _T("[EOF]");
 constexpr size_t EOF_STR_SIZE = sizeof(EOF_STR) / sizeof(EOF_STR[0]) - 1;//NULL文字を除く
 
@@ -41,20 +40,18 @@ namespace{
 	constexpr dxle::rgb box_on_back_color{ 249,249,0 };
 	constexpr dxle::rgb box_edge_color{ 221,221,221 };
 }
-Score_detail::Score_detail(int selecting_, size_t submissions_index_)
+Score_detail::Score_detail(int selecting_, Submission&& submission_)
 	: Sequence_Commom(selecting_)
 	, menu_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
 	, main_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), main_font_handle_size, 2))
-	, submissions_index(submissions_index_)
+	, submission(submission_)
 {
 	SetFontLineSpaceToHandle(main_font_handle_size + 5, main_font);
-	auto& data_ins = Data::GetIns();
-	auto& submission = data_ins[selecting].GetSubmissionSet()[submissions_index];
 	//メインの表示部分
 	scrollbar.set_pos({ menu_space_size, title_space });
 	//ソース
 	{
-		tifstream ifs(submission.get_source_name());
+		tifstream ifs(submission.get_source_name(), std::ios::in | std::ios::binary);
 		if (ifs.bad()) {
 			source_str = _T("読み込みに失敗しました");
 		}
@@ -66,10 +63,10 @@ Score_detail::Score_detail(int selecting_, size_t submissions_index_)
 				auto str_buf = std::make_unique<TCHAR[]>(str_len);
 				str_buf[0] = _T('\0');
 				ifs.seekg(0, std::ios::beg);
-				ifs.read(str_buf.get(), str_len);
+				ifs.read(str_buf.get(), str_len);//NULL終端文字はつかないので注意！！
 				source_str.reserve(str_len * 2);
 				//source_str = str_buf.get();
-				for (auto iter = str_buf.get(); *iter != _T('\0'); ++iter) {
+				for (auto iter = str_buf.get(), iter_end = str_buf.get() + str_len; iter != iter_end; ++iter) {
 					if (*iter == _T('\t')) {
 						for (size_t i = 0; i < 4; ++i) {
 							source_str.push_back(_T(' '));
@@ -90,7 +87,7 @@ Score_detail::Score_detail(int selecting_, size_t submissions_index_)
 	}
 	//コンパイルメッセージ
 	{
-		tifstream ifs(submission.get_source_name() + _T("/../") + get_compile_out_filename());
+		tifstream ifs(submission.get_source_name() + _T("/../") + get_compile_out_filename(), std::ios::in | std::ios::binary);
 		if (ifs.bad()) {
 			compile_str = _T("読み込みに失敗しました");
 		}
@@ -102,10 +99,9 @@ Score_detail::Score_detail(int selecting_, size_t submissions_index_)
 				auto str_buf = std::make_unique<TCHAR[]>(str_len);
 				str_buf[0] = _T('\0');
 				ifs.seekg(0, std::ios::beg);
-				ifs.read(str_buf.get(), str_len);
+				ifs.read(str_buf.get(), str_len);//NULL終端文字はつかないので注意！！
 				compile_str.reserve(str_len * 2);
-				//source_str = str_buf.get();
-				for (auto iter = str_buf.get(); *iter != _T('\0'); ++iter) {
+				for (auto iter = str_buf.get(), iter_end = str_buf.get() + str_len; iter != iter_end; ++iter) {
 					if (*iter == _T('\t')) {
 						for (size_t i = 0; i < 4; ++i) {
 							compile_str.push_back(_T(' '));
@@ -249,7 +245,6 @@ void Score_detail::draw() const
 		const int32_t typename_width = draw_area_width*min_typename_width / min_total_width;
 		const int32_t value_width = draw_area_width*min_value_width / min_total_width;
 		const auto& problem = Data::GetIns()[selecting];
-		const auto& submission = problem.GetSubmissionSet()[submissions_index];
 		int32_t pos1_x = pos1.x;
 		int32_t pos2_x = pos1_x + typename_width;
 		int32_t pos3_x = pos2_x + value_width;
@@ -288,7 +283,7 @@ void Score_detail::draw() const
 		//得点
 		my_draw_box_WF();
 		draw_subject(_T("得点"));
-		draw_value(_T("%d"), problem.GetScore_single(submissions_index));
+		draw_value(_T("%d"), problem.GetScore_single(submission));
 		pos1.y += data_height;
 
 		//仕切り線
@@ -303,8 +298,6 @@ void Score_detail::draw() const
 		const int32_t time_width = draw_area_width*min_time_width / min_total_width;
 		const int32_t memory_width = draw_area_width*min_memory_width / min_total_width;
 		const int32_t middle_total_width = draw_area_width*min_middle_total_width / min_total_width;
-		const auto& problem = Data::GetIns()[selecting];
-		const auto& submission = problem.GetSubmissionSet()[submissions_index];
 		const auto& scores = submission.get_scores();
 		int32_t pos_x = pos1.x;
 		int32_t width = 0;
@@ -427,10 +420,8 @@ void Score_detail::draw_Menu() const
 	to_submissions.draw(menu_font);
 }
 
-dxle::sizeui32 Score_detail::get_display_total_size()
+dxle::sizeui32 Score_detail::get_display_total_size()const
 {
-	auto& submission = Data::GetIns()[selecting].GetSubmissionSet()[submissions_index];
-
 	dxle::sizeui32 result;
 	//height
 	result.height += data_height;

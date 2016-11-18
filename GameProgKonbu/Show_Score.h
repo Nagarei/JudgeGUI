@@ -14,6 +14,7 @@ private:
 	Button to_problem;
 	bool show_myscore_only;
 	size_t last_submissions_size;
+	std::vector<Submission> submissions_data;
 	std::vector<size_t> submissions_index;
 	std::vector<Button> submissions_button;
 public:
@@ -28,6 +29,7 @@ private:
 	void draw_Menu()const;
 
 	std::unique_ptr<Sequence> update_Submit();
+	void reset_button_area();//ボタンの再計算
 	void reset_Scroll();//問題が変わった際のスクロール(とボタン)の再計算
 	void draw_Submit()const;
 

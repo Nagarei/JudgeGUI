@@ -59,18 +59,21 @@
     <IncludePath>C:\lib\boost;C:\lib;C:\lib\DxLib;..\DxLib;Z:\library\DxLib;Z:\library\boost;Z:\library;$(IncludePath)</IncludePath>
     <LibraryPath>..\DxLib;C:\lib\DxLib;Z:\library\DxLib;Z:\library\boost\stage\$(PlatformTarget);$(LibraryPath)</LibraryPath>
     <UseMultiToolTask>true</UseMultiToolTask>
+    <TargetName>JudgeGUI</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VC_DEBUG|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\lib\boost;C:\lib;C:\lib\DxLib;..\DxLib;Z:\library\DxLib;Z:\library\boost;Z:\library;$(IncludePath)</IncludePath>
     <LibraryPath>..\DxLib;C:\lib\DxLib;Z:\library\DxLib;Z:\library\boost\stage\$(PlatformTarget);$(LibraryPath)</LibraryPath>
     <UseMultiToolTask>true</UseMultiToolTask>
+    <TargetName>JudgeGUI</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\lib\boost;C:\lib;C:\lib\DxLib;..\DxLib;Z:\library\DxLib;Z:\library\boost;Z:\library;$(IncludePath)</IncludePath>
     <LibraryPath>..\DxLib;C:\lib\DxLib;Z:\library\DxLib;Z:\library\boost\stage\$(PlatformTarget);$(LibraryPath)</LibraryPath>
     <UseMultiToolTask>true</UseMultiToolTask>
+    <TargetName>JudgeGUI</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -130,6 +133,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="button.h" />
+    <ClInclude Include="My_GetWindowSize.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="popup.h" />
     <ClInclude Include="fps.h" />
     <ClInclude Include="GetNumfileNum.h">
@@ -145,6 +152,10 @@
     <ClInclude Include="Score_detail.h" />
     <ClInclude Include="Script.h" />
     <ClInclude Include="ScrollBar2.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="SetClipboardText.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -182,13 +193,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VC_DEBUG|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Score_detail.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VC_DEBUG|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="Score_detail.cpp" />
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="ScrollBar2.cpp" />
+    <ClCompile Include="SetClipboardText.cpp" />
     <ClCompile Include="Show_Score.cpp">
       <SubType>
       </SubType>

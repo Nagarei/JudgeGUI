@@ -221,9 +221,10 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 				My_SetClipboardText(_T(""));
 			}
 			else {
-				auto str_raw_buf = std::make_unique<TCHAR[]>(str_len);
+				auto str_raw_buf = std::make_unique<TCHAR[]>(static_cast<size_t>(str_len)+1u);
 				ifs.seekg(0, std::ios::beg);
 				ifs.read(str_raw_buf.get(), str_len);
+				str_raw_buf[str_len] = _T('\0');
 				//クリップボードにコピー
 				My_SetClipboardText(str_raw_buf.get());
 			}
