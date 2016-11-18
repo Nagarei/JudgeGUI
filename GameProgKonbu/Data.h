@@ -13,7 +13,7 @@ public:
 class Submission final
 {
 public:
-	enum class Type_T { normal, CE, IE };
+	enum class Type_T { normal, CE, IE, WJ };
 private:
 	Type_T type;
 	dxle::tstring source_name;
@@ -27,8 +27,9 @@ public:
 		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)),
 		 user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
 	{}
-	Submission(const Submission&) = default;
-	Submission(Submission&&) = default;
+	//Submission(const Submission&) = default;
+	//Submission(Submission&&)noexcept = default;
+	static Submission MakeWJ(time_t);
 
 	const dxle::tstring& get_user_name()const { return user_name; }
 	Type_T get_type()const { return type; }
@@ -152,11 +153,4 @@ public:
 		return GetProblemsDirectory() + problems[now_loding_problem].GetName() + _T('/');
 	}
 
-private:
-	//problemsのScoreの更新キャッシュ
-	static std::mutex new_scores_mtx;
-	static std::vector<std::pair<size_t, Submission>> new_scores;//FIFO (first: pop, last: push)
-	void update_ScoresSet();
-public:
-	static void AddScoresSet_threadsafe(size_t problem_num, Submission new_scores);
 };

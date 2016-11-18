@@ -132,6 +132,15 @@
     <ClInclude Include="Script.h">
       <Filter>Data\Script</Filter>
     </ClInclude>
+    <ClInclude Include="My_GetWindowSize.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SetClipboardText.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="WaitJudge.h">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -187,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="Score_detail.cpp">
       <Filter>Sequence\Score_detail</Filter>
+    </ClCompile>
+    <ClCompile Include="SetClipboardText.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

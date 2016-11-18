@@ -16,13 +16,20 @@ const TCHAR* get_compile_out_filename()noexcept {
 void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const dxle::tstring& cppfile_full_name)
 {
 	//引数調整
-	if (!log_directory.empty() && log_directory.back() != _T('\\') && log_directory.back() != _T('/')) {
+	if (log_directory.empty()) {
+		log_directory = _T("./");
+	}
+	if (log_directory.back() != _T('\\') && log_directory.back() != _T('/')) {
 		log_directory.push_back(_T('/'));
 	}
-	if (!input_directory.empty() && input_directory.back() == _T('\\')) {
+
+	if (input_directory.empty()) {
+		input_directory = _T("./");
+	}
+	if (input_directory.back() == _T('\\')) {
 		input_directory.pop_back();//"～\"とやると、"の閉じがエスケープされて、次の引数を巻き込んでしまう
 	}
-	if (!input_directory.empty() && input_directory.back() != _T('\\') && input_directory.back() != _T('/')) {
+	if (input_directory.back() != _T('\\') && input_directory.back() != _T('/')) {
 		input_directory.push_back(_T('/'));
 	}
 
@@ -61,40 +68,16 @@ void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const d
 		si.cb = sizeof(si);
 		auto temp_param = std::make_unique<TCHAR[]>(param.size()+1);
 		StrCpy(temp_param.get(), param.c_str());
-		CreateProcess(_T("Judge++/Judge++.exe"), temp_param.get(),
-			NULL, NULL, FALSE, CREATE_NO_WINDOW,
-			NULL, _T("Judge++"), &si, &pi);
-
-		CloseHandle(pi.hThread);
-		WaitForSingleObject(pi.hProcess, INFINITE);
-		CloseHandle(pi.hProcess);
-	}
-	//ShellExecute(NULL, NULL, _T("Judge++.exe"), param.c_str(), _T("Judge++"), SW_HIDE);
-#if 0
-	auto error = (int)ShellExecute(NULL, NULL, _T("Judge++.exe"), param.c_str(), _T("Judge++"), SW_SHOWNORMAL);
-	if (32 < error)
-	{
-	}
-	else {
-		switch (error)
-		{
-		case 0:
-			assert(false && 0); break;
-		case ERROR_FILE_NOT_FOUND:
-			assert(false && ERROR_FILE_NOT_FOUND); break;
-		case ERROR_PATH_NOT_FOUND:
-			assert(false && ERROR_PATH_NOT_FOUND); break;
-		case ERROR_BAD_FORMAT:
-			assert(false && ERROR_BAD_FORMAT); break;
-		case SE_ERR_ACCESSDENIED:
-			assert(false && SE_ERR_ACCESSDENIED); break;
-		case SE_ERR_ASSOCINCOMPLETE:
-			assert(false && SE_ERR_ASSOCINCOMPLETE); break;
-		default:
-			assert(false); break;
+		if (
+			CreateProcess(_T("Judge++/Judge++.exe"), temp_param.get(),
+				NULL, NULL, FALSE, CREATE_NO_WINDOW,
+				NULL, _T("Judge++"), &si, &pi)
+			) {
+			CloseHandle(pi.hThread);
+			WaitForSingleObject(pi.hProcess, INFINITE);
+			CloseHandle(pi.hProcess);
 		}
 	}
-#endif
 }
 //結果の解析
 Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)

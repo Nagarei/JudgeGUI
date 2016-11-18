@@ -177,6 +177,10 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Unsafe_My_func.h" />
     <ClInclude Include="useful_func_and_class.h" />
+    <ClInclude Include="WaitJudge.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="button.cpp" />

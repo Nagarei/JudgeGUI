@@ -6,6 +6,7 @@
 #include "SetLocale.h"
 #include "fps.h"
 #include "popup.h"
+#include "test.h"
 
 namespace {
 	///DxLib初期化処理
@@ -29,6 +30,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 			Mouse::GetIns().update();
 			Data::GetIns().update();
 			frame_time::GetIns().upadte();
+			compile_taskmanager::update();
 
 			//auto new_seq = seqence->update();
 			//if (new_seq){

@@ -351,6 +351,8 @@ void Score_detail::draw() const
 
 		DxLib::SetDrawAreaFull();
 	}
+	//末端空白
+	pos1.y += data_height;
 
 	//スクロール系表示
 	scrollbar.draw();
@@ -434,6 +436,7 @@ dxle::sizeui32 Score_detail::get_display_total_size()const
 	result.height += data_height;
 	result.height += data_height;
 	result.height += data_height * submission.get_scores().size();
+	result.height += data_height;
 	//width
 	int page_size_width = My_GetWindowSize().width;
 	result.width = std::max<int32_t>({ page_size_width - menu_space_size - rightspace_width,

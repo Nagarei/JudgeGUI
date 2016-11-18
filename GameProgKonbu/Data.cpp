@@ -5,8 +5,6 @@
 #include "SubmissionLog.h"
 #include "popup.h"
 
-std::mutex Data::new_scores_mtx;
-std::vector<std::pair<size_t, Submission>> Data::new_scores;//FIFO (first: pop, last: push)
 namespace {
 }
 
@@ -87,7 +85,6 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 void Data::update()
 {
 	BuildProblemText();
-	update_ScoresSet();
 }
 
 void Data::InitBuildProblemText()
@@ -355,24 +352,6 @@ std::vector<Submission> Problem::LoadSubmissionAll()const
 	return submissions;
 }
 
-void Data::update_ScoresSet()
-{
-	std::lock_guard<std::mutex> lock(new_scores_mtx);
-	for (auto& i : new_scores)
-	{
-		auto type_draw = get_result_type_fordraw(i.second);
-		popup::set(_T("結果が出ました："_ts) + type_draw.first.data(), type_draw.second, dxle::color_tag::black, 3000);
-		(*this)[i.first].AddSubmission(std::move(i.second));
-	}
-	new_scores.clear();
-}
-
-void Data::AddScoresSet_threadsafe(size_t problem_num, Submission param_new_scores)
-{
-	std::lock_guard<std::mutex> lock(new_scores_mtx);
-	new_scores.emplace_back(problem_num, std::move(param_new_scores));
-}
-
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& score)
 {
 	std::array<TCHAR, 10> str;
@@ -438,6 +417,10 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 		SET_grts_(IE);
 		color = dxle::color_tag::white;
 		break;
+	case Submission::Type_T::WJ:
+		SET_grts_(WJ);
+		color = dxle::color_tag::gray;
+		break;
 	default:
 		assert(false);
 		SET_grts_(IE);
@@ -446,4 +429,20 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 	}
 	return{ str,color };
 #undef SET_grts_
+}
+
+Submission Submission::MakeWJ(time_t time)
+{
+	tm local_time;
+	localtime_s(&local_time, &time);
+	DxLib::DATEDATA dx_date;
+	dx_date.Year = local_time.tm_year;
+	dx_date.Mon  = local_time.tm_mon;
+	dx_date.Day  = local_time.tm_mday;
+	dx_date.Hour = local_time.tm_hour;
+	dx_date.Min  = local_time.tm_min;
+	dx_date.Sec  = local_time.tm_sec;
+	return Submission{
+		Submission::Type_T::WJ, _T(""), {}, Data::GetIns().get_user_name(), dx_date
+	};
 }

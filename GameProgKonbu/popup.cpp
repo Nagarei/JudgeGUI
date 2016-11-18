@@ -1,10 +1,6 @@
 ﻿#include "popup.h"
 #include "useful_func_and_class.h"
 
-namespace {
-	constexpr int show_time = 1000;
-}
-
 popup::popup()
 	: font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 5))
 {
@@ -22,7 +18,7 @@ void popup::update_()
 	}
 	else {
 		//表示中
-		if (start_time + show_time < myGetNowCount()) {
+		if (start_time + std::get<3>(que.front()) < myGetNowCount()) {
 			start_time = -1;
 			que.pop();
 		}

@@ -4,6 +4,7 @@
 #include "KeyInputData.h"
 #include "Contest.h"
 #include "Score_detail.h"
+#include "WaitJudge.h"
 
 namespace
 {
@@ -32,7 +33,7 @@ Show_Score::Show_Score(int selecting_)
 	, menu_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
 	, submissions_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 20, 5))
 	, show_myscore_only(Data::GetIns().get_is_contest_mode())
-	, last_submissions_size(0)
+	, last_WJ_submissions_size(0)
 {
 	scrollbar.set_pos({ menu_space_size, title_space });
 
@@ -97,7 +98,7 @@ std::unique_ptr<Sequence> Show_Score::update()
 		reset_Scroll();
 	}
 
-	if (last_submissions_size != submissions_data.size()) {
+	if (last_WJ_submissions_size != WaitJudgeQueue::waiting_list(selecting).size()) {
 		get_submissions_copy();
 		reset_Scroll();
 	}
@@ -305,9 +306,18 @@ void Show_Score::draw_Submit() const
 
 void Show_Score::get_submissions_copy()
 {
+	//元データの更新
 	submissions_data = Data::GetIns()[selecting].LoadSubmissionAll();
-	last_submissions_size = submissions_data.size();
-	submissions_index.resize(last_submissions_size);
+	//WJ
+	{
+		auto& waiting_list = WaitJudgeQueue::waiting_list(selecting);
+		last_WJ_submissions_size = waiting_list.size();
+		for (auto& i : waiting_list) {
+			submissions_data.emplace_back(Submission::MakeWJ(i));
+		}
+	}
+	//インデックスの更新
+	submissions_index.resize(submissions_data.size());
 	std::iota(submissions_index.rbegin(), submissions_index.rend(), 0u);//新しいのを前にするため、逆順
 	if (show_myscore_only) {
 		submissions_index.erase(
