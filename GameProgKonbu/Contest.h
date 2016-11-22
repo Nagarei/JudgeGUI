@@ -30,7 +30,6 @@ private:
 
 	void update_Scroll();
 	void reset_Scroll();//問題が変わった際のスクロールの再計算
-	void draw_Scroll()const;
 
 	void reset_window_size();
 };

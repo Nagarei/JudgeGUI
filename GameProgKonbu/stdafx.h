@@ -27,6 +27,7 @@
 #include "FormatToString.h"
 #include "Sequence.h"
 #include "KeyInputData.h"
+#include "My_GetWindowSize.h"
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください。
 

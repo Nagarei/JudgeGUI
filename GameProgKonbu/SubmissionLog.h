@@ -11,3 +11,5 @@ void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const d
 //結果の解析
 //@param log_directory 出力があるフォルダの「絶対パス」
 Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name);
+
+const TCHAR* get_compile_out_filename()noexcept;

@@ -26,6 +26,10 @@ public:
 	void reset(const dxle::sizeui32& bar_area_, const dxle::sizeui32& object_size_);
 
 	void set_pos(const dxle::pointi32& pos1_)noexcept { pos1 = pos1_; }
+	void set_value(const dxle::sizei32& scroll_value) {
+		scrollbar_v.set_now_pos(scroll_value.height);
+		scrollbar_h.set_now_pos(scroll_value.width);
+	}
 	bool update();//@return true:スクロールされた
 	void draw()const;
 

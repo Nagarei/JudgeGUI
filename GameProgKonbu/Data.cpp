@@ -63,12 +63,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 					break;//ファイルが多すぎ
 				}
 				auto& problems_ = const_cast<std::vector<Problem>&>(problems);
-				try {
-					problems_.emplace_back(problems_directory, fi.Name);
-				}
-				catch (Problem::init_error) {
-					//読み込み失敗
-				}
+				problems_.emplace_back(fi.Name);
 			}
 		}
 	} while (DxLib::FileRead_findNext(hFind, &fi) == 0);
@@ -196,8 +191,6 @@ void Data::BuildProblemText()
 }
 void Data::ReloadSubmission()
 {
-	dxle::tstring problem_user_directory;
-	dxle::tstring problem_directory;
 	//すべての問題のデータをロード
 	for (auto& prob : const_cast<std::vector<Problem>&>(problems))
 	{
@@ -229,41 +222,11 @@ void Data::DrawExtendProblem(int index, const dxle::pointi32& pos, double extend
 }
 
 //@param path:末尾に\又は/
-Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
+Problem::Problem(const TCHAR* pronlem_name)
 	:name(pronlem_name)
 {
-	path += name;
-	path += '/';
-	//部分点情報取得
-	tifstream ifs(path + _T("partial_scores.txt"));
-	if (ifs.fail()) {
-		MessageBox(GetMainWindowHandle(), (_T("問題["_ts) + name + _T("]のpartial_scores.txtがないため、問題を読み込めません")).c_str(), _T("警告"), MB_OK);
-		throw init_error{};//読み込み失敗
-	}
-	while (!ifs.fail())
-	{
-		auto& partial_scores_ = const_cast<std::vector<std::pair<int, size_t>>&>(partial_scores);
-		partial_scores_.emplace_back();
-		ifs >> partial_scores_.back().first >> partial_scores_.back().second;
-		//partial_scores.back().second -= 1;//番号->index
-		ifs.ignore(-1, '\n');
-		if (ifs.fail() && (partial_scores_.back().first == 0 && partial_scores_.back().second == 0)) {
-			//読み込み終了
-			partial_scores_.pop_back();
-			break;
-		}
-		if (2 <= partial_scores.size()) {
-			auto i = partial_scores.rbegin();
-			if (i->second <= (i + 1)->second) {
-				MessageBox(GetMainWindowHandle(), (_T("問題["_ts) + name + _T("]のpartial_scores.txtの書式が間違っています\n入力の指定は昇順にしてください。")).c_str(), _T("警告"), MB_OK);
-				partial_scores_.pop_back();
-				continue;
-			}
-		}
-		const_cast<int&>(max_score) += partial_scores.back().first;
-	}
-				
-	const_cast<uint32_t&>(sample_num) = get_numfile_num(path + _T("sample_in"), _T(".txt"), 1);
+	ReloadPartialScores();
+	const_cast<uint32_t&>(sample_num) = get_numfile_num(Data::GetIns().GetProblemsDirectory() + name + _T("/sample_in"), _T(".txt"), 1);
 	if(sample_num == (uint32_t)(-1)){
 		const_cast<uint32_t&>(sample_num) = 0;
 	}
@@ -312,6 +275,38 @@ void Problem::ReloadSubmission()
 	for (uint32_t i = 0; i <= log_num; ++i)
 	{
 		this->AddSubmission(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), user_name));
+	}
+}
+void Problem::ReloadPartialScores()
+{
+	//部分点情報取得
+	tifstream ifs(Data::GetIns().GetProblemsDirectory() + name + _T("/partial_scores.txt"));
+	if (ifs.fail()) {
+		MessageBox(GetMainWindowHandle(), (_T("問題["_ts) + name + _T("]のpartial_scores.txtがないため、問題を読み込めません")).c_str(), _T("警告"), MB_OK);
+		partial_scores.resize(0);
+		partial_scores.emplace_back(0,0);
+		return;
+	}
+	while (!ifs.fail())
+	{
+		partial_scores.emplace_back();
+		ifs >> partial_scores.back().first >> partial_scores.back().second;
+		//partial_scores.back().second -= 1;//番号->index
+		ifs.ignore(-1, '\n');
+		if (ifs.fail() && (partial_scores.back().first == 0 && partial_scores.back().second == 0)) {
+			//読み込み終了
+			partial_scores.pop_back();
+			break;
+		}
+		if (2 <= partial_scores.size()) {
+			auto i = partial_scores.rbegin();
+			if (i->second <= (i + 1)->second) {
+				MessageBox(GetMainWindowHandle(), (_T("問題["_ts) + name + _T("]のpartial_scores.txtの書式が間違っています\n入力の指定は昇順にしてください。")).c_str(), _T("警告"), MB_OK);
+				partial_scores.pop_back();
+				continue;
+			}
+		}
+		const_cast<int&>(max_score) += partial_scores.back().first;
 	}
 }
 std::vector<Submission> Problem::LoadSubmissionAll()const

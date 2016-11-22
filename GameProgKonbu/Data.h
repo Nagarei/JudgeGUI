@@ -43,15 +43,14 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 class Problem final
 {
 private:
-	const int max_score = 0;
+	int max_score = 0;
 	const uint32_t sample_num = 0;
-	const std::vector<std::pair<int, size_t>> partial_scores;//部分点　first: 得点、　second：どこまでの問題か(<=)(入力ファイルの番号)
+	std::vector<std::pair<int, size_t>> partial_scores;//部分点　first: 得点、　second：どこまでの問題か(<=)(入力ファイルの番号)
 	const dxle::tstring name;
 	int32_t my_socre = 0;
 public:
-	struct init_error{};
 	//@param path:末尾に\又は/
-	Problem(dxle::tstring path, const TCHAR* name)noexcept(false);
+	Problem(const TCHAR* name)noexcept(false);
 	Problem(const Problem&) = default;
 	Problem(Problem&&) = default;
 
@@ -59,7 +58,7 @@ public:
 	const dxle::tstring& GetName()const { return name; }
 	//メインスレッドからのみ呼び出し可
 	int32_t GetScore()const { return my_socre; }
-	//スレッドセーフ
+	//メインスレッドからのみ呼び出し可
 	int GetMaxScore()const { return max_score; }
 	//メインスレッドからのみ呼び出し可
 	void AddSubmission(const Submission& new_data);
@@ -72,6 +71,8 @@ public:
 
 	//メインスレッドからのみ呼び出し可
 	void ReloadSubmission();
+	//メインスレッドからのみ呼び出し可
+	void ReloadPartialScores();
 	//メインスレッドからのみ呼び出し可
 	std::vector<Submission> LoadSubmissionAll()const;
 
