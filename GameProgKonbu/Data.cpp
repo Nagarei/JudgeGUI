@@ -150,11 +150,9 @@ void Data::BuildProblemText()
 				}
 				else
 				{
+					script_raw_temp.clear();
 					std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
-					if (problem_file.fail()) {
-						script_raw_temp.clear();
-					}
-					else {
+					if (!problem_file.fail()) {
 						script_raw_temp.insert(script_raw_temp.begin(), _T('@'));//@追加
 					}
 				}
@@ -249,7 +247,7 @@ Problem::Problem(dxle::tstring path, const TCHAR* pronlem_name)
 		ifs >> partial_scores_.back().first >> partial_scores_.back().second;
 		//partial_scores.back().second -= 1;//番号->index
 		ifs.ignore(-1, '\n');
-		if (ifs.fail()) {
+		if (ifs.fail() && (partial_scores_.back().first == 0 && partial_scores_.back().second == 0)) {
 			//読み込み終了
 			partial_scores_.pop_back();
 			break;

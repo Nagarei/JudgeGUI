@@ -41,6 +41,7 @@ void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const d
 	param += _T(" /c-out \"") + log_directory + LOG_COMPILE_NAME + _T("\"");
 	param += _T(" /problem \"") + input_directory + _T("\"");
 	param += _T(" /source \"") + log_directory + LOG_SOURCE_NAME + _T("\"");
+	param += _T(" /tempoutdir \"") + log_directory + _T("\"");
 	{
 		tifstream ifs(input_directory + _T("overview.txt"));
 		if (ifs)
@@ -140,7 +141,7 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 		my_strcpy(score_temp.back().input_name, _T("input"_ts) + my_itoa(counter, itoa_buf) + _T(".txt"));
 		buf.resize(0);
 		is >> score_temp.back().use_memory >> score_temp.back().use_time >> buf; is.ignore(-1, _T('\n'));
-		if (is.fail()) {
+		if (is.fail() && (buf.empty())) {
 			//読み込み終わった
 			score_temp.pop_back();
 			return false;
@@ -158,7 +159,7 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 		++counter;
 		return false;
 	};
-	if(ifs){//初めの一行だけもう読み込んでしまったので別処理
+	if(ifs || !buf.empty()){//初めの一行だけもう読み込んでしまったので別処理
 		std::basic_stringstream<TCHAR> ss(buf);
 		if (get_score(ss)) {
 			return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME

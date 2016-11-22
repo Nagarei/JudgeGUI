@@ -158,7 +158,9 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 		for (size_t i = 0; i < submissions_button.size(); ++i)
 		{
 			if (submissions_button[i].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-				return std::make_unique<Score_detail>(selecting, std::move(submissions_data[submissions_index[i]]));
+				if (submissions_data[submissions_index[i]].get_type() != Submission::Type_T::WJ) {
+					return std::make_unique<Score_detail>(selecting, std::move(submissions_data[submissions_index[i]]));
+				}
 			}
 		}
 	}
