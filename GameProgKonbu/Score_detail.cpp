@@ -174,6 +174,10 @@ std::unique_ptr<Sequence> Score_detail::update()
 		reset_window_size();
 	}
 
+	//リロード処理
+	if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_F5)) {
+		Data::GetIns()[selecting].ReloadPartialScores();
+	}
 	//コピペボタン処理
 	update_copybutton();
 	//スクロール

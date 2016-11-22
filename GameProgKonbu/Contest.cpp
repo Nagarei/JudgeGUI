@@ -79,6 +79,7 @@ std::unique_ptr<Sequence> Contest::update()
 		//問題のリロード処理
 		if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_F5)) {
 			Data::GetIns().ClearProblemsCache();
+			Data::GetIns()[selecting].ReloadPartialScores();
 			problem_load_finished = false;
 		}
 

@@ -87,7 +87,7 @@ std::unique_ptr<Sequence> Show_Score::update()
 
 	//リロード処理
 	if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_F5)) {
-		Data::GetIns().ReloadSubmission();
+		Data::GetIns()[selecting].ReloadPartialScores();
 		get_submissions_copy();
 		reset_Scroll();
 	}

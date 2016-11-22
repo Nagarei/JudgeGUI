@@ -280,10 +280,11 @@ void Problem::ReloadSubmission()
 void Problem::ReloadPartialScores()
 {
 	//部分点情報取得
+	max_score = 0;
+	partial_scores.resize(0);
 	tifstream ifs(Data::GetIns().GetProblemsDirectory() + name + _T("/partial_scores.txt"));
 	if (ifs.fail()) {
 		MessageBox(GetMainWindowHandle(), (_T("問題["_ts) + name + _T("]のpartial_scores.txtがないため、問題を読み込めません")).c_str(), _T("警告"), MB_OK);
-		partial_scores.resize(0);
 		partial_scores.emplace_back(0,0);
 		return;
 	}
@@ -306,8 +307,10 @@ void Problem::ReloadPartialScores()
 				continue;
 			}
 		}
-		const_cast<int&>(max_score) += partial_scores.back().first;
+		max_score += partial_scores.back().first;
 	}
+	//自分の点数更新
+	ReloadSubmission();
 }
 std::vector<Submission> Problem::LoadSubmissionAll()const
 {
