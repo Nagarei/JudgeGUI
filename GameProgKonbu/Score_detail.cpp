@@ -87,33 +87,26 @@ Score_detail::Score_detail(int selecting_, Submission&& submission_)
 	}
 	//コンパイルメッセージ
 	{
-		tifstream ifs(submission.get_source_name() + _T("/../") + get_compile_out_filename(), std::ios::in | std::ios::binary);
-		if (ifs.bad()) {
+		//BOMなしUTF-8（clangの出力）指定で読み込む
+		FILE* fp = NULL;
+		_tfopen_s(&fp,
+			(submission.get_source_name() + _T("/../") + get_compile_out_filename()).c_str()
+			, _T("r,ccs=UTF-8"));
+		if (fp == NULL) {
 			compile_str = _T("読み込みに失敗しました");
 		}
 		else {
-			ifs.seekg(0, std::ios::end);
-			auto str_len = ifs.tellg();
-			if (0 < str_len)
-			{
-				auto str_buf = std::make_unique<TCHAR[]>(str_len);
-				str_buf[0] = _T('\0');
-				ifs.seekg(0, std::ios::beg);
-				ifs.read(str_buf.get(), str_len);//NULL終端文字はつかないので注意！！
-				compile_str.reserve(str_len * 2);
-				for (auto iter = str_buf.get(), iter_end = str_buf.get() + str_len; iter != iter_end; ++iter) {
-					if (*iter == _T('\t')) {
-						for (size_t i = 0; i < 4; ++i) {
-							compile_str.push_back(_T(' '));
-						}
-					}
-					else {
-						compile_str.push_back(*iter);
-					}
-				}
+			fseek(fp, 0, SEEK_END);
+			auto size = ftell(fp);
+			if (0 < size) {
+				auto buf = std::make_unique<TCHAR[]>(size+1);
+				fseek(fp, 0, SEEK_SET);
+				buf[size] = _T('\0');
+				fread((void*)buf.get(), sizeof(TCHAR), size+1, fp);
+				compile_str = buf.get();
 			}
-			compile_str += EOF_STR;
 		}
+		compile_str += EOF_STR;
 		DxLib::GetDrawStringSizeToHandle(&compile_size.width, &compile_size.height, nullptr,
 			compile_str.c_str(), compile_str.size(), main_font);//@todo dxlibex
 		compile_size.height += box_frame_thickness * 2;//ボックスの淵分
@@ -443,8 +436,11 @@ dxle::sizeui32 Score_detail::get_display_total_size()const
 	result.height += data_height;
 	//width
 	int page_size_width = My_GetWindowSize().width;
-	result.width = std::max<int32_t>({ page_size_width - menu_space_size - rightspace_width,
-		min_total_width, source_size.width, compile_size.width});
+	const int32_t draw_area_width = std::max(page_size_width - menu_space_size - rightspace_width, min_total_width);
+	const int32_t left_space_width = draw_area_width*min_leftspace_width / min_total_width;
+	result.width = std::max<int32_t>({ draw_area_width,
+		left_space_width + source_size.width + rightspace_width,
+		left_space_width + compile_size.width + rightspace_width });
 
 	return result;
 }

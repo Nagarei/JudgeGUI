@@ -84,9 +84,10 @@ void DrawButtonString(dxle::pointi32 pos1, dxle::sizei32 size, const dxle::tstri
 	switch (str_pos_)
 	{
 	case Button_string_pos::center:
-		DrawStringToHandle(pos1.x + padding + (size.width - 2 * padding - str_size.width) / 2,
-			pos1.y + padding + (size.height - 2 * padding - str_size.height) / 2,
-			str.c_str(), string_color.get(), font);
+		DrawStringCenter2(pos1 + dxle::sizei32{ padding,padding }, str.c_str(), string_color, font, size - 2 * dxle::sizei32{ padding ,padding });
+		//DrawStringToHandle(pos1.x + padding + (size.width - 2 * padding - str_size.width) / 2,
+		//	pos1.y + padding + (size.height - 2 * padding - str_size.height) / 2,
+		//	str.c_str(), string_color.get(), font);
 		break;
 	case Button_string_pos::left:
 		DrawStringToHandle(pos1.x + padding, pos1.y + padding + (size.height - 2 * padding - str_size.height) / 2,

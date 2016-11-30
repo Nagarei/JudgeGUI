@@ -21,6 +21,12 @@ namespace
 			+ min_user_width + min_score_width + min_type_width;
 		constexpr int32_t rightspace_width = 20;//固定値
 
+		namespace index{
+			enum {
+				sbumittime, problemname, user, score, type,NUM
+			};
+		}
+
 		constexpr dxle::rgb out_back_color{ 249,249,249 };
 		constexpr dxle::rgb on_back_color{ 249,249,0 };
 		constexpr dxle::rgb edge_color{ 221,221,221 };
@@ -50,6 +56,21 @@ Show_Score::Show_Score(int selecting_)
 		to_problem.set_on_color(on_back_color, on_edge_color, on_string_color);
 		to_problem.set_out_color(out_back_color, out_edge_color, out_string_color);
 	}
+
+	submission_state_index.resize(submit::index::NUM);
+	submission_state_index[0].set_str(_T("提出日時"));
+	submission_state_index[1].set_str(_T("問題名"));
+	submission_state_index[2].set_str(_T("ユーザ名"));
+	submission_state_index[3].set_str(_T("得点"));
+	submission_state_index[4].set_str(_T("状態"));
+	static_assert(submit::index::NUM == 5, "");
+	for (auto& i : submission_state_index) {
+		i.set_on_color(submit::on_back_color, submit::edge_color, dxle::color_tag::black);
+		i.set_out_color(submit::out_back_color, submit::edge_color, dxle::color_tag::black);
+	}
+
+	sort_state.last_state_type = submit::index::user;
+	sort_state.direction = sort_state.down;
 
 	get_submissions_copy();
 	reset_Scroll();
@@ -163,6 +184,14 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 				}
 			}
 		}
+		//ガイド
+		for (size_t i = 0; i < submission_state_index.size(); ++i)
+		{
+			if (submission_state_index[i].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
+				//ソート
+				run_sort(i);
+			}
+		}
 	}
 	return nullptr;
 }
@@ -175,8 +204,36 @@ void Show_Score::reset_button_area()
 	pos1 -= scrollbar.get_value();//ボタン表示エリアの左上座標
 	int32_t submit_area_width = std::max(page_size.width - submit::rightspace_width, submit::min_total_width);
 	int32_t left_space = submit_area_width * submit::min_leftspace_width / submit::min_total_width;
-	int32_t button_width = submit_area_width - left_space;
 
+	//ガイドのボタン
+	{
+		auto pos_temp = pos1;
+		int i = 0;
+		dxle::sizei32 draw_area{ 0, submit::height };
+		auto set_next_area = [&pos_temp, &draw_area, &submit_area_width, &i, this](int32_t min_width) {
+			pos_temp.x += draw_area.width;
+			draw_area.width = submit_area_width*min_width / submit::min_total_width;
+			submission_state_index[i++].set_area(pos_temp, draw_area);
+		};
+		static_assert(submit::index::NUM == 5, "");
+		//左スペース
+		draw_area.width = left_space;
+		//提出時間
+		set_next_area(submit::min_sbumittime_width);
+		//問題名
+		set_next_area(submit::min_problemname_width);
+		//ユーザー名
+		set_next_area(submit::min_user_width);
+		//スコア
+		set_next_area(submit::min_score_width);
+		//タイプ
+		set_next_area(submit::min_type_width);
+		//右スペース
+
+	}
+
+	//各提出のボタン
+	int32_t button_width = submit_area_width - left_space;
 	for (size_t i = 0; i < submissions_button.size(); ++i)
 	{
 		submissions_button[i].set_on_color(submit::on_back_color, submit::edge_color, submit::on_back_color);
@@ -261,6 +318,11 @@ void Show_Score::draw_Submit() const
 		}
 
 		//ガイド
+#if 1
+		for (auto& i : submission_state_index) {
+			i.draw(submissions_font);
+		}
+#else
 		{
 			dxle::pointi32 pos1{ menu_space_size, title_space };
 			pos1.x -= scrollbar.get_value().width;
@@ -301,6 +363,7 @@ void Show_Score::draw_Submit() const
 
 			DxLib::SetDrawAreaFull();
 		}
+#endif
 	}
 
 	scrollbar.draw();
@@ -340,4 +403,46 @@ void Show_Score::reset_window_size()
 
 	//ポップアップ
 	reset_popup();
+}
+
+void Show_Score::run_sort(int type)
+{
+	if (type == sort_state.last_state_type) {
+		//逆順にソート
+		if (sort_state.direction == sort_state.up) {
+			sort_state.direction = sort_state.down;
+		}
+		else {
+			sort_state.direction = sort_state.up;
+		}
+	}
+	else {
+		//とりあえず降順ソートにする
+		sort_state.last_state_type = type;
+		sort_state.direction = sort_state.down;
+	}
+	//ソート実行
+	auto sort = [&submissions_index = this->submissions_index](auto&& pred) {
+		return std::stable_sort(submissions_index.begin(), submissions_index.end(),
+			std::forward<decltype(pred)>(pred));
+	};
+	auto pred = [is_down = (sort_state.direction == sort_state.down)](auto&& l)
+	switch (sort_state.last_state_type)
+	{
+	case submit::index::sbumittime:
+		sort([](size_t l, size_t r) {})
+		break;
+	case submit::index::problemname:
+		break;
+	case submit::index::user:
+		break;
+	case submit::index::score:
+		break;
+	case submit::index::type:
+		break;
+	case submit::index::NUM:
+	default:
+		assert(false);
+		break;
+	}
 }
