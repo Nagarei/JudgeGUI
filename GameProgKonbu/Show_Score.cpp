@@ -290,7 +290,9 @@ void Show_Score::draw_Submit() const
 			{
 				const auto& stime = score.get_submit_time();
 				DrawStringRight(pos1,
-					ToStringEx(stime.Year%1000,_T('/'), stime.Mon, _T('/'), stime.Day, _T('['), stime.Hour, _T(':'), stime.Min, _T(']')).c_str(),
+					ToStringEx(
+						stime.Year%1000,_T('/'), std::setw(2),stime.Mon, _T('/'), std::setw(2),stime.Day,
+						_T('['), std::setw(2),stime.Hour, _T(':'), std::setw(2),stime.Min, _T(']')).c_str(),
 					dxle::color_tag::black, submissions_font, draw_area);
 			}
 			//問題名
@@ -426,19 +428,44 @@ void Show_Score::run_sort(int type)
 		return std::stable_sort(submissions_index.begin(), submissions_index.end(),
 			std::forward<decltype(pred)>(pred));
 	};
-	auto pred = [is_down = (sort_state.direction == sort_state.down)](auto&& l)
+	auto pred = [is_down = (sort_state.direction == sort_state.down)](auto&& l, auto&& r){
+		return (is_down) ? (l < r) : (r < l);
+	};
 	switch (sort_state.last_state_type)
 	{
 	case submit::index::sbumittime:
-		sort([](size_t l, size_t r) {})
+		sort([&pred, this](size_t l, size_t r) {
+			auto to_tuple = [](const DxLib::DATEDATA& d) {
+				return std::make_tuple( d.Year,d.Mon,d.Day,d.Hour,d.Min,d.Sec );
+			};
+			return pred(
+				to_tuple(submissions_data[l].get_submit_time()),
+				to_tuple(submissions_data[r].get_submit_time())
+			);
+		});
 		break;
 	case submit::index::problemname:
+		//nothig to do
 		break;
 	case submit::index::user:
+		sort([&pred, this](size_t l, size_t r) { return pred(submissions_data[l].get_user_name(), submissions_data[r].get_user_name()); });
 		break;
 	case submit::index::score:
+		sort([&pred, this](size_t l, size_t r) {
+			const auto& prob = Data::GetIns()[selecting];
+			return pred(prob.GetScore_single(submissions_data[l]), prob.GetScore_single(submissions_data[r]));
+		});
 		break;
 	case submit::index::type:
+		sort([&pred, this](size_t l, size_t r) {
+			auto to_int = [](const auto& p) {
+				return ((static_cast<uint32_t>(p.first) << 16) | static_cast<uint32_t>(p.second));
+			};
+			return pred(
+				to_int(get_result_type(submissions_data[l])),
+				to_int(get_result_type(submissions_data[r]))
+			);
+		});
 		break;
 	case submit::index::NUM:
 	default:

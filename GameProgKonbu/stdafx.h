@@ -19,6 +19,7 @@
 #include <fstream>
 #include <queue>
 #include <cstdint>
+#include <iomanip>
 #include <numeric>
 #include <Lmcons.h>
 #include <shlwapi.h>

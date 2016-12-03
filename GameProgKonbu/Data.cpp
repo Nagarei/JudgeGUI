@@ -348,6 +348,23 @@ std::vector<Submission> Problem::LoadSubmissionAll()const
 	return submissions;
 }
 
+std::pair<Submission::Type_T, Score::Type_T> get_result_type(const Submission& scores)
+{
+	std::pair<Submission::Type_T, Score::Type_T> result{ scores.get_type() , Score::Type_T::AC };
+	if (result.first == Submission::Type_T::normal) {
+		//secondの決定
+		auto iter = std::find_if_not(scores.get_scores().begin(), scores.get_scores().end()
+			, [](const Score& s) {return s.type == Score::Type_T::AC; });
+		if (iter == scores.get_scores().end()) {
+			//AC
+		}
+		else {
+			//AC以外
+			result.second = iter->type;
+		}
+	}
+	return result;
+}
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& score)
 {
 	std::array<TCHAR, 10> str;

@@ -7,13 +7,13 @@ class Score final
 public:
 	uint32_t use_memory;
 	uint32_t use_time;
-	enum class Type_T{ AC,WA,TLE,MLE,RE }type;
+	enum class Type_T : uint8_t { AC,WA,TLE,MLE,RE }type;
 	TCHAR input_name[20];//入力ファイルの名前
 };
 class Submission final
 {
 public:
-	enum class Type_T { normal, CE, IE, WJ };
+	enum class Type_T : uint8_t{ normal, CE, IE, WJ };
 private:
 	Type_T type;
 	dxle::tstring source_name;
@@ -37,6 +37,7 @@ public:
 	const std::vector<Score>& get_scores()const { return scores; }
 	const DxLib::DATEDATA& get_submit_time()const { return submit_time; }
 };
+std::pair<Submission::Type_T, Score::Type_T> get_result_type(const Submission& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission& );
 
