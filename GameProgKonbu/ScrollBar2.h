@@ -30,7 +30,7 @@ public:
 		scrollbar_v.set_now_pos(scroll_value.height);
 		scrollbar_h.set_now_pos(scroll_value.width);
 	}
-	bool update();//@return true:スクロールされた
+	bool update(bool enable_extend = true);//@return true:スクロールされた
 	void draw()const;
 
 	dxle::sizei32 get_value()const {

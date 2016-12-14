@@ -47,7 +47,7 @@ void ScrollBar2::reset(const dxle::sizeui32& bar_area_param, const dxle::sizeui3
 
 }
 
-bool ScrollBar2::update()
+bool ScrollBar2::update(bool enable_extend)
 {
 	bool is_moved = false;
 
@@ -55,7 +55,7 @@ bool ScrollBar2::update()
 	auto& mouse = Mouse::GetIns();
 
 	//拡大/縮小入力
-	if (key.GetKeyInput(KEY_INPUT_LCONTROL) || key.GetKeyInput(KEY_INPUT_RCONTROL))
+	if (enable_extend) if (key.GetKeyInput(KEY_INPUT_LCONTROL) || key.GetKeyInput(KEY_INPUT_RCONTROL))
 	{
 		auto old_extend_rate = extend_rate;
 		extend_rate += mouse.get_now_wheel() * 10.0 / 100.0;

@@ -174,7 +174,7 @@ std::unique_ptr<Sequence> Score_detail::update()
 	//コピペボタン処理
 	update_copybutton();
 	//スクロール
-	if (scrollbar.update()) {
+	if (scrollbar.update(false)) {
 		reset_scrolled_obj();
 	}
 	//メニュー処理

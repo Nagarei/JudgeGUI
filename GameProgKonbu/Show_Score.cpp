@@ -167,7 +167,7 @@ void Show_Score::draw_Menu() const
 std::unique_ptr<Sequence> Show_Score::update_Submit()
 {
 	if (submissions_button.empty()) { return nullptr; }
-	if (scrollbar.update())
+	if (scrollbar.update(false))
 	{
 		//ボタンの位置変更
 		reset_button_area();
