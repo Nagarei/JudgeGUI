@@ -20,11 +20,12 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 
 	const_cast<dxle::tstring&>(user_name) = std::move(user_name_);
 	const_cast<bool&>(is_contest_mode) = std::move(is_contest_mode_);
-
-	if (!problems_directory_.empty() && problems_directory_.back() != '/' && problems_directory_.back() != '\\'){
+	if (problems_directory_.empty()) {
+		problems_directory_ = _T("./");
+	}
+	else if (problems_directory_.back() != '/' && problems_directory_.back() != '\\'){
 		problems_directory_.push_back('/');
 	}
-	problems_directory_ += _T("Problems/");
 	{//絶対パスに
 		TCHAR buf[MAX_PATH * 3];
 		GetFullPathName(problems_directory_.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
@@ -32,10 +33,12 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 	}
 	const_cast<dxle::tstring&>(problems_directory) = std::move(problems_directory_);
 
-	if (!log_directory_.empty() && log_directory_.back() != '/' && log_directory_.back() != '\\'){
+	if (log_directory_.empty()) {
+		log_directory_ = _T("./");
+	}
+	else if (log_directory_.back() != '/' && log_directory_.back() != '\\'){
 		log_directory_.push_back('/');
 	}
-	log_directory_ += _T("Problems/");
 	{//絶対パスに
 		TCHAR buf[MAX_PATH * 3];
 		GetFullPathName(log_directory_.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
