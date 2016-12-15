@@ -13,9 +13,12 @@ public:
 };
 using test_class = test_Local;
 
-class compile_taskmanager final : boost::noncopyable
+class compile_taskmanager final
 {
 private:
+	compile_taskmanager(const compile_taskmanager&) = delete;
+	compile_taskmanager& operator=(const compile_taskmanager&) = delete;
+
 	std::atomic_bool is_end;
 	std::thread test_thread;
 	std::mutex test_queue_mtx;

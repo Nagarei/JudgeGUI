@@ -8,11 +8,12 @@
 
 #ifndef FORMAT_TO_STRING_2015_11_07_1500_415386410534036025
 #define FORMAT_TO_STRING_2015_11_07_1500_415386410534036025
-#include <boost/format.hpp>
 #include <string>
 #include <sstream>
 #include <utility>
 
+#if 0
+#include <boost/format.hpp>
 template<typename Format_T>
 inline dxle::tstring FormatToString_impl(Format_T&& format){
 	std::basic_stringstream<TCHAR> ss;
@@ -33,7 +34,7 @@ inline dxle::tstring FormatToString(dxle::tstring format_string, Args&&... args)
 {
 	return FormatToString_impl(boost::basic_format<TCHAR>(format_string), std::forward<Args>(args)...);
 }
-
+#endif
 
 //受け取ったのを片っ端からostreamに突っ込む
 inline void ToStringEx_impl(std::basic_ostream<TCHAR>&)

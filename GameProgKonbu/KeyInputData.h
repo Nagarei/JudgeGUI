@@ -1,7 +1,8 @@
 #ifndef KEY_INPUT_DATA_H_20150321_0919_
 #define KEY_INPUT_DATA_H_20150321_0919_
+#include "other_usefuls.h"
 
-class KeyInputData final : boost::noncopyable {
+class KeyInputData final {
 	public:
 		enum DirectionKey:uint8_t{KEY_UP,KEY_DOWN,KEY_LEFT,KEY_RIGHT,end_DirectionKey};
 	private:
@@ -13,6 +14,9 @@ class KeyInputData final : boost::noncopyable {
 		char* now_key;
 		char* last_key;
 		KeyInputData();
+
+		KeyInputData(const KeyInputData&) = delete;
+		KeyInputData& operator=(const KeyInputData&) = delete;
 	public:
 		static inline KeyInputData& GetIns()
 		{

@@ -1,9 +1,12 @@
 #pragma once
 #include "other_usefuls.h"
 #include "button.h"
-class Option final : boost::noncopyable
+class Option final
 {
 public:
+	Option(const Option&) = delete;
+	Option& operator=(const Option&) = delete;
+
 	static constexpr unsigned username_length = 100;
 	TCHAR username[username_length];
 	static const Option& GetIns() {

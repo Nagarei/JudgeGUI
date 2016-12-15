@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class Mouse final : boost::noncopyable
+class Mouse final
 {
 public:
 	struct click_data {
@@ -13,6 +13,8 @@ public:
 		bool is_drag = false;
 	};
 private:
+	Mouse(const Mouse&) = delete;
+	Mouse& operator=(const Mouse&) = delete;
 	Mouse() = default;
 
 	dxle::pointi now_pos;

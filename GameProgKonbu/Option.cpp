@@ -1,6 +1,7 @@
 ﻿#include "Option.h"
 #include "Contest.h"
 #include "Mouse.h"
+#include "OpenFolder.h"
 
 Option Option::ins;
 namespace {
@@ -87,15 +88,32 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 	}
 
 	auto select_end = [this](Select input)->std::unique_ptr<Sequence> {
+		auto sel_folder = [](const TCHAR* set_dir) {
+			return BrowseForFolder(DxLib::GetMainWindowHandle(), set_dir, set_dir, _T("問題セットを選択"));
+		};
 		switch (input)
 		{
-		case Option_Sequence::Select::local:
+		case Option_Sequence::Select::local: {
 			//local
-			Data::GetIns().InitProblem(_T("Problems"), _T("Problems"), Option::ins.username, false);
-			return std::make_unique<Contest>(0);
-		case Option_Sequence::Select::server_contact:
-			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\問題セット\\Problems"), _T("Z:\\競技プログラミング\\問題セット\\Problems"), Option::ins.username, false);
-			return std::make_unique<Contest>(0);
+			TCHAR current_directory[MAX_PATH * 3];
+			GetCurrentDirectory(sizeof(current_directory) / sizeof(current_directory[0]), current_directory);
+			//処理止まります
+			auto select_dir = sel_folder((current_directory + _T("\\Problems\\"_ts)).c_str());
+			if (!select_dir.empty()) {
+				Data::GetIns().InitProblem(select_dir, select_dir, Option::ins.username, false);
+				return std::make_unique<Contest>(0);
+			}
+			break;
+		}
+		case Option_Sequence::Select::server_contact: {
+			//処理止まります
+			auto select_dir = sel_folder(_T("Z:\\競技プログラミング\\問題セット\\Problems"));
+			if (!select_dir.empty()) {
+				Data::GetIns().InitProblem(select_dir, select_dir, Option::ins.username, false);
+				return std::make_unique<Contest>(0);
+			}
+			break;
+		}
 		case Option_Sequence::Select::contest:
 			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\contest\\"), _T("Z:\\競技プログラミング\\contest\\LOGLOGLOG"), Option::ins.username, true);
 			return std::make_unique<Contest>(0);

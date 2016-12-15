@@ -183,12 +183,11 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		//ウィンドウの名前
 		ofn.lpstrTitle = _T("提出するC++コードの選択");
 		//カレントディレクトリを変更しない
-		ofn.Flags |= OFN_NOCHANGEDIR;
+		ofn.Flags = OFN_NOCHANGEDIR | OFN_PATHMUSTEXIST;
 
-		//カレントディレクトリを保存（GetOpenFileNameはカレントディレクトリをいじる）
+		//カレントディレクトリを初めに開くフォルダにする
 		TCHAR current_directory[MAX_PATH * 3];
 		GetCurrentDirectory(sizeof(current_directory) / sizeof(current_directory[0]), current_directory);
-		//カレントディレクトリを初めに開くフォルダにする
 		ofn.lpstrInitialDir = current_directory;
 		//MessageBoxなみに処理を止めるので注意
 		auto open_state = GetOpenFileName(&ofn);

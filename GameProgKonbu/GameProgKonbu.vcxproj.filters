@@ -58,6 +58,9 @@
     <Filter Include="SetClipboardText">
       <UniqueIdentifier>{77a65026-6674-4887-a9f3-81cde0d94fcc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OpenFolder">
+      <UniqueIdentifier>{1e715982-bb71-4d71-8732-7d512e2705a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -144,6 +147,9 @@
     <ClInclude Include="SetClipboardText.h">
       <Filter>SetClipboardText</Filter>
     </ClInclude>
+    <ClInclude Include="OpenFolder.h">
+      <Filter>OpenFolder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -202,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="SetClipboardText.cpp">
       <Filter>SetClipboardText</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenFolder.cpp">
+      <Filter>OpenFolder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

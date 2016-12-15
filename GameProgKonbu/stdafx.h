@@ -6,10 +6,13 @@
 #ifndef STDAFX_H_201505121652_1_6_5_8_
 #define STDAFX_H_201505121652_1_6_5_8_
 
+struct IUnknown;
+#include <Windows.h>
+#include "DxLib.h"
 #include <dxlibex/graph2d.hpp>
 #include <dxlibex/color.hpp>
-#include <Windows.h>
-#include <boost/utility.hpp>
+#undef CINTERFACE
+//#include <boost/utility.hpp>
 #include <vector>
 #include <memory>
 #include <thread>

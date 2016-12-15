@@ -86,6 +86,7 @@
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <Verbose>false</Verbose>
+      <CppLanguageStandard>c++1y</CppLanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,6 +123,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <CppLanguageStandard>c++1y</CppLanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -134,6 +136,10 @@
   <ItemGroup>
     <ClInclude Include="button.h" />
     <ClInclude Include="My_GetWindowSize.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="OpenFolder.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -190,6 +196,11 @@
     <ClCompile Include="KeyInputData.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="OpenFolder.cpp">
+      <SubType>
+      </SubType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Option.cpp" />
     <ClCompile Include="popup.cpp" />
     <ClCompile Include="sample_combuchat.cpp">

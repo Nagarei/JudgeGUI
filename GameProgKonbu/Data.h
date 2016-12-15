@@ -84,7 +84,7 @@ struct Script_Data {
 	std::vector<std::unique_ptr<Script::Script>> script;
 	dxle::sizeui32 size;
 };
-class Data final : boost::noncopyable
+class Data final
 {
 private:
 	const dxle::tstring user_name;
@@ -112,6 +112,7 @@ private:
 private:
 	Data();
 	Data(const Data&) = delete;
+	Data& operator=(const Data&) = delete;
 	~Data();
 public:
 	static Data& GetIns(){
