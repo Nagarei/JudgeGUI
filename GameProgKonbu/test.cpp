@@ -26,9 +26,11 @@ compile_taskmanager::compile_taskmanager()
 
 void compile_taskmanager::Loop()
 {
+	//サブスレッドで動作
+
 	while (!is_end)
 	{
-		std::unique_ptr<test_class> test;
+		test_info test;
 		//テストバッファを確認
 		{
 			std::lock_guard<std::mutex> lock(test_queue_mtx);
@@ -39,10 +41,10 @@ void compile_taskmanager::Loop()
 			}
 		}
 		//実行or待機
-		if (test) {
-			auto&& new_submission = test->test_run();
+		if (test.second) {
+			auto&& new_submission = test.second->test_run();
 			std::lock_guard<std::mutex> lock(new_submissions_mtx);
-			new_submissions.emplace_back(std::move(new_submission));
+			new_submissions.emplace_back(test.first, test.second->get_problem_num(), std::move(new_submission));
 		}
 		else {
 			std::this_thread::sleep_for(std::chrono::milliseconds(17));
@@ -101,23 +103,25 @@ test_Local::test_Local(size_t problem_num_, dxle::tstring cppfile_full_name_)
 	: problem_num(problem_num_)
 	, cppfile_full_name(cppfile_full_name_)
 {
+	const auto& data = Data::GetIns();
+	const auto& problem_name = data[problem_num].GetName();
+	
+	problem_directory = data.GetProblemsDirectory() + problem_name + _T('/');
+	//CreateDirectory(problem_directory.c_str(), NULL);
+	
+	auto log_problem_directory = data.GetLogRootDirectory() + problem_name + _T('/');
+	CreateDirectory(log_problem_directory.c_str(), NULL);
+	log_user_directory = std::move(log_problem_directory) + data.get_user_name() + _T('/');
+	CreateDirectory(log_user_directory.c_str(), NULL);
 }
 
-std::pair<size_t, Submission> test_Local::test_run()
+Submission test_Local::test_run()
 {
+	//サブスレッドで動作
+
 	//ログフォルダの確保
-	dxle::tstring problem_directory = Data::GetIns().GetProblemsDirectory() + Data::GetIns()[problem_num].GetName() + _T('/');
-	//CreateDirectory(problem_directory.c_str(), NULL);
-	dxle::tstring log_directory;
-	dxle::tstring log_user_directory;
-	{
-		dxle::tstring log_problem_directory = Data::GetIns().GetLogRootDirectory() + Data::GetIns()[problem_num].GetName() + _T('/');
-		CreateDirectory(log_problem_directory.c_str(), NULL);
-		log_user_directory = std::move(log_problem_directory) + Data::GetIns().get_user_name() + _T('/');
-		CreateDirectory(log_user_directory.c_str(), NULL);
-		log_directory = log_user_directory + LOG_TEMP_FOLDER_NAME;
-		CreateDirectory(log_directory.c_str(), NULL);
-	}
+	dxle::tstring log_directory = log_user_directory + LOG_TEMP_FOLDER_NAME;
+	CreateDirectory(log_directory.c_str(), NULL);
 
 	//ジャッジ
 	RunTest(log_directory, problem_directory, cppfile_full_name);
@@ -131,5 +135,5 @@ std::pair<size_t, Submission> test_Local::test_run()
 
 	//結果の解析
 	//スコアデータを返す
-	return{ problem_num , BuildScores(log_directory, Data::GetIns().get_user_name()) };
+	return BuildScores(log_directory, Data::GetIns().get_user_name());
 }

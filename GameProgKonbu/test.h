@@ -5,11 +5,14 @@ class test_Local final
 {
 private:
 	size_t problem_num;
+	dxle::tstring problem_directory;
+	dxle::tstring log_user_directory;
 	dxle::tstring cppfile_full_name;
 public:
 	test_Local(size_t problem_num, dxle::tstring cppfile_full_name_);
 	//スコアデータを返す
-	std::pair<size_t, Submission> test_run();
+	Submission test_run();
+	size_t get_problem_num()const noexcept { return problem_num; }
 };
 using test_class = test_Local;
 
@@ -22,11 +25,21 @@ private:
 	std::atomic_bool is_end;
 	std::thread test_thread;
 	std::mutex test_queue_mtx;
-	std::deque<std::unique_ptr<test_class>> test_queue;//front:pop back:push
+	using test_info = std::pair<size_t, std::unique_ptr<test_class>>;//first:問題セット番号 second:テスト実行クラス
+	std::deque<test_info> test_queue;//front:pop back:push
 private:
 	//Submissionの更新キャッシュ
 	std::mutex new_submissions_mtx;
-	std::vector<std::pair<size_t, Submission>> new_submissions;//FIFO (first: pop, last: push)
+	struct new_submission_info {
+		size_t problem_num;
+		size_t problem_set_num;
+		Submission new_submission;
+		new_submission_info(){}
+		new_submission_info(size_t problem_num, size_t problem_set_num, Submission&& new_submission)
+			:problem_num(problem_num), problem_set_num(problem_set_num), new_submission(std::move(new_submission))
+		{}
+	};
+	std::vector<new_submission_info> new_submissions;//FIFO (first: pop, last: push)
 
 private:
 	compile_taskmanager();
