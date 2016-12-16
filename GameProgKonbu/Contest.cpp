@@ -7,6 +7,7 @@
 #include "Show_Score.h"
 #include "SetClipboardText.h"
 #include "popup.h"
+#include "Option.h"
 namespace
 {
 }
@@ -65,6 +66,12 @@ std::unique_ptr<Sequence> Contest::update()
 	dxle::sizei32 window_size = My_GetWindowSize();
 	if (window_size != last_window_size) {
 		reset_window_size();
+	}
+
+	if (KeyInputData::GetIns().GetNewKeyInput(KEY_INPUT_ESCAPE))
+	{
+		//戻る
+		return std::make_unique<Option_Sequence>();
 	}
 
 	{
@@ -191,6 +198,8 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		ofn.lpstrInitialDir = current_directory;
 		//MessageBoxなみに処理を止めるので注意
 		auto open_state = GetOpenFileName(&ofn);
+		ProcessMessage();
+		auto& m = Mouse::GetIns(); m.update(); m.click_log_clear(); m.drag_clear();
 
 		if (open_state == 0) {
 			//ファイルオープンに失敗

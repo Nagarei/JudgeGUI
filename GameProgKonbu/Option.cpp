@@ -40,6 +40,8 @@ Option_Sequence::Option_Sequence()
 		i.set_on_color(selecting_color, selecting_color, selecting_color);
 		i.set_out_color(normal_color, normal_color, normal_color);
 	}
+	
+	Data::GetIns().DeleteProblem();
 }
 Option_Sequence::~Option_Sequence()
 {
@@ -89,7 +91,10 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 
 	auto select_end = [this](Select input)->std::unique_ptr<Sequence> {
 		auto sel_folder = [](const TCHAR* set_dir) {
-			return BrowseForFolder(DxLib::GetMainWindowHandle(), set_dir, set_dir, _T("問題セットを選択"));
+			auto ret = BrowseForFolder(DxLib::GetMainWindowHandle(), set_dir, set_dir, _T("問題セットを選択"));
+			ProcessMessage();
+			auto& m = Mouse::GetIns(); m.update(); m.click_log_clear(); m.drag_clear();
+			return ret;
 		};
 		switch (input)
 		{

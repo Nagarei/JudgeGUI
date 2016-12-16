@@ -62,7 +62,7 @@ void compile_taskmanager::set_test(size_t problem_num, const dxle::tstring & cpp
 	auto& ins = GetIns();
 	WaitJudgeQueue::push(problem_num);
 	std::lock_guard<std::mutex> lock(ins.test_queue_mtx);
-	ins.test_queue.emplace_back(std::make_unique<test_class>(problem_num, cppfile_full_name));
+	ins.test_queue.emplace_back(Data::GetIns().get_problemset_num(), std::make_unique<test_class>(problem_num, cppfile_full_name));
 }
 
 void compile_taskmanager::update()
@@ -76,12 +76,17 @@ void compile_taskmanager::update()
 	for (size_t i = 0; i < length; ++i)
 	{
 		std::lock_guard<std::mutex> lock(ins.new_submissions_mtx);
+		auto& data = Data::GetIns();
+		if (data.get_problemset_num() != ins.new_submissions[i].problem_set_num) {
+			continue;
+		}
 
-		auto& ns = ins.new_submissions[i];
-		auto type_draw = get_result_type_fordraw(ns.second);
+		auto& ns = ins.new_submissions[i].new_submission;
+		auto& prob_num = ins.new_submissions[i].problem_num;
+		auto type_draw = get_result_type_fordraw(ns);
 		popup::set(_T("結果が出ました："_ts) + type_draw.first.data(), type_draw.second, dxle::color_tag::black, 3000);
-		WaitJudgeQueue::pop(ns.first);
-		Data::GetIns()[ns.first].AddSubmission(std::move(ns.second));
+		WaitJudgeQueue::pop(prob_num);
+		data[prob_num].AddSubmission(std::move(ns));
 	}
 	if(0 < length){
 		std::lock_guard<std::mutex> lock(ins.new_submissions_mtx);

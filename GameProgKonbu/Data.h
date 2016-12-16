@@ -87,12 +87,13 @@ struct Script_Data {
 class Data final
 {
 private:
-	const dxle::tstring user_name;
-	const bool is_contest_mode;
+	dxle::tstring user_name;
+	bool is_contest_mode;
+	size_t problem_set_num = 0;
 
-	const dxle::tstring log_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
-	const dxle::tstring problems_directory;//InitProblem以外で変更しないこと（それによってスレッドセーフにしている為）
-	const std::vector<Problem> problems;//InitProblem以外で要素数を変更しないこと（それによってスレッドセーフにしている為）
+	dxle::tstring log_directory;
+	dxle::tstring problems_directory;
+	std::vector<Problem> problems;
 	std::vector<Script_Data> problems_text;//問題文のキャッシュ
 
 	//問題文の非同期読み込み
@@ -119,7 +120,8 @@ public:
 		static Data ins; return ins;
 	}
 	void ReloadSubmission();//提出データの読み込み
-	void InitProblem(dxle::tstring problems_directory, dxle::tstring log_directory, dxle::tstring user_name, bool is_contest_mode);//初回呼び出し限定！
+	void DeleteProblem();
+	void InitProblem(dxle::tstring problems_directory, dxle::tstring log_directory, dxle::tstring user_name, bool is_contest_mode);
 	const dxle::tstring& get_user_name()const { return user_name; }//スレッドセーフ
 	bool get_is_contest_mode()const { return this->is_contest_mode; }//スレッドセーフ
 	void SetBuildProblemText(size_t index);
@@ -137,20 +139,16 @@ public:
 		return problems_text[index].size;
 	}
 	void ClearProblemsCache();
-	//スレッドセーフ
 	const dxle::tstring& GetProblemsDirectory()const { return problems_directory; }
-	//スレッドセーフ
 	const dxle::tstring& GetLogRootDirectory()const { return log_directory; }
-	//スレッドセーフ
 	const Problem& operator[](size_t i)const{
 		return problems[i];
 	}
-	//スレッドセーフ
 	Problem& operator[](size_t i){
 		return const_cast<std::vector<Problem>&>(problems)[i];
 	}
-	//スレッドセーフ
 	size_t size()const { return problems.size(); }
+	size_t get_problemset_num()const { return problem_set_num; }
 
 	dxle::tstring GetLoadingProblemDir()const {
 		return GetProblemsDirectory() + problems[now_loding_problem].GetName() + _T('/');

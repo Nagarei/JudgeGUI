@@ -11,6 +11,9 @@ public:
 	static WaitJudgeQueue& GetIns() {
 		static WaitJudgeQueue ins; return ins;
 	}
+	static void clear_all() {
+		GetIns().wait_judge_list.clear();
+	}
 	static void push(size_t problem_num) {
 		GetIns().wait_judge_list[problem_num].push_back(time(nullptr));
 	}

@@ -4,22 +4,21 @@
 #include "GetNumfileNum.h"
 #include "SubmissionLog.h"
 #include "popup.h"
+#include "WaitJudge.h"
 
 namespace {
 }
 
+void Data::DeleteProblem()
+{
+	WaitJudgeQueue::clear_all();
+	++problem_set_num;
+}
 void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_directory_, dxle::tstring user_name_, bool is_contest_mode_)
 {
-#ifdef _DEBUG
-	//初回しか呼ばれないので、problemsのスレッドセーフを保証できる
-	//下手にいじらないこと
-	static bool is_finish = false;
-	assert(is_finish == false);
-	is_finish = true;
-#endif
+	user_name = std::move(user_name_);
+	is_contest_mode = std::move(is_contest_mode_);
 
-	const_cast<dxle::tstring&>(user_name) = std::move(user_name_);
-	const_cast<bool&>(is_contest_mode) = std::move(is_contest_mode_);
 	if (problems_directory_.empty()) {
 		problems_directory_ = _T("./");
 	}
@@ -31,7 +30,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 		GetFullPathName(problems_directory_.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
 		problems_directory_ = buf;
 	}
-	const_cast<dxle::tstring&>(problems_directory) = std::move(problems_directory_);
+	problems_directory = std::move(problems_directory_);
 
 	if (log_directory_.empty()) {
 		log_directory_ = _T("./");
@@ -44,13 +43,14 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 		GetFullPathName(log_directory_.c_str(), sizeof(buf) / sizeof(buf[0]), buf, nullptr);
 		log_directory_ = buf;
 	}
-	const_cast<dxle::tstring&>(log_directory) = std::move(log_directory_);
+	log_directory = std::move(log_directory_);
 
 	DxLib::FILEINFO fi;
 	DWORD_PTR hFind = (DWORD_PTR)-1;
 	FINALLY([&]() {if (hFind != -1) { FileRead_findClose(hFind); }});
 
 	hFind = DxLib::FileRead_findFirst((problems_directory + _T('*')).c_str(), &fi);
+	problems.clear();
 	if (hFind == -1) {
 		throw std::exception("no problem is found");
 	}
@@ -65,8 +65,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 					MessageBox(GetMainWindowHandle(), _T("問題数数が多すぎます。"), _T("警告"), MB_OK);
 					break;//ファイルが多すぎ
 				}
-				auto& problems_ = const_cast<std::vector<Problem>&>(problems);
-				problems_.emplace_back(fi.Name);
+				problems.emplace_back(fi.Name);
 			}
 		}
 	} while (DxLib::FileRead_findNext(hFind, &fi) == 0);

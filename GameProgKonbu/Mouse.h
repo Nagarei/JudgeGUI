@@ -61,12 +61,5 @@ public:
 			return{ true, iter->second };
 		}
 	}
-	//@return first is_valid
-	std::pair<bool, drag_data> get_drag_iter(int type)const {
-		auto iter = drag_point.find(type);
-		if (iter == drag_point.end()) {
-			return{ false, drag_data{} };
-		}
-		return{ true, iter->second };
-	}
+	auto drag_clear() { return drag_point.clear(); }
 };
