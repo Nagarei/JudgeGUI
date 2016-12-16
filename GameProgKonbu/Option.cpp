@@ -3,6 +3,8 @@
 #include "Mouse.h"
 #include "OpenFolder.h"
 
+#define JUDGEGUI_VERSION _T("JudgeGUI VERSION ") __DATE__ _T("[") __TIME__ _T("]")
+
 Option Option::ins;
 namespace {
 }
@@ -87,6 +89,12 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 	if (key.GetDirectionKeyInput(KeyInputData::KEY_DOWN)) {//下キーが押されている場合
 		//一つ下に
 		++selecting;
+	}
+	if (key.GetNewKeyInput(KEY_INPUT_ESCAPE)) {
+		//バージョン表示
+		MessageBox(NULL, JUDGEGUI_VERSION, JUDGEGUI_VERSION, MB_OK);
+		ProcessMessage();
+		auto& m = Mouse::GetIns(); m.update(); m.click_log_clear(); m.drag_clear();
 	}
 
 	auto select_end = [this](Select input)->std::unique_ptr<Sequence> {

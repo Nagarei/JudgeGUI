@@ -9,8 +9,8 @@
 #include "test.h"
 
 namespace {
-	///DxLib初期化処理
-	///@return true:失敗
+	//DxLib初期化処理
+	//@return true:失敗
 	bool MyDxLib_Init();
 }
 int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int)
