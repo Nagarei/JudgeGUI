@@ -34,12 +34,12 @@ private:
 //テスト実行結果情報
 public:
 	struct test_result_info {
-		size_t problem_num;
 		size_t problem_set_num;
+		size_t problem_num;
 		Submission new_submission;
 		test_result_info() {}
-		test_result_info(size_t problem_num, size_t problem_set_num, Submission&& new_submission)
-			: problem_num(problem_num), problem_set_num(problem_set_num), new_submission(std::move(new_submission))
+		test_result_info(size_t problem_set_num, size_t problem_num, Submission&& new_submission)
+			: problem_set_num(problem_set_num), problem_num(problem_num), new_submission(std::move(new_submission))
 		{}
 	};
 private:

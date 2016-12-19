@@ -91,7 +91,7 @@ Score_detail::Score_detail(int selecting_, Submission&& submission_)
 		FILE* fp = NULL;
 		_tfopen_s(&fp,
 			(submission.get_source_name() + _T("/../") + get_compile_out_filename()).c_str()
-			, _T("r,ccs=UTF-8"));
+		, _T("r"));//, _T("r,ccs=UTF-8"));//clangの出力はUTF-8
 		if (fp == NULL) {
 			compile_str = _T("読み込みに失敗しました");
 		}
