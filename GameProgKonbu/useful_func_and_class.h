@@ -2,8 +2,6 @@
 #define USEFUL_FUNC_AND_CLASS_H_201503222223_1223_
 
 using dxColor = decltype(GetColor(255, 255, 255));
-using tifstream = std::basic_ifstream<TCHAR>;
-using tofstream = std::basic_ofstream<TCHAR>;
 
 static constexpr double sqrt3 = (1.7320508075688772935274463415059);
 

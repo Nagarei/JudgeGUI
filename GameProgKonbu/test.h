@@ -22,24 +22,29 @@ private:
 	compile_taskmanager(const compile_taskmanager&) = delete;
 	compile_taskmanager& operator=(const compile_taskmanager&) = delete;
 
+//スレッド
 	std::atomic_bool is_end;
 	std::thread test_thread;
-	std::mutex test_queue_mtx;
+
+//テスト実行前情報
 	using test_info = std::pair<size_t, std::unique_ptr<test_class>>;//first:問題セット番号 second:テスト実行クラス
+	std::mutex test_queue_mtx;
 	std::deque<test_info> test_queue;//front:pop back:push
-private:
-	//Submissionの更新キャッシュ
-	std::mutex new_submissions_mtx;
-	struct new_submission_info {
+
+//テスト実行結果情報
+public:
+	struct test_result_info {
 		size_t problem_num;
 		size_t problem_set_num;
 		Submission new_submission;
-		new_submission_info(){}
-		new_submission_info(size_t problem_num, size_t problem_set_num, Submission&& new_submission)
-			:problem_num(problem_num), problem_set_num(problem_set_num), new_submission(std::move(new_submission))
+		test_result_info() {}
+		test_result_info(size_t problem_num, size_t problem_set_num, Submission&& new_submission)
+			: problem_num(problem_num), problem_set_num(problem_set_num), new_submission(std::move(new_submission))
 		{}
 	};
-	std::vector<new_submission_info> new_submissions;//FIFO (first: pop, last: push)
+private:
+	std::mutex test_results_mtx;
+	std::deque<test_result_info> test_results;//FIFO (first: pop, last: push)
 
 private:
 	compile_taskmanager();
@@ -52,5 +57,15 @@ private:
 	}
 public:
 	static void set_test(size_t problem_num, const dxle::tstring& cppfile_full_name);
-	static void update();
+	//注意：再入耐性なし
+	static void process_test_result(std::function<void(test_result_info&&)>& processer);
+	//注意：再入耐性なし
+	static void process_test_result(const std::function<void(test_result_info&&)>& processer) {
+		auto processer_ = processer;
+		return process_test_result(processer_);
+	}
+	//注意：再入耐性なし
+	static void process_test_result(std::function<void(test_result_info&&)>&& processer) {
+		return process_test_result(processer);
+	}
 };

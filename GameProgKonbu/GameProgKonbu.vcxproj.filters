@@ -16,50 +16,65 @@
     <Filter Include="プリコンパイル済みヘッダー">
       <UniqueIdentifier>{9dd98c22-ec97-453c-aebd-bce01059ad3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sequence">
-      <UniqueIdentifier>{c30e9705-345c-4735-a14e-0316d9e9b672}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sequence\Contest">
-      <UniqueIdentifier>{92ec4d42-cc0a-452c-8d84-ca7c66e763cb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{c69345b0-fc8b-4824-a35e-bb88a7121108}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Key">
-      <UniqueIdentifier>{878c9465-be4a-406f-99fd-6c9da069cb0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mouse">
-      <UniqueIdentifier>{5a20328f-78f6-4ac7-b920-6dc449d95d5b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="test">
-      <UniqueIdentifier>{6d6085a5-f87e-401b-b221-8304665b1246}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sequence\Option">
-      <UniqueIdentifier>{187d70ed-7d0c-4986-a72e-576e8d5912f7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="button">
-      <UniqueIdentifier>{cd90bd75-f0b6-48bc-9818-9364e2cb42a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ScrollBar">
-      <UniqueIdentifier>{9b41938d-1b5c-4f47-bd7e-561b7f76d328}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sequence\Show_Score">
-      <UniqueIdentifier>{5a50630f-a437-4ef5-8c46-f6ed0ff55302}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="popup">
-      <UniqueIdentifier>{39a32ff7-e1f0-41b2-a39e-9fe7ee76891b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sequence\Score_detail">
-      <UniqueIdentifier>{bba4f5f1-5166-4c26-800e-8418949747ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="Data\Script">
       <UniqueIdentifier>{22aefb7b-d8d7-46fa-a0de-cf30005ee18e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SetClipboardText">
-      <UniqueIdentifier>{77a65026-6674-4887-a9f3-81cde0d94fcc}</UniqueIdentifier>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{27638ae6-bbae-49f3-bbe7-8a7f9c1137fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OpenFolder">
+    <Filter Include="TEST">
+      <UniqueIdentifier>{c781bf4d-12ef-40a2-ad4d-27512525d093}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TEST\test">
+      <UniqueIdentifier>{6d6085a5-f87e-401b-b221-8304665b1246}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NET">
+      <UniqueIdentifier>{3aa4a99f-9e58-456d-8d5d-a064bae27ad1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Sequence">
+      <UniqueIdentifier>{c30e9705-345c-4735-a14e-0316d9e9b672}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Sequence\Contest">
+      <UniqueIdentifier>{92ec4d42-cc0a-452c-8d84-ca7c66e763cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Sequence\Option">
+      <UniqueIdentifier>{187d70ed-7d0c-4986-a72e-576e8d5912f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Sequence\Show_Score">
+      <UniqueIdentifier>{5a50630f-a437-4ef5-8c46-f6ed0ff55302}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Sequence\Score_detail">
+      <UniqueIdentifier>{bba4f5f1-5166-4c26-800e-8418949747ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\button">
+      <UniqueIdentifier>{cd90bd75-f0b6-48bc-9818-9364e2cb42a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\popup">
+      <UniqueIdentifier>{39a32ff7-e1f0-41b2-a39e-9fe7ee76891b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\ScrollBar">
+      <UniqueIdentifier>{9b41938d-1b5c-4f47-bd7e-561b7f76d328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Key">
+      <UniqueIdentifier>{878c9465-be4a-406f-99fd-6c9da069cb0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Mouse">
+      <UniqueIdentifier>{5a20328f-78f6-4ac7-b920-6dc449d95d5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CommonLIB">
+      <UniqueIdentifier>{d08a660a-7628-4c83-b8f3-bb64778e91a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\OpenFolder">
       <UniqueIdentifier>{1e715982-bb71-4d71-8732-7d512e2705a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TEST\Submission">
+      <UniqueIdentifier>{17529bc7-3124-4bb1-973b-9bd7021d7e9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\SetClipboardText">
+      <UniqueIdentifier>{77a65026-6674-4887-a9f3-81cde0d94fcc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,10 +85,10 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Sequence.h">
-      <Filter>Sequence</Filter>
+      <Filter>GUI\Sequence</Filter>
     </ClInclude>
     <ClInclude Include="Contest.h">
-      <Filter>Sequence\Contest</Filter>
+      <Filter>GUI\Sequence\Contest</Filter>
     </ClInclude>
     <ClInclude Include="useful_func_and_class.h">
       <Filter>ヘッダー ファイル</Filter>
@@ -85,28 +100,28 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="KeyInputData.h">
-      <Filter>Key</Filter>
+      <Filter>GUI\Key</Filter>
     </ClInclude>
     <ClInclude Include="Mouse.h">
-      <Filter>Mouse</Filter>
+      <Filter>GUI\Mouse</Filter>
     </ClInclude>
     <ClInclude Include="test.h">
-      <Filter>test</Filter>
+      <Filter>TEST\test</Filter>
     </ClInclude>
     <ClInclude Include="Option.h">
-      <Filter>Sequence\Option</Filter>
+      <Filter>GUI\Sequence\Option</Filter>
     </ClInclude>
     <ClInclude Include="other_usefuls.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="button.h">
-      <Filter>button</Filter>
+      <Filter>GUI\button</Filter>
     </ClInclude>
     <ClInclude Include="SetLocale.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="ScrollBar.h">
-      <Filter>ScrollBar</Filter>
+      <Filter>GUI\ScrollBar</Filter>
     </ClInclude>
     <ClInclude Include="fps.h">
       <Filter>ヘッダー ファイル</Filter>
@@ -115,25 +130,22 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
-      <Filter>Sequence</Filter>
+      <Filter>GUI\Sequence</Filter>
     </ClInclude>
     <ClInclude Include="Show_Score.h">
-      <Filter>Sequence\Show_Score</Filter>
+      <Filter>GUI\Sequence\Show_Score</Filter>
     </ClInclude>
     <ClInclude Include="ScrollBar2.h">
-      <Filter>ScrollBar</Filter>
+      <Filter>GUI\ScrollBar</Filter>
     </ClInclude>
     <ClInclude Include="Unsafe_My_func.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="SubmissionLog.h">
-      <Filter>Data</Filter>
-    </ClInclude>
     <ClInclude Include="popup.h">
-      <Filter>popup</Filter>
+      <Filter>GUI\popup</Filter>
     </ClInclude>
     <ClInclude Include="Score_detail.h">
-      <Filter>Sequence\Score_detail</Filter>
+      <Filter>GUI\Sequence\Score_detail</Filter>
     </ClInclude>
     <ClInclude Include="Script.h">
       <Filter>Data\Script</Filter>
@@ -145,10 +157,16 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="SetClipboardText.h">
-      <Filter>SetClipboardText</Filter>
+      <Filter>GUI\SetClipboardText</Filter>
     </ClInclude>
     <ClInclude Include="OpenFolder.h">
-      <Filter>OpenFolder</Filter>
+      <Filter>GUI\OpenFolder</Filter>
+    </ClInclude>
+    <ClInclude Include="Submission.h">
+      <Filter>TEST\Submission</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTchar.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -159,58 +177,58 @@
       <Filter>プリコンパイル済みヘッダー</Filter>
     </ClCompile>
     <ClCompile Include="Contest.cpp">
-      <Filter>Sequence\Contest</Filter>
+      <Filter>GUI\Sequence\Contest</Filter>
     </ClCompile>
     <ClCompile Include="Data.cpp">
       <Filter>Data</Filter>
     </ClCompile>
     <ClCompile Include="KeyInputData.cpp">
-      <Filter>Key</Filter>
+      <Filter>GUI\Key</Filter>
     </ClCompile>
     <ClCompile Include="sample_combuchat.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Mouse.cpp">
-      <Filter>Mouse</Filter>
+      <Filter>GUI\Mouse</Filter>
     </ClCompile>
     <ClCompile Include="test.cpp">
-      <Filter>test</Filter>
+      <Filter>TEST\test</Filter>
     </ClCompile>
     <ClCompile Include="Option.cpp">
-      <Filter>Sequence\Option</Filter>
+      <Filter>GUI\Sequence\Option</Filter>
     </ClCompile>
     <ClCompile Include="button.cpp">
-      <Filter>button</Filter>
+      <Filter>GUI\button</Filter>
     </ClCompile>
     <ClCompile Include="ScrollBar.cpp">
-      <Filter>ScrollBar</Filter>
+      <Filter>GUI\ScrollBar</Filter>
     </ClCompile>
     <ClCompile Include="Show_Score.cpp">
-      <Filter>Sequence\Show_Score</Filter>
+      <Filter>GUI\Sequence\Show_Score</Filter>
     </ClCompile>
     <ClCompile Include="common.cpp">
-      <Filter>Sequence</Filter>
+      <Filter>GUI\Sequence</Filter>
     </ClCompile>
     <ClCompile Include="ScrollBar2.cpp">
-      <Filter>ScrollBar</Filter>
-    </ClCompile>
-    <ClCompile Include="SubmissionLog.cpp">
-      <Filter>Data</Filter>
+      <Filter>GUI\ScrollBar</Filter>
     </ClCompile>
     <ClCompile Include="popup.cpp">
-      <Filter>popup</Filter>
+      <Filter>GUI\popup</Filter>
     </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>Data\Script</Filter>
     </ClCompile>
     <ClCompile Include="Score_detail.cpp">
-      <Filter>Sequence\Score_detail</Filter>
+      <Filter>GUI\Sequence\Score_detail</Filter>
     </ClCompile>
     <ClCompile Include="SetClipboardText.cpp">
-      <Filter>SetClipboardText</Filter>
+      <Filter>GUI\SetClipboardText</Filter>
     </ClCompile>
     <ClCompile Include="OpenFolder.cpp">
-      <Filter>OpenFolder</Filter>
+      <Filter>GUI\OpenFolder</Filter>
+    </ClCompile>
+    <ClCompile Include="Submission.cpp">
+      <Filter>TEST\Submission</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

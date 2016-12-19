@@ -1,15 +1,34 @@
 ﻿
-#include "SubmissionLog.h"
+#include "Submission.h"
 #include "GetNumfileNum.h"
 #include "Unsafe_My_func.h"
+#include "MyTchar.h"
 
 #define LOG_SOURCE_NAME _T("source.cpp")
 #define LOG_COMPILE_NAME _T("compile.txt")
 #define LOG_TEMPBAT_NAME _T("__temp.bat")
 #define LOG_RESULT_NAME _T("result.txt")
+#define TEST_INPUT_NAME_PRE _T("input")
+#define TEST_INPUT_NAME_POST _T(".txt")
+
 
 const TCHAR* get_compile_out_filename()noexcept {
 	return LOG_COMPILE_NAME;
+}
+
+std::array<TCHAR, 20> get_input_name(uint32_t i) noexcept
+{
+	std::array<TCHAR, 10> str; 
+	auto strcpy2 = [](TCHAR* buf, const TCHAR* str) {
+		while (*str != '\0') { *buf++ = *str++; }
+		return buf;
+	};
+	auto iter = str.data();
+	iter = strcpy2(iter, TEST_INPUT_NAME_PRE);
+	my_itoa(i, iter);
+	while (*iter != '\0') { ++iter; }
+	*strcpy2(iter, TEST_INPUT_NAME_POST) = '\0';
+	return str;
 }
 
 

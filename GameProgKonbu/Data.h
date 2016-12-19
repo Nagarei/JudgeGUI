@@ -1,42 +1,8 @@
 ﻿#pragma once
 #include "useful_func_and_class.h"
 #include "Script.h"
+#include "Submission.h"
 
-class Score final
-{
-public:
-	uint32_t use_memory;
-	uint32_t use_time;
-	enum class Type_T : uint8_t { AC,WA,TLE,MLE,RE }type;
-	TCHAR input_name[20];//入力ファイルの名前
-};
-class Submission final
-{
-public:
-	enum class Type_T : uint8_t{ normal, CE, IE, WJ };
-private:
-	Type_T type;
-	dxle::tstring source_name;
-	std::vector<Score> scores;
-	dxle::tstring user_name;
-	DxLib::DATEDATA submit_time;
-public:
-	Submission() = default;
-	Submission(Type_T type_, dxle::tstring source_name_, std::vector<Score> scores_,
-		dxle::tstring user_name_, DxLib::DATEDATA submit_time_)
-		:type(type_), source_name(std::move(source_name_)), scores(std::move(scores_)),
-		 user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
-	{}
-	//Submission(const Submission&) = default;
-	//Submission(Submission&&)noexcept = default;
-	static Submission MakeWJ(time_t);
-
-	const dxle::tstring& get_user_name()const { return user_name; }
-	Type_T get_type()const { return type; }
-	const dxle::tstring& get_source_name()const { return source_name; }
-	const std::vector<Score>& get_scores()const { return scores; }
-	const DxLib::DATEDATA& get_submit_time()const { return submit_time; }
-};
 std::pair<Submission::Type_T, Score::Type_T> get_result_type(const Submission& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission& );
