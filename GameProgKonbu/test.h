@@ -31,12 +31,12 @@ private:
 	//Submissionの更新キャッシュ
 	std::mutex new_submissions_mtx;
 	struct new_submission_info {
-		size_t problem_num;
 		size_t problem_set_num;
+		size_t problem_num;
 		Submission new_submission;
 		new_submission_info(){}
-		new_submission_info(size_t problem_num, size_t problem_set_num, Submission&& new_submission)
-			:problem_num(problem_num), problem_set_num(problem_set_num), new_submission(std::move(new_submission))
+		new_submission_info(size_t problem_set_num, size_t problem_num, Submission&& new_submission)
+			:problem_set_num(problem_set_num), problem_num(problem_num), new_submission(std::move(new_submission))
 		{}
 	};
 	std::vector<new_submission_info> new_submissions;//FIFO (first: pop, last: push)
