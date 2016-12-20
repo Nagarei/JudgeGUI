@@ -87,6 +87,7 @@ Score_detail::Score_detail(int selecting_, Submission&& submission_)
 	}
 	//コンパイルメッセージ
 	{
+#if 0
 		//BOMなしUTF-8（clangの出力）指定で読み込む
 		FILE* fp = NULL;
 		_tfopen_s(&fp,
@@ -105,8 +106,32 @@ Score_detail::Score_detail(int selecting_, Submission&& submission_)
 				fread((void*)buf.get(), sizeof(TCHAR), size+1, fp);
 				compile_str = buf.get();
 			}
+			compile_str += EOF_STR;
 		}
-		compile_str += EOF_STR;
+#else
+		//gccはANSI
+		tifstream ifs(
+			(submission.get_source_name() + _T("/../") + get_compile_out_filename()).c_str(),
+			std::ios::in | std::ios::binary);
+		if (ifs.bad()) {
+			compile_str = _T("読み込みに失敗しました");
+		}
+		else {
+			ifs.seekg(0, std::ios::end);
+			auto str_len = ifs.tellg();
+			if (0 < str_len)
+			{
+				auto str_buf = std::make_unique<TCHAR[]>((size_t)(str_len) + 1);
+				str_buf[0] = _T('\0');
+				ifs.seekg(0, std::ios::beg);
+				ifs.read(str_buf.get(), str_len);//NULL終端文字はつかないので注意！！
+				str_buf[str_len] = _T('\0');
+				compile_str.reserve(str_len * 2);
+				compile_str = str_buf.get();
+			}
+			compile_str += EOF_STR;
+		}
+#endif
 		DxLib::GetDrawStringSizeToHandle(&compile_size.width, &compile_size.height, nullptr,
 			compile_str.c_str(), compile_str.size(), main_font);//@todo dxlibex
 		compile_size.height += box_frame_thickness * 2;//ボックスの淵分
