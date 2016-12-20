@@ -451,8 +451,8 @@ Submission Submission::MakeWJ(time_t time)
 	tm local_time;
 	localtime_s(&local_time, &time);
 	DxLib::DATEDATA dx_date;
-	dx_date.Year = local_time.tm_year;
-	dx_date.Mon  = local_time.tm_mon;
+	dx_date.Year = local_time.tm_year + 1900;
+	dx_date.Mon  = local_time.tm_mon + 1;
 	dx_date.Day  = local_time.tm_mday;
 	dx_date.Hour = local_time.tm_hour;
 	dx_date.Min  = local_time.tm_min;
