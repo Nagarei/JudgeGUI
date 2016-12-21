@@ -12,8 +12,8 @@ class Submission_Core final
 public:
 	enum class Type_T : uint8_t { normal, CE, IE, WJ };
 	Submission_Core() = default;
-	Submission_Core(Type_T type_, std::vector<Score> scores_)
-		:type(type_), scores(std::move(scores_))
+	Submission_Core(Type_T type_, std::vector<Score> scores_, time_t submit_time_)
+		:type(type_), scores(std::move(scores_)), submit_time(submit_time_)
 	{}
 	Submission_Core(const Submission_Core&) = default;
 	Submission_Core(Submission_Core&&) = default;
@@ -22,36 +22,11 @@ public:
 
 	Type_T get_type()const { return type; }
 	const std::vector<Score>& get_scores()const { return scores; }
+	time_t get_submit_time()const { return submit_time; }
 private:
 	Type_T type;
 	std::vector<Score> scores;
-};
-class Submission final
-{
-public:
-	using Type_T = Submission_Core::Type_T;
-private:
-	Submission_Core core;
-	uint32_t submit_num;
-	dxle::tstring user_name;
-	DxLib::DATEDATA submit_time;
-public:
-	Submission() = default;
-	Submission(Type_T type_, uint32_t submit_num, std::vector<Score> scores_,
-		dxle::tstring user_name_, DxLib::DATEDATA submit_time_)
-		: core(type_, std::move(scores_)), submit_num(submit_num)
-		, user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
-	{}
-	Submission(const Submission&) = default;
-	Submission(Submission&&) = default;
-	Submission& operator=(const Submission&) = default;
-	Submission& operator=(Submission&&) = default;
-	static Submission MakeWJ(time_t);
-
-	const dxle::tstring& get_user_name()const { return user_name; }
-	Type_T get_type()const { return core.get_type(); }
-	const std::vector<Score>& get_scores()const { return core.get_scores(); }
-	const DxLib::DATEDATA& get_submit_time()const { return submit_time; }
+	time_t submit_time;
 };
 
 
@@ -63,7 +38,7 @@ public:
 void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const dxle::tstring& cppfile_full_name);
 //結果の解析
 //@param log_directory 出力があるフォルダの「絶対パス」
-Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name);
+Submission_Core BuildScores(dxle::tstring log_directory);
 
 const TCHAR* get_compile_out_filename()noexcept;
-std::array<TCHAR, 20> get_input_name(size_t i)noexcept;
+std::array<TCHAR, 20> get_input_name(uint32_t i)noexcept;

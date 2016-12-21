@@ -14,7 +14,7 @@ private:
 	Button to_problem;
 	bool show_myscore_only;
 	size_t last_WJ_submissions_size;
-	std::vector<Submission> submissions_data;
+	std::vector<Submission_old> submissions_data;
 	std::vector<Button> submission_state_index;
 	std::vector<size_t> submissions_index;
 	std::vector<Button> submissions_button;

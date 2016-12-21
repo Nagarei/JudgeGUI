@@ -3,9 +3,36 @@
 #include "Script.h"
 #include "Submission.h"
 
-std::pair<Submission::Type_T, Score::Type_T> get_result_type(const Submission& );
+class Submission_old final
+{
+public:
+	using Type_T = Submission_Core::Type_T;
+private:
+	Submission_Core core;
+	dxle::tstring code_path;
+	dxle::tstring user_name;
+public:
+	Submission_old() = default;
+	Submission_old(Type_T type_, dxle::tstring code_path, std::vector<Score> scores_,
+		dxle::tstring user_name_, time_t submit_time_)
+		: core(type_, std::move(scores_), submit_time_), code_path(code_path)
+		, user_name(std::move(user_name_))
+	{}
+	Submission_old(const Submission_old&) = default;
+	Submission_old(Submission_old&&) = default;
+	Submission_old& operator=(const Submission_old&) = default;
+	Submission_old& operator=(Submission_old&&) = default;
+	static Submission_old MakeWJ(time_t);
+
+	const dxle::tstring& get_user_name()const { return user_name; }
+	Type_T get_type()const { return core.get_type(); }
+	const std::vector<Score>& get_scores()const { return core.get_scores(); }
+	const DxLib::DATEDATA& get_submit_time()const;
+};
+
+std::pair<Submission_old::Type_T, Score::Type_T> get_result_type(const Submission_old& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& );
-std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission& );
+std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission_old& );
 
 class Problem final
 {
@@ -28,20 +55,20 @@ public:
 	//メインスレッドからのみ呼び出し可
 	int GetMaxScore()const { return max_score; }
 	//メインスレッドからのみ呼び出し可
-	void AddSubmission(const Submission& new_data);
+	void AddSubmission(const Submission_old& new_data);
 	//メインスレッドからのみ呼び出し可
 	void ClearSubmissionCache() { my_socre = 0; }
 
 	//メインスレッドからのみ呼び出し可
 	//iの入力が何点相当か調べる
-	int32_t GetScore_single(const Submission& )const;
+	int32_t GetScore_single(const Submission_old& )const;
 
 	//メインスレッドからのみ呼び出し可
 	void ReloadSubmission();
 	//メインスレッドからのみ呼び出し可
 	void ReloadPartialScores();
 	//メインスレッドからのみ呼び出し可
-	std::vector<Submission> LoadSubmissionAll()const;
+	std::vector<Submission_old> LoadSubmissionAll()const;
 
 	//スレッドセーフ
 	int GetSampleNum()const { return sample_num; }

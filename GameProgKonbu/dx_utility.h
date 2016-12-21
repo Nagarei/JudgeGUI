@@ -1,7 +1,7 @@
 ﻿#pragma once
+#include "my_utility.h"
 
 using dxColor = decltype(GetColor(255, 255, 255));
-
 
 template<typename RandomAccessIterator>
 inline typename std::enable_if<

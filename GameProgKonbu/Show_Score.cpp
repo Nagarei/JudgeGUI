@@ -179,7 +179,7 @@ std::unique_ptr<Sequence> Show_Score::update_Submit()
 		for (size_t i = 0; i < submissions_button.size(); ++i)
 		{
 			if (submissions_button[i].update(mouse.get_now_pos(), mouse.get_now_input() & MOUSE_INPUT_LEFT)) {
-				if (submissions_data[submissions_index[i]].get_type() != Submission::Type_T::WJ) {
+				if (submissions_data[submissions_index[i]].get_type() != Submission_old::Type_T::WJ) {
 					return std::make_unique<Score_detail>(selecting, std::move(submissions_data[submissions_index[i]]));
 				}
 			}
@@ -380,7 +380,7 @@ void Show_Score::get_submissions_copy()
 		auto& waiting_list = WaitJudgeQueue::waiting_list(selecting);
 		last_WJ_submissions_size = waiting_list.size();
 		for (auto& i : waiting_list) {
-			submissions_data.emplace_back(Submission::MakeWJ(i));
+			submissions_data.emplace_back(Submission_old::MakeWJ(i));
 		}
 	}
 	//インデックスの更新

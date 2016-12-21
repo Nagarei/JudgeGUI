@@ -84,7 +84,7 @@ test_Local::test_Local(size_t problem_num_, dxle::tstring cppfile_full_name_)
 	CreateDirectory(log_user_directory.c_str(), NULL);
 }
 
-Submission test_Local::test_run()
+Submission_old test_Local::test_run()
 {
 	//サブスレッドで動作
 

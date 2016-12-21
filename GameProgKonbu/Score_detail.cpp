@@ -40,7 +40,7 @@ namespace{
 	constexpr dxle::rgb box_on_back_color{ 249,249,0 };
 	constexpr dxle::rgb box_edge_color{ 221,221,221 };
 }
-Score_detail::Score_detail(int selecting_, Submission&& submission_)
+Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 	: Sequence_Commom(selecting_)
 	, menu_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
 	, main_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), main_font_handle_size, 2))
@@ -51,7 +51,7 @@ Score_detail::Score_detail(int selecting_, Submission&& submission_)
 	scrollbar.set_pos({ menu_space_size, title_space });
 	//ソース
 	{
-		tifstream ifs(submission.get_source_name(), std::ios::in | std::ios::binary);
+		tifstream ifs( submission.get_source_name(), std::ios::in | std::ios::binary);
 		if (ifs.bad()) {
 			source_str = _T("読み込みに失敗しました");
 		}

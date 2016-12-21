@@ -18,7 +18,7 @@ private:
 	Button copy_code;
 	Button copy_compile;
 
-	Submission submission;
+	Submission_old submission;
 	//Button source_on_off;
 	dxle::tstring source_str;
 	dxle::sizei32 source_size;//行カウントを含むようになる予定
@@ -37,7 +37,7 @@ private:
 
 	void reset_window_size(){ reset_Scroll(); }
 public:
-	Score_detail(int selecting, Submission&& submission);
+	Score_detail(int selecting, Submission_old&& submission);
 	~Score_detail();
 
 	std::unique_ptr<Sequence> update()override;

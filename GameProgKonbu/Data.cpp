@@ -234,7 +234,7 @@ Problem::Problem(const TCHAR* pronlem_name)
 	}
 }
 
-void Problem::AddSubmission(const Submission& new_data)
+void Problem::AddSubmission(const Submission_old& new_data)
 {
 	if (Data::GetIns().get_user_name() == new_data.get_user_name())
 	{
@@ -242,9 +242,9 @@ void Problem::AddSubmission(const Submission& new_data)
 	}
 }
 
-int32_t Problem::GetScore_single(const Submission& data) const
+int32_t Problem::GetScore_single(const Submission_old& data) const
 {
-	if (data.get_type() != Submission::Type_T::normal) {
+	if (data.get_type() != Submission_old::Type_T::normal) {
 		return 0;
 	}
 	int32_t temp_score = 0;
@@ -314,9 +314,9 @@ void Problem::ReloadPartialScores()
 	//自分の点数更新
 	ReloadSubmission();
 }
-std::vector<Submission> Problem::LoadSubmissionAll()const
+std::vector<Submission_old> Problem::LoadSubmissionAll()const
 {
-	std::vector<Submission> submissions;
+	std::vector<Submission_old> submissions;
 	auto problem_directory = Data::GetIns().GetLogRootDirectory() + this->GetName() + _T('/');
 	dxle::tstring problem_user_directory;
 
@@ -350,10 +350,10 @@ std::vector<Submission> Problem::LoadSubmissionAll()const
 	return submissions;
 }
 
-std::pair<Submission::Type_T, Score::Type_T> get_result_type(const Submission& scores)
+std::pair<Submission_old::Type_T, Score::Type_T> get_result_type(const Submission_old& scores)
 {
-	std::pair<Submission::Type_T, Score::Type_T> result{ scores.get_type() , Score::Type_T::AC };
-	if (result.first == Submission::Type_T::normal) {
+	std::pair<Submission_old::Type_T, Score::Type_T> result{ scores.get_type() , Score::Type_T::AC };
+	if (result.first == Submission_old::Type_T::normal) {
 		//secondの決定
 		auto iter = std::find_if_not(scores.get_scores().begin(), scores.get_scores().end()
 			, [](const Score& s) {return s.type == Score::Type_T::AC; });
@@ -404,14 +404,14 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score&
 #undef SET_grts_
 }
 
-std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission& scores)
+std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission_old& scores)
 {
 	std::array<TCHAR, 10> str;
 	dxle::rgb color;
 #define SET_grts_(message) DxLib::strcpy_sDx(str.data(), str.size(), _T(#message))
 	switch (scores.get_type())
 	{
-	case Submission::Type_T::normal: {
+	case Submission_old::Type_T::normal: {
 		auto iter = std::find_if_not(scores.get_scores().begin(), scores.get_scores().end()
 			, [](const Score& s) {return s.type == Score::Type_T::AC; });
 		if (iter == scores.get_scores().end()) {
@@ -424,15 +424,15 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 		}
 	}
 		break;
-	case Submission::Type_T::CE:
+	case Submission_old::Type_T::CE:
 		SET_grts_(CE);
 		color = dxle::color_tag::red;
 		break;
-	case Submission::Type_T::IE:
+	case Submission_old::Type_T::IE:
 		SET_grts_(IE);
 		color = dxle::color_tag::white;
 		break;
-	case Submission::Type_T::WJ:
+	case Submission_old::Type_T::WJ:
 		SET_grts_(WJ);
 		color = dxle::color_tag::gray;
 		break;
@@ -446,7 +446,7 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 #undef SET_grts_
 }
 
-Submission Submission::MakeWJ(time_t time)
+Submission_old Submission_old::MakeWJ(time_t time)
 {
 	tm local_time;
 	localtime_s(&local_time, &time);
@@ -457,7 +457,7 @@ Submission Submission::MakeWJ(time_t time)
 	dx_date.Hour = local_time.tm_hour;
 	dx_date.Min  = local_time.tm_min;
 	dx_date.Sec  = local_time.tm_sec;
-	return Submission{
-		Submission::Type_T::WJ, 0, {}, Data::GetIns().get_user_name(), dx_date
+	return Submission_old{
+		Submission_old::Type_T::WJ, 0, {}, Data::GetIns().get_user_name(), dx_date
 	};
 }

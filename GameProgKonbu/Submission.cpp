@@ -100,7 +100,7 @@ void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const d
 	}
 }
 //結果の解析
-Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
+Submission_Core BuildScores(dxle::tstring log_directory)
 {
 #if 0
 	//コンパイルメッセージの取得
@@ -140,24 +140,22 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 	tifstream ifs(log_directory + LOG_RESULT_NAME);
 	if (ifs.fail()) {
 		//IE
-		return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
-			, std::vector<Score>{}, std::move(user_name), std::move(sbumit_time));
+		return Submission_Core(Submission_Core::Type_T::IE
+			, std::vector<Score>{}, std::move(sbumit_time));
 	}
 	dxle::tstring buf;
 	//CEチェック
 	std::getline(ifs, buf);
 	if (buf == _T("CE")) {
 		//CE
-		return Submission(Submission::Type_T::CE, log_directory + LOG_SOURCE_NAME
-			, std::vector<Score>{}, std::move(user_name), std::move(sbumit_time));
+		return Submission_Core(Submission_Core::Type_T::CE
+			, std::vector<Score>{}, std::move(sbumit_time));
 	}
 	//結果を取得
-	uint32_t counter = 1;
 	std::vector<Score> score_temp;
 	TCHAR itoa_buf[20];
 	auto get_score = [&](std::basic_istream<TCHAR>& is) {//@return true:error
 		score_temp.emplace_back();
-		my_strcpy(score_temp.back().input_name, _T("input"_ts) + my_itoa(counter, itoa_buf) + _T(".txt"));
 		buf.resize(0);
 		is >> score_temp.back().use_memory >> score_temp.back().use_time >> buf; is.ignore(-1, _T('\n'));
 		if (is.fail() && (buf.empty())) {
@@ -175,23 +173,22 @@ Submission BuildScores(dxle::tstring log_directory, dxle::tstring user_name)
 			//IE
 			return true;
 		}
-		++counter;
 		return false;
 	};
 	if(ifs || !buf.empty()){//初めの一行だけもう読み込んでしまったので別処理
 		std::basic_stringstream<TCHAR> ss(buf);
 		if (get_score(ss)) {
-			return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
-				, std::move(score_temp), std::move(user_name), std::move(sbumit_time));
+			return Submission_Core(Submission_Core::Type_T::IE
+				, std::move(score_temp), std::move(sbumit_time));
 		}
 	}
 	while (ifs) {
 		if (get_score(ifs)) {
-			return Submission(Submission::Type_T::IE, log_directory + LOG_SOURCE_NAME
-				, std::move(score_temp), std::move(user_name), std::move(sbumit_time));
+			return Submission_Core(Submission_Core::Type_T::IE
+				, std::move(score_temp), std::move(sbumit_time));
 		}
 	}
 
-	return Submission(Submission::Type_T::normal, log_directory + LOG_SOURCE_NAME
-		, std::move(score_temp), std::move(user_name), std::move(sbumit_time));
+	return Submission_Core(Submission_Core::Type_T::normal
+		, std::move(score_temp), std::move(sbumit_time));
 }

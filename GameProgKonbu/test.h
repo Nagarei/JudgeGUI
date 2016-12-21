@@ -11,7 +11,7 @@ private:
 public:
 	test_Local(size_t problem_num, dxle::tstring cppfile_full_name_);
 	//スコアデータを返す
-	Submission test_run();
+	Submission_old test_run();
 	size_t get_problem_num()const noexcept { return problem_num; }
 };
 using test_class = test_Local;
@@ -36,9 +36,9 @@ public:
 	struct test_result_info {
 		size_t problem_set_num;
 		size_t problem_num;
-		Submission new_submission;
+		Submission_old new_submission;
 		test_result_info() {}
-		test_result_info(size_t problem_set_num, size_t problem_num, Submission&& new_submission)
+		test_result_info(size_t problem_set_num, size_t problem_num, Submission_old&& new_submission)
 			: problem_set_num(problem_set_num), problem_num(problem_num), new_submission(std::move(new_submission))
 		{}
 	};
