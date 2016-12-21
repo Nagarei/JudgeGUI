@@ -120,9 +120,10 @@ Submission_Core BuildScores(dxle::tstring log_directory)
 	}
 #endif
 	//提出時間取得
-	DATEDATA sbumit_time;
-	sbumit_time.Year = sbumit_time.Mon = sbumit_time.Day = sbumit_time.Hour = sbumit_time.Min = sbumit_time.Sec = 0;
+	time_t sbumit_time;
 	{
+		DATEDATA dx_sbumit_time;
+		dx_sbumit_time.Year = dx_sbumit_time.Mon = dx_sbumit_time.Day = dx_sbumit_time.Hour = dx_sbumit_time.Min = dx_sbumit_time.Sec = 0;
 		auto file_handle = FileRead_createInfo((log_directory + LOG_RESULT_NAME).c_str());
 		if (file_handle != -1) {
 			//読み込み成功
@@ -132,8 +133,9 @@ Submission_Core BuildScores(dxle::tstring log_directory)
 			Buffer.CreationTime.Year = Buffer.CreationTime.Mon = Buffer.CreationTime.Day
 				= Buffer.CreationTime.Hour = Buffer.CreationTime.Min = Buffer.CreationTime.Sec = 0;
 			DxLib::FileRead_getInfo(0, &Buffer, file_handle);
-			sbumit_time = Buffer.CreationTime;
+			dx_sbumit_time = Buffer.CreationTime;
 		}
+		sbumit_time = ;
 	}
 
 	//結果の解析
@@ -153,7 +155,6 @@ Submission_Core BuildScores(dxle::tstring log_directory)
 	}
 	//結果を取得
 	std::vector<Score> score_temp;
-	TCHAR itoa_buf[20];
 	auto get_score = [&](std::basic_istream<TCHAR>& is) {//@return true:error
 		score_temp.emplace_back();
 		buf.resize(0);

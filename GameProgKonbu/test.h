@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Data.h"
+#include "Submission.h"
 
 class test_Local final
 {
@@ -11,7 +11,7 @@ private:
 public:
 	test_Local(size_t problem_num, dxle::tstring cppfile_full_name_);
 	//スコアデータを返す
-	Submission_old test_run();
+	Submission_Core test_run();
 	size_t get_problem_num()const noexcept { return problem_num; }
 };
 using test_class = test_Local;
@@ -36,10 +36,10 @@ public:
 	struct test_result_info {
 		size_t problem_set_num;
 		size_t problem_num;
-		Submission_old new_submission;
+		Submission_Core submission_result;
 		test_result_info() {}
-		test_result_info(size_t problem_set_num, size_t problem_num, Submission_old&& new_submission)
-			: problem_set_num(problem_set_num), problem_num(problem_num), new_submission(std::move(new_submission))
+		test_result_info(size_t problem_set_num, size_t problem_num, Submission_Core&& submission_result)
+			: problem_set_num(problem_set_num), problem_num(problem_num), submission_result(std::move(submission_result))
 		{}
 	};
 private:

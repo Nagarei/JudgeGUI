@@ -276,7 +276,7 @@ void Problem::ReloadSubmission()
 	TCHAR buf[20];
 	for (uint32_t i = 0; i <= log_num; ++i)
 	{
-		this->AddSubmission(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), user_name));
+		this->AddSubmission(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/')));
 	}
 }
 void Problem::ReloadPartialScores()
@@ -341,7 +341,7 @@ std::vector<Submission_old> Problem::LoadSubmissionAll()const
 					TCHAR buf[20];
 					for (uint32_t i = 0; i <= log_num; ++i)
 					{
-						submissions.emplace_back(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/'), fi.Name));
+						submissions.emplace_back(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/')));
 					}
 				};
 			}

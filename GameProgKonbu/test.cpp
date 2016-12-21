@@ -84,7 +84,7 @@ test_Local::test_Local(size_t problem_num_, dxle::tstring cppfile_full_name_)
 	CreateDirectory(log_user_directory.c_str(), NULL);
 }
 
-Submission_old test_Local::test_run()
+Submission_Core test_Local::test_run()
 {
 	//サブスレッドで動作
 
@@ -104,5 +104,5 @@ Submission_old test_Local::test_run()
 
 	//結果の解析
 	//スコアデータを返す
-	return BuildScores(log_directory, Data::GetIns().get_user_name());
+	return BuildScores(log_directory);
 }
