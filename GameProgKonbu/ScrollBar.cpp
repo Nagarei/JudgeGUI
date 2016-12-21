@@ -1,7 +1,7 @@
 ﻿#include "ScrollBar.h"
 #include <utility>
-#include "useful_func_and_class.h"
-#include "other_usefuls.h"
+#include "dx_utility.h"
+#include "my_utility.h"
 
 ScrollBar::ScrollBar()
 	: object_size(1)

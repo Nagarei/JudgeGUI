@@ -2,12 +2,9 @@
 #include "Data.h"
 #include "GetNumfileNum.h"
 #include "Unsafe_My_func.h"
-#include "SubmissionLog.h"
+#include "Submission.h"
 #include "WaitJudge.h"
 #include "popup.h"
-
-//メインスレッドでカレントディレクトリが変更される為
-//相対パス使用禁止！！！
 
 namespace
 {
@@ -43,8 +40,8 @@ void compile_taskmanager::Loop()
 		//実行or待機
 		if (test.second) {
 			auto&& new_submission = test.second->test_run();
-			std::lock_guard<std::mutex> lock(new_submissions_mtx);
-			new_submissions.emplace_back(test.first, test.second->get_problem_num(), std::move(new_submission));
+			std::lock_guard<std::mutex> lock(test_results_mtx);
+			test_results.emplace_back(test.first, test.second->get_problem_num(), std::move(new_submission));
 		}
 		else {
 			std::this_thread::sleep_for(std::chrono::milliseconds(17));
