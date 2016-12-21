@@ -1,7 +1,7 @@
 ﻿
 #include "Submission.h"
 #include "GetNumfileNum.h"
-#include "Unsafe_My_func.h"
+#include "my_utility.h"
 #include "MyTchar.h"
 
 #define LOG_SOURCE_NAME _T("source.cpp")
@@ -18,7 +18,7 @@ const TCHAR* get_compile_out_filename()noexcept {
 
 std::array<TCHAR, 20> get_input_name(uint32_t i) noexcept
 {
-	std::array<TCHAR, 10> str; 
+	std::array<TCHAR, 20> str; 
 	auto strcpy2 = [](TCHAR* buf, const TCHAR* str) {
 		while (*str != '\0') { *buf++ = *str++; }
 		return buf;

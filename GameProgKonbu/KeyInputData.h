@@ -1,6 +1,5 @@
 #ifndef KEY_INPUT_DATA_H_20150321_0919_
 #define KEY_INPUT_DATA_H_20150321_0919_
-#include "other_usefuls.h"
 
 class KeyInputData final {
 	public:

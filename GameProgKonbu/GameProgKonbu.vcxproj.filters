@@ -90,9 +90,6 @@
     <ClInclude Include="Contest.h">
       <Filter>GUI\Sequence\Contest</Filter>
     </ClInclude>
-    <ClInclude Include="useful_func_and_class.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="FormatToString.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -110,9 +107,6 @@
     </ClInclude>
     <ClInclude Include="Option.h">
       <Filter>GUI\Sequence\Option</Filter>
-    </ClInclude>
-    <ClInclude Include="other_usefuls.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="button.h">
       <Filter>GUI\button</Filter>
@@ -166,6 +160,12 @@
       <Filter>TEST\Submission</Filter>
     </ClInclude>
     <ClInclude Include="MyTchar.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="my_utility.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="dx_utility.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

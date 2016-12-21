@@ -35,6 +35,13 @@ struct IUnknown;
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください。
 
+#if !defined(__clang__)
+using int8_t = char;
+using uint8_t = unsigned char;
+using int32_t = int;
+using uint32_t = unsigned int;
+#endif // !defined(__clang__)
+
 namespace dxle
 {
 	using pointi32 = dxle::point_c<int32_t>;
@@ -45,5 +52,6 @@ namespace dxle
 		return DxLib::DrawBox(pos1.x, pos1.y, pos2.x, pos2.y, color.get(), fill_flag);
 	}
 }
+
 
 #endif

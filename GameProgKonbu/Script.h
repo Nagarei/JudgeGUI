@@ -75,6 +75,6 @@ namespace Script
 
 	constexpr int32_t linestart_space = 2;
 	//スクリプトの大きさ分next_start_posを進める
-	void advance_script(const std::unique_ptr<Script::Script>& script, dxle::pointui32& next_start_pos, uint32_t& next_line_start,
+	void advance_script(const std::unique_ptr<Script>& script, dxle::pointui32& next_start_pos, uint32_t& next_line_start,
 		double extend_rate, uint32_t* max_width_buf, const dxle::pointi32* draw_pos1/*nullptrで描画しない*/);
 }

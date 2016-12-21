@@ -57,15 +57,43 @@ private:
 	}
 public:
 	static void set_test(size_t problem_num, const dxle::tstring& cppfile_full_name);
+	template<typename FUNC>
 	//注意：再入耐性なし
-	static void process_test_result(std::function<void(test_result_info&&)>& processer);
-	//注意：再入耐性なし
-	static void process_test_result(const std::function<void(test_result_info&&)>& processer) {
-		auto processer_ = processer;
-		return process_test_result(processer_);
-	}
-	//注意：再入耐性なし
-	static void process_test_result(std::function<void(test_result_info&&)>&& processer) {
-		return process_test_result(processer);
-	}
+	//@param processer: void(test_result_info&&)
+	static void process_test_result(FUNC&& processer);
 };
+template<typename FUNC>
+void compile_taskmanager::process_test_result(FUNC&& processer)
+{
+	auto& ins = GetIns();
+	size_t length = 0;
+	{
+		std::lock_guard<std::mutex> lock(ins.test_results_mtx);
+		length = ins.test_results.size();
+	}
+	for (size_t i = 0; i < length; ++i)
+	{
+		decltype(ins.test_results)::value_type res;
+		{
+			std::lock_guard<std::mutex> lock(ins.test_results_mtx);
+			res = std::move(ins.test_results[i]);
+		}
+		processer(std::move(res));
+#if 0
+		auto& data = Data::GetIns();
+		if (data.get_problemset_num() != ins.test_results[i].problem_set_num) {
+			continue;
+		}
+		auto& ns = ins.new_submissions[i].new_submission;
+		auto& prob_num = ins.new_submissions[i].problem_num;
+		auto type_draw = get_result_type_fordraw(ns);
+		popup::set(_T("結果が出ました："_ts) + type_draw.first.data(), type_draw.second, dxle::color_tag::black, 3000);
+		WaitJudgeQueue::pop(prob_num);
+		data[prob_num].AddSubmission(std::move(ns));
+#endif
+	}
+	if (0 < length) {
+		std::lock_guard<std::mutex> lock(ins.test_results_mtx);
+		ins.test_results.erase(ins.test_results.begin(), ins.test_results.begin() + length);
+	}
+}

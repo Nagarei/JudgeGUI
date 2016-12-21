@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "useful_func_and_class.h"
+#include "MyTchar.h"
 #include "Script.h"
 #include "Submission.h"
 

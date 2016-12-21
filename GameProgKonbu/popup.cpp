@@ -1,5 +1,6 @@
 ﻿#include "popup.h"
-#include "useful_func_and_class.h"
+#include "my_utility.h"
+#include "dx_utility.h"
 
 popup::popup()
 	: font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 5))

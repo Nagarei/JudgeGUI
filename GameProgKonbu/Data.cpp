@@ -1,8 +1,8 @@
 ﻿
 #include "Data.h"
-#include "other_usefuls.h"
+#include "my_utility.h"
 #include "GetNumfileNum.h"
-#include "SubmissionLog.h"
+#include "Submission.h"
 #include "popup.h"
 #include "WaitJudge.h"
 
@@ -458,6 +458,6 @@ Submission Submission::MakeWJ(time_t time)
 	dx_date.Min  = local_time.tm_min;
 	dx_date.Sec  = local_time.tm_sec;
 	return Submission{
-		Submission::Type_T::WJ, _T(""), {}, Data::GetIns().get_user_name(), dx_date
+		Submission::Type_T::WJ, 0, {}, Data::GetIns().get_user_name(), dx_date
 	};
 }

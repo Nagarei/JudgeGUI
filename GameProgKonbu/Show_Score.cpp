@@ -1,5 +1,5 @@
 ﻿#include "Show_Score.h"
-#include "other_usefuls.h"
+#include "dx_utility.h"
 #include "Mouse.h"
 #include "KeyInputData.h"
 #include "Contest.h"

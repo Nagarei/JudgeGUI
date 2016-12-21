@@ -157,7 +157,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="other_usefuls.h" />
+    <ClInclude Include="dx_utility.h" />
     <ClInclude Include="Option.h" />
     <ClInclude Include="Score_detail.h" />
     <ClInclude Include="Script.h" />
@@ -189,7 +189,7 @@
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Unsafe_My_func.h" />
-    <ClInclude Include="useful_func_and_class.h" />
+    <ClInclude Include="my_utility.h" />
     <ClInclude Include="WaitJudge.h">
       <SubType>
       </SubType>

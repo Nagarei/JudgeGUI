@@ -1,4 +1,5 @@
 ﻿#include "button.h"
+#include "dx_utility.h"
 
 namespace {
 
@@ -14,7 +15,6 @@ void Button::set_out_color(dxle::dx_color_param out_back_color_, dxle::dx_color_
 	out_back_color   = out_back_color_;
 	out_edge_color   = out_edge_color_;
 	out_string_color = out_string_color_;
-
 }
 bool Button::update(dxle::pointi32 mouse_pos, bool mouse_left_input)
 {

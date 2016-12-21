@@ -2,6 +2,7 @@
 #include "KeyInputData.h"
 #include "Mouse.h"
 #include "popup.h"
+#include "dx_utility.h"
 
 constexpr dxle::sizei32 popup_size = { 200, 75 };
 

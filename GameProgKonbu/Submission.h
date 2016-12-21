@@ -39,8 +39,8 @@ public:
 	Submission() = default;
 	Submission(Type_T type_, uint32_t submit_num, std::vector<Score> scores_,
 		dxle::tstring user_name_, DxLib::DATEDATA submit_time_)
-		:core(type_, std::move(scores_)), submit_num(submit_num)
-		user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
+		: core(type_, std::move(scores_)), submit_num(submit_num)
+		, user_name(std::move(user_name_)), submit_time(std::move(submit_time_))
 	{}
 	Submission(const Submission&) = default;
 	Submission(Submission&&) = default;

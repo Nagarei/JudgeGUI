@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "useful_func_and_class.h"
+#include "my_utility.h"
 
 void DrawButton(dxle::pointi32 pos1, dxle::sizei32 size, dxle::dx_color_param color, dxle::dx_color_param edge_color);
 enum class Button_string_pos { center, left };

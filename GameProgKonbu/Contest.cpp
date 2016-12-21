@@ -1,6 +1,5 @@
 ﻿#include "Contest.h"
-#include "useful_func_and_class.h"
-#include "other_usefuls.h"
+#include "dx_utility.h"
 #include "Mouse.h"
 #include "test.h"
 #include "fps.h"
