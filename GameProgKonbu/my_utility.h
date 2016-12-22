@@ -5,14 +5,6 @@
 static constexpr double sqrt3 = (1.7320508075688772935274463415059);
 
 
-namespace tstring_literal {
-	inline dxle::tstring operator"" _ts(const TCHAR* s, std::size_t l)
-	{
-		return{ s,l };
-	}
-}
-using namespace tstring_literal;
-
 template<typename FUNC>
 struct Finally_C {
 	Finally_C(FUNC&& func_):func(std::forward<FUNC>(func_)){}

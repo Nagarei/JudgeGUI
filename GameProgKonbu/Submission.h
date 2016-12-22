@@ -41,4 +41,5 @@ void RunTest(dxle::tstring log_directory, dxle::tstring input_directory, const d
 Submission_Core BuildScores(dxle::tstring log_directory);
 
 const TCHAR* get_compile_out_filename()noexcept;
+const TCHAR* get_source_filename()noexcept;
 std::array<TCHAR, 20> get_input_name(uint32_t i)noexcept;

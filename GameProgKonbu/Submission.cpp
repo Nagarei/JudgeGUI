@@ -16,6 +16,11 @@ const TCHAR* get_compile_out_filename()noexcept {
 	return LOG_COMPILE_NAME;
 }
 
+const TCHAR* get_source_filename() noexcept
+{
+	return LOG_SOURCE_NAME;
+}
+
 std::array<TCHAR, 20> get_input_name(uint32_t i) noexcept
 {
 	std::array<TCHAR, 20> str; 
@@ -122,8 +127,9 @@ Submission_Core BuildScores(dxle::tstring log_directory)
 	//提出時間取得
 	time_t sbumit_time;
 	{
-		DATEDATA dx_sbumit_time;
-		dx_sbumit_time.Year = dx_sbumit_time.Mon = dx_sbumit_time.Day = dx_sbumit_time.Hour = dx_sbumit_time.Min = dx_sbumit_time.Sec = 0;
+		tm local_time;
+		local_time.tm_year = local_time.tm_mon = local_time.tm_mday = 
+			local_time.tm_hour = local_time.tm_min = local_time.tm_sec = 0;
 		auto file_handle = FileRead_createInfo((log_directory + LOG_RESULT_NAME).c_str());
 		if (file_handle != -1) {
 			//読み込み成功
@@ -133,9 +139,15 @@ Submission_Core BuildScores(dxle::tstring log_directory)
 			Buffer.CreationTime.Year = Buffer.CreationTime.Mon = Buffer.CreationTime.Day
 				= Buffer.CreationTime.Hour = Buffer.CreationTime.Min = Buffer.CreationTime.Sec = 0;
 			DxLib::FileRead_getInfo(0, &Buffer, file_handle);
-			dx_sbumit_time = Buffer.CreationTime;
+			//変換
+			local_time.tm_year = Buffer.CreationTime.Year - 1900;
+			local_time.tm_mon  = Buffer.CreationTime.Mon - 1;
+			local_time.tm_mday = Buffer.CreationTime.Day;
+			local_time.tm_hour = Buffer.CreationTime.Hour;
+			local_time.tm_min  = Buffer.CreationTime.Min;
+			local_time.tm_sec  = Buffer.CreationTime.Sec;
 		}
-		sbumit_time = ;
+		sbumit_time = mktime(&local_time);
 	}
 
 	//結果の解析

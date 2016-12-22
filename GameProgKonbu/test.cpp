@@ -1,10 +1,7 @@
 ﻿#include "test.h"
-#include "Data.h"
+#include "Submission.h"
 #include "GetNumfileNum.h"
 #include "Unsafe_My_func.h"
-#include "Submission.h"
-#include "WaitJudge.h"
-#include "popup.h"
 
 namespace
 {

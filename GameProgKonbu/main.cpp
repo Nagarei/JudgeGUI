@@ -1,12 +1,9 @@
 ﻿//#include "DxLib.h"
 #include "resource.h"
 #include "Option.h"
-#include "Mouse.h"
-#include "Data.h"
 #include "SetLocale.h"
 #include "fps.h"
-#include "popup.h"
-#include "test.h"
+#include "ModeSwitch.h"
 
 namespace {
 	//DxLib初期化処理
@@ -26,11 +23,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 		std::unique_ptr<Sequence> seqence = std::make_unique<Option_Sequence>();
 		while (ProcessMessage() == 0)
 		{
-			KeyInputData::GetIns().Update();
-			Mouse::GetIns().update();
-			Data::GetIns().update();
-			frame_time::GetIns().upadte();
-			compile_taskmanager::update();
 
 			//auto new_seq = seqence->update();
 			//if (new_seq){
@@ -46,7 +38,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 			}
 			seqence->draw();
 
-			popup::update();
+			update_after_maindraw();
 
 			ScreenFlip();
 			ClearDrawScreen();

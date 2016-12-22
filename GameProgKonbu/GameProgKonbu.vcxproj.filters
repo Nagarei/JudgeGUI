@@ -64,9 +64,6 @@
     <Filter Include="GUI\Mouse">
       <UniqueIdentifier>{5a20328f-78f6-4ac7-b920-6dc449d95d5b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CommonLIB">
-      <UniqueIdentifier>{d08a660a-7628-4c83-b8f3-bb64778e91a0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI\OpenFolder">
       <UniqueIdentifier>{1e715982-bb71-4d71-8732-7d512e2705a9}</UniqueIdentifier>
     </Filter>
@@ -75,6 +72,9 @@
     </Filter>
     <Filter Include="GUI\SetClipboardText">
       <UniqueIdentifier>{77a65026-6674-4887-a9f3-81cde0d94fcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ModeSwitch">
+      <UniqueIdentifier>{d08a660a-7628-4c83-b8f3-bb64778e91a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +168,9 @@
     <ClInclude Include="dx_utility.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="ModeSwitch.h">
+      <Filter>ModeSwitch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="Submission.cpp">
       <Filter>TEST\Submission</Filter>
+    </ClCompile>
+    <ClCompile Include="ModeSwitch.cpp">
+      <Filter>ModeSwitch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

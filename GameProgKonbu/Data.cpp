@@ -273,10 +273,17 @@ void Problem::ReloadSubmission()
 		user_name + _T('/');
 	auto log_num = get_numdirectry_num(problem_user_directory, _T(""), 0);
 	if (log_num == (uint32_t)(-1)) { return; }
+	dxle::tstring prb_dir;
+	prb_dir.reserve(problem_user_directory.size() + 20);
 	TCHAR buf[20];
 	for (uint32_t i = 0; i <= log_num; ++i)
 	{
-		this->AddSubmission(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/')));
+		prb_dir = problem_user_directory + my_itoa(i, buf) + _T('/');
+		this->AddSubmission({
+			BuildScores(prb_dir),
+			prb_dir + get_source_filename(),
+			Data::GetIns().get_user_name()
+		});
 	}
 }
 void Problem::ReloadPartialScores()
@@ -341,7 +348,12 @@ std::vector<Submission_old> Problem::LoadSubmissionAll()const
 					TCHAR buf[20];
 					for (uint32_t i = 0; i <= log_num; ++i)
 					{
-						submissions.emplace_back(BuildScores(problem_user_directory + my_itoa(i, buf) + _T('/')));
+						auto submission_dir = problem_user_directory + my_itoa(i, buf) + _T('/');
+						submissions.emplace_back(
+							BuildScores(submission_dir),
+							submission_dir + get_source_filename(),
+							fi.Name
+						);
 					}
 				};
 			}
@@ -448,6 +460,7 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 
 Submission_old Submission_old::MakeWJ(time_t time)
 {
+#if 0
 	tm local_time;
 	localtime_s(&local_time, &time);
 	DxLib::DATEDATA dx_date;
@@ -457,7 +470,9 @@ Submission_old Submission_old::MakeWJ(time_t time)
 	dx_date.Hour = local_time.tm_hour;
 	dx_date.Min  = local_time.tm_min;
 	dx_date.Sec  = local_time.tm_sec;
+#endif
 	return Submission_old{
-		Submission_old::Type_T::WJ, 0, {}, Data::GetIns().get_user_name(), dx_date
+		Submission_Core{Submission_Core::Type_T::WJ, {}, time},
+		{}, Data::GetIns().get_user_name()
 	};
 }

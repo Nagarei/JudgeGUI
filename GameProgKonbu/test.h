@@ -79,18 +79,6 @@ void compile_taskmanager::process_test_result(FUNC&& processer)
 			res = std::move(ins.test_results[i]);
 		}
 		processer(std::move(res));
-#if 0
-		auto& data = Data::GetIns();
-		if (data.get_problemset_num() != ins.test_results[i].problem_set_num) {
-			continue;
-		}
-		auto& ns = ins.new_submissions[i].new_submission;
-		auto& prob_num = ins.new_submissions[i].problem_num;
-		auto type_draw = get_result_type_fordraw(ns);
-		popup::set(_T("結果が出ました："_ts) + type_draw.first.data(), type_draw.second, dxle::color_tag::black, 3000);
-		WaitJudgeQueue::pop(prob_num);
-		data[prob_num].AddSubmission(std::move(ns));
-#endif
 	}
 	if (0 < length) {
 		std::lock_guard<std::mutex> lock(ins.test_results_mtx);

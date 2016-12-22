@@ -254,6 +254,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="button.h" />
+    <ClInclude Include="ModeSwitch.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="MyTchar.h">
       <SubType>
       </SubType>
@@ -321,6 +325,10 @@
     <ClCompile Include="Data.cpp" />
     <ClCompile Include="KeyInputData.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ModeSwitch.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="OpenFolder.cpp">
       <SubType>

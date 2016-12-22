@@ -13,10 +13,8 @@ private:
 	dxle::tstring user_name;
 public:
 	Submission_old() = default;
-	Submission_old(Type_T type_, dxle::tstring code_path, std::vector<Score> scores_,
-		dxle::tstring user_name_, time_t submit_time_)
-		: core(type_, std::move(scores_), submit_time_), code_path(code_path)
-		, user_name(std::move(user_name_))
+	Submission_old(Submission_Core core, dxle::tstring code_path, dxle::tstring user_name)
+		: core(std::move(core)), code_path(std::move(code_path)) , user_name(std::move(user_name))
 	{}
 	Submission_old(const Submission_old&) = default;
 	Submission_old(Submission_old&&) = default;
@@ -25,6 +23,7 @@ public:
 	static Submission_old MakeWJ(time_t);
 
 	const dxle::tstring& get_user_name()const { return user_name; }
+	const dxle::tstring& get_source_name()const { return code_path; }
 	Type_T get_type()const { return core.get_type(); }
 	const std::vector<Score>& get_scores()const { return core.get_scores(); }
 	const DxLib::DATEDATA& get_submit_time()const;
@@ -146,5 +145,4 @@ public:
 	dxle::tstring GetLoadingProblemDir()const {
 		return GetProblemsDirectory() + problems[now_loding_problem].GetName() + _T('/');
 	}
-
 };
