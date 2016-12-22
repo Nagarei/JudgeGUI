@@ -30,7 +30,6 @@ public:
 	DxLib::DATEDATA get_submit_time()const;
 };
 
-std::pair<Submission_Core::Type_T, Score::Type_T> get_result_type(const Submission_Core& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission_Core& );
 

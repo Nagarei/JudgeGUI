@@ -14,7 +14,13 @@ namespace
 	void set_test(size_t problem_num, const dxle::tstring& cppfile_full_name)
 	{
 		WaitJudgeQueue::push(problem_num);
-		compile_taskmanager::set_test(Data::GetIns().get_problemset_num(), problem_num, cppfile_full_name);
+		auto& data = Data::GetIns();
+		compile_taskmanager::set_test(
+			Data::GetIns().get_problemset_num(), 
+			std::make_unique<test_Local>(
+				problem_dir_set{ problem_num, data.GetProblemsDirectory(), data.GetLogRootDirectory(), data[problem_num].GetName() },
+				data.get_user_name(), cppfile_full_name)
+		);
 	}
 }
 Contest::Contest(int selecting_)

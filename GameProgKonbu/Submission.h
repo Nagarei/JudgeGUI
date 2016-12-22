@@ -29,6 +29,7 @@ private:
 	time_t submit_time;
 };
 
+std::pair<Submission_Core::Type_T, Score::Type_T> get_result_type(const Submission_Core&);
 
 
 //結果の解析
