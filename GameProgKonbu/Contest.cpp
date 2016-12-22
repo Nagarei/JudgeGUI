@@ -7,8 +7,15 @@
 #include "SetClipboardText.h"
 #include "popup.h"
 #include "Option.h"
+#include "WaitJudge.h"
+
 namespace
 {
+	void set_test(size_t problem_num, const dxle::tstring& cppfile_full_name)
+	{
+		WaitJudgeQueue::push(problem_num);
+		compile_taskmanager::set_test(Data::GetIns().get_problemset_num(), problem_num, cppfile_full_name);
+	}
 }
 Contest::Contest(int selecting_)
 	: Sequence_Commom(selecting_)
@@ -54,7 +61,7 @@ std::unique_ptr<Sequence> Contest::update()
 		GetDragFilePath(str_buf.get());
 		DxLib::DragFileInfoClear();
 		DxLib::SetDragFileValidFlag(TRUE);
-		compile_taskmanager::set_test(selecting, str_buf.get());
+		set_test(selecting, str_buf.get());
 	}
 	if (!GetWindowActiveFlag()) {
 		return nullptr;
@@ -205,7 +212,7 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		}
 		else {
 			//成功
-			compile_taskmanager::set_test(selecting, szFile);
+			set_test(selecting, szFile);
 		}
 
 	}

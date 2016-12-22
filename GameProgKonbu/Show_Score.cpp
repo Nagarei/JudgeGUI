@@ -304,11 +304,11 @@ void Show_Score::draw_Submit() const
 			//スコア
 			set_next_area(submit::min_score_width);
 			DrawStringCenter2(pos1, _T("%d"), dxle::color_tag::black, submissions_font, draw_area,
-				prob.GetScore_single(submissions_data[submissions_index[i]]));
+				prob.GetScore_single(submissions_data[submissions_index[i]].get_core()));
 			//タイプ
 			set_next_area(submit::min_type_width);
 			{
-				auto&& type_draw = get_result_type_fordraw(score);
+				auto&& type_draw = get_result_type_fordraw(score.get_core());
 				dxle::DrawBox(pos1 + dxle::sizei{3, 1}, pos1 + draw_area - dxle::sizei{ 0, 1 }, type_draw.second, true);
 				dxle::DrawBox(pos1 + dxle::sizei{3, 1}, pos1 + draw_area - dxle::sizei{ 0, 1 }, dxle::color_tag::black, false);
 				DrawStringCenter2(pos1, type_draw.first.data(), dxle::color_tag::black, submissions_font, draw_area);
@@ -453,7 +453,7 @@ void Show_Score::run_sort(int type)
 	case submit::index::score:
 		sort([&pred, this](size_t l, size_t r) {
 			const auto& prob = Data::GetIns()[selecting];
-			return pred(prob.GetScore_single(submissions_data[l]), prob.GetScore_single(submissions_data[r]));
+			return pred(prob.GetScore_single(submissions_data[l].get_core()), prob.GetScore_single(submissions_data[r].get_core()));
 		});
 		break;
 	case submit::index::type:
@@ -462,8 +462,8 @@ void Show_Score::run_sort(int type)
 				return ((static_cast<uint32_t>(p.first) << 16) | static_cast<uint32_t>(p.second));
 			};
 			return pred(
-				to_int(get_result_type(submissions_data[l])),
-				to_int(get_result_type(submissions_data[r]))
+				to_int(get_result_type(submissions_data[l].get_core())),
+				to_int(get_result_type(submissions_data[r].get_core()))
 			);
 		});
 		break;

@@ -297,7 +297,7 @@ void Score_detail::draw() const
 		{
 			draw_subject(_T("状態"));
 			int32_t x1 = pos2_x + (value_width - type_icon_width) / 2;
-			auto for_draw = get_result_type_fordraw(submission);
+			auto for_draw = get_result_type_fordraw(submission.get_core());
 			DxLib::DrawFillBox(x1, pos1.y, x1 + type_icon_width, pos1.y + data_height, dxle::dx_color(for_draw.second).get());
 			DrawStringCenter2({ x1, pos1.y }, for_draw.first.data(), dxle::color_tag::black, main_font, { type_icon_width, data_height });
 			pos1.y += data_height;
@@ -305,7 +305,7 @@ void Score_detail::draw() const
 		//得点
 		my_draw_box_WF();
 		draw_subject(_T("得点"));
-		draw_value(_T("%d"), problem.GetScore_single(submission));
+		draw_value(_T("%d"), problem.GetScore_single(submission.get_core()));
 		pos1.y += data_height;
 
 		//仕切り線

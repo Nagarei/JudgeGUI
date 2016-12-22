@@ -26,12 +26,13 @@ public:
 	const dxle::tstring& get_source_name()const { return code_path; }
 	Type_T get_type()const { return core.get_type(); }
 	const std::vector<Score>& get_scores()const { return core.get_scores(); }
-	const DxLib::DATEDATA& get_submit_time()const;
+	const Submission_Core& get_core()const { return core; }
+	DxLib::DATEDATA get_submit_time()const;
 };
 
-std::pair<Submission_old::Type_T, Score::Type_T> get_result_type(const Submission_old& );
+std::pair<Submission_Core::Type_T, Score::Type_T> get_result_type(const Submission_Core& );
 std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score& );
-std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission_old& );
+std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission_Core& );
 
 class Problem final
 {
@@ -54,13 +55,13 @@ public:
 	//メインスレッドからのみ呼び出し可
 	int GetMaxScore()const { return max_score; }
 	//メインスレッドからのみ呼び出し可
-	void AddSubmission(const Submission_old& new_data);
+	void AddSubmission(const Submission_Core& new_data);
 	//メインスレッドからのみ呼び出し可
 	void ClearSubmissionCache() { my_socre = 0; }
 
 	//メインスレッドからのみ呼び出し可
 	//iの入力が何点相当か調べる
-	int32_t GetScore_single(const Submission_old& )const;
+	int32_t GetScore_single(const Submission_Core& )const;
 
 	//メインスレッドからのみ呼び出し可
 	void ReloadSubmission();

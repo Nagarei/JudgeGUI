@@ -51,12 +51,11 @@ compile_taskmanager::~compile_taskmanager()
 	SetEnd();
 }
 
-void compile_taskmanager::set_test(size_t problem_num, const dxle::tstring & cppfile_full_name)
+void compile_taskmanager::set_test(size_t problemset_num, std::unique_ptr<test_class> tester)
 {
 	auto& ins = GetIns();
-	WaitJudgeQueue::push(problem_num);
 	std::lock_guard<std::mutex> lock(ins.test_queue_mtx);
-	ins.test_queue.emplace_back(Data::GetIns().get_problemset_num(), std::make_unique<test_class>(problem_num, cppfile_full_name));
+	ins.test_queue.emplace_back(problemset_num, std::move(tester));
 }
 
 
@@ -65,19 +64,16 @@ void compile_taskmanager::set_test(size_t problem_num, const dxle::tstring & cpp
 #define LOG_TEMP_FOLDER_NAME _T("__TEMP/")
 
 
-test_Local::test_Local(size_t problem_num_, dxle::tstring cppfile_full_name_)
-	: problem_num(problem_num_)
-	, cppfile_full_name(cppfile_full_name_)
+test_Local::test_Local(const problem_dir_set& prob_dir, const dxle::tstring& user_name, dxle::tstring cppfile_full_name_)
+	: problem_num(prob_dir.problem_num)
+	, cppfile_full_name(std::move(cppfile_full_name_))
 {
-	const auto& data = Data::GetIns();
-	const auto& problem_name = data[problem_num].GetName();
-	
-	problem_directory = data.GetProblemsDirectory() + problem_name + _T('/');
+	problem_directory = prob_dir.problem_root_dir + prob_dir.problem_name + _T('/');
 	//CreateDirectory(problem_directory.c_str(), NULL);
 	
-	auto log_problem_directory = data.GetLogRootDirectory() + problem_name + _T('/');
+	auto log_problem_directory = prob_dir.log_root_dir + prob_dir.problem_name + _T('/');
 	CreateDirectory(log_problem_directory.c_str(), NULL);
-	log_user_directory = std::move(log_problem_directory) + data.get_user_name() + _T('/');
+	log_user_directory = std::move(log_problem_directory) + user_name + _T('/');
 	CreateDirectory(log_user_directory.c_str(), NULL);
 }
 

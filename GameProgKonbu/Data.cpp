@@ -234,17 +234,14 @@ Problem::Problem(const TCHAR* pronlem_name)
 	}
 }
 
-void Problem::AddSubmission(const Submission_old& new_data)
+void Problem::AddSubmission(const Submission_Core& new_data)
 {
-	if (Data::GetIns().get_user_name() == new_data.get_user_name())
-	{
-		my_socre = std::max(my_socre, GetScore_single(new_data));
-	}
+	my_socre = std::max(my_socre, GetScore_single(new_data));
 }
 
-int32_t Problem::GetScore_single(const Submission_old& data) const
+int32_t Problem::GetScore_single(const Submission_Core& data) const
 {
-	if (data.get_type() != Submission_old::Type_T::normal) {
+	if (data.get_type() != Submission_Core::Type_T::normal) {
 		return 0;
 	}
 	int32_t temp_score = 0;
@@ -275,15 +272,9 @@ void Problem::ReloadSubmission()
 	if (log_num == (uint32_t)(-1)) { return; }
 	dxle::tstring prb_dir;
 	prb_dir.reserve(problem_user_directory.size() + 20);
-	TCHAR buf[20];
 	for (uint32_t i = 0; i <= log_num; ++i)
 	{
-		prb_dir = problem_user_directory + my_itoa(i, buf) + _T('/');
-		this->AddSubmission({
-			BuildScores(prb_dir),
-			prb_dir + get_source_filename(),
-			Data::GetIns().get_user_name()
-		});
+		this->AddSubmission(BuildScores(prb_dir));
 	}
 }
 void Problem::ReloadPartialScores()
@@ -416,7 +407,7 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Score&
 #undef SET_grts_
 }
 
-std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission_old& scores)
+std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submission_Core& scores)
 {
 	std::array<TCHAR, 10> str;
 	dxle::rgb color;
@@ -460,8 +451,16 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 
 Submission_old Submission_old::MakeWJ(time_t time)
 {
-#if 0
+	return Submission_old{
+		Submission_Core{Submission_Core::Type_T::WJ, {}, time},
+		{}, Data::GetIns().get_user_name()
+	};
+}
+
+DxLib::DATEDATA Submission_old::get_submit_time() const
+{
 	tm local_time;
+	auto time = core.get_submit_time();
 	localtime_s(&local_time, &time);
 	DxLib::DATEDATA dx_date;
 	dx_date.Year = local_time.tm_year + 1900;
@@ -470,9 +469,5 @@ Submission_old Submission_old::MakeWJ(time_t time)
 	dx_date.Hour = local_time.tm_hour;
 	dx_date.Min  = local_time.tm_min;
 	dx_date.Sec  = local_time.tm_sec;
-#endif
-	return Submission_old{
-		Submission_Core{Submission_Core::Type_T::WJ, {}, time},
-		{}, Data::GetIns().get_user_name()
-	};
+	return dx_date;
 }

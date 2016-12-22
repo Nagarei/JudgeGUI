@@ -3,6 +3,10 @@
 #ifdef PARENT_MODE
 #include "test.h"
 
+void init_switch()
+{
+}
+
 void update()
 {
 	後で書く;
@@ -20,7 +24,13 @@ void update_after_maindraw()
 #include "Data.h"
 #include "WaitJudge.h"
 #include "MyTchar.h"
+#include "fps.h"
 
+void init_switch()
+{
+	frame_time::GetIns().upadte();
+	frame_time::GetIns().upadte();
+}
 void update()
 {
 	KeyInputData::GetIns().Update();

@@ -1,6 +1,12 @@
 ﻿#pragma once
 #include "Submission.h"
 
+struct problem_dir_set {
+	size_t problem_num;
+	const dxle::tstring& problem_root_dir;
+	const dxle::tstring& log_root_dir;
+	const dxle::tstring& problem_name;
+};
 class test_Local final
 {
 private:
@@ -9,7 +15,7 @@ private:
 	dxle::tstring log_user_directory;
 	dxle::tstring cppfile_full_name;
 public:
-	test_Local(size_t problem_num, dxle::tstring cppfile_full_name_);
+	test_Local(const problem_dir_set& prob_dir, const dxle::tstring& user_name, dxle::tstring cppfile_full_name_);
 	//スコアデータを返す
 	Submission_Core test_run();
 	size_t get_problem_num()const noexcept { return problem_num; }
@@ -56,7 +62,7 @@ private:
 		return ins;
 	}
 public:
-	static void set_test(size_t problem_num, const dxle::tstring& cppfile_full_name);
+	static void set_test(size_t problemset_num, std::unique_ptr<test_class> tester);
 	template<typename FUNC>
 	//注意：再入耐性なし
 	//@param processer: void(test_result_info&&)
