@@ -1,4 +1,5 @@
-﻿#include "Score_detail.h"
+﻿#ifndef PARENT_MODE
+#include "Score_detail.h"
 #include "Show_Score.h"
 #include "Contest.h"
 #include "Submission.h"
@@ -10,9 +11,9 @@
 constexpr TCHAR EOF_STR[] = _T("[EOF]");
 constexpr size_t EOF_STR_SIZE = sizeof(EOF_STR) / sizeof(EOF_STR[0]) - 1;//NULL文字を除く
 
-namespace{
+namespace {
 	constexpr int32_t data_height = 30;
-	enum class show_data_enum : int32_t{//（個々の入出力以外で）表示するデータの種類
+	enum class show_data_enum : int32_t {//（個々の入出力以外で）表示するデータの種類
 		user_name, time,/*prob_name,*/ type, score,
 		ENUM_SIZE
 	};
@@ -51,7 +52,7 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 	scrollbar.set_pos({ menu_space_size, title_space });
 	//ソース
 	{
-		tifstream ifs( submission.get_source_name(), std::ios::in | std::ios::binary);
+		tifstream ifs(submission.get_source_name(), std::ios::in | std::ios::binary);
 		if (ifs.bad()) {
 			source_str = _T("読み込みに失敗しました");
 		}
@@ -81,7 +82,7 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 		}
 		DxLib::GetDrawStringSizeToHandle(&source_size.width, &source_size.height, &source_line_num,
 			source_str.c_str(), source_str.size(), main_font);//@todo dxlibex
-		source_size.height += box_frame_thickness*2;//ボックスの淵分
+		source_size.height += box_frame_thickness * 2;//ボックスの淵分
 		source_size.width += box_frame_thickness * 2;//ボックスの淵分
 		source_size.width += linenum_space;
 	}
@@ -92,7 +93,7 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 		FILE* fp = NULL;
 		_tfopen_s(&fp,
 			(submission.get_source_name() + _T("/../") + get_compile_out_filename()).c_str()
-		, _T("r"));//, _T("r,ccs=UTF-8"));//clangの出力はUTF-8
+			, _T("r,ccs=UTF-8"));//clangの出力はUTF-8
 		if (fp == NULL) {
 			compile_str = _T("読み込みに失敗しました");
 		}
@@ -100,14 +101,14 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 			fseek(fp, 0, SEEK_END);
 			auto size = ftell(fp);
 			if (0 < size) {
-				auto buf = std::make_unique<TCHAR[]>(size+1);
+				auto buf = std::make_unique<TCHAR[]>(size + 1);
 				fseek(fp, 0, SEEK_SET);
 				buf[size] = _T('\0');
-				fread((void*)buf.get(), sizeof(TCHAR), size+1, fp);
+				fread((void*)buf.get(), sizeof(TCHAR), size + 1, fp);
 				compile_str = buf.get();
 			}
 			compile_str += EOF_STR;
-		}
+}
 #else
 		//gccはANSI
 		tifstream ifs(
@@ -121,7 +122,7 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 			auto str_len = ifs.tellg();
 			if (0 < str_len)
 			{
-				auto str_buf = std::make_unique<TCHAR[]>((size_t)(str_len) + 1);
+				auto str_buf = std::make_unique<TCHAR[]>((size_t)(str_len)+1);
 				str_buf[0] = _T('\0');
 				ifs.seekg(0, std::ios::beg);
 				ifs.read(str_buf.get(), str_len);//NULL終端文字はつかないので注意！！
@@ -152,7 +153,7 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 	//メニュー配置
 	to_problem.set_area({ 0, title_space }, { menu_space_size , menu_button_height });
 	to_problem.set_str(_T("問題文"));
-	to_submissions.set_area({ 0, title_space+ menu_button_height }, { menu_space_size , menu_button_height });
+	to_submissions.set_area({ 0, title_space + menu_button_height }, { menu_space_size , menu_button_height });
 	to_submissions.set_str(_T("結果"));
 
 	{
@@ -233,11 +234,11 @@ void Score_detail::draw() const
 			auto y = pos1.y + source_size_temp.height * i / source_line_num;
 			DxLib::DrawLine(pos1.x, y, pos1.x + source_size_temp.width, y, dxle::dx_color(box_edge_color).get());
 			DrawStringRight({ pos1.x + box_frame_thickness,y }, _T("%d"), dxle::color_tag::black,
-				main_font, { linenum_space - box_frame_thickness, height }, i+1);
+				main_font, { linenum_space - box_frame_thickness, height }, i + 1);
 		}
 		//行番号とコードの区切りの縦線
 		DxLib::DrawLine(pos1.x + linenum_space, pos1.y,
-						pos1.x + linenum_space, pos1.y + source_size_temp.height, dxle::dx_color(box_edge_color).get());
+			pos1.x + linenum_space, pos1.y + source_size_temp.height, dxle::dx_color(box_edge_color).get());
 		//コード
 		DxLib::DrawStringToHandle(pos1.x + box_frame_thickness + linenum_space, pos1.y + box_frame_thickness,
 			source_str.c_str(), dxle::dx_color(dxle::color_tag::black).get(), main_font);
@@ -323,7 +324,7 @@ void Score_detail::draw() const
 		const auto& scores = submission.get_scores();
 		int32_t pos_x = pos1.x;
 		int32_t width = 0;
-		auto my_draw_box_WF = [&pos1,&middle_total_width]() {
+		auto my_draw_box_WF = [&pos1, &middle_total_width]() {
 			DrawBoxWithFrame(pos1, { pos1.x + middle_total_width, pos1.y + data_height }, box_back_color, box_edge_color);
 		};
 		auto draw_str = [&pos_x, &pos1, &width, font = this->main_font](const TCHAR* str, auto... args) {
@@ -341,7 +342,7 @@ void Score_detail::draw() const
 		set_next(memory_width);     draw_str(_T("メモリ使用量"));
 		pos1.y += data_height;
 		//値
-		for (auto iter = scores.cbegin(), iter_end = scores.cend();iter != iter_end; ++iter)
+		for (auto iter = scores.cbegin(), iter_end = scores.cend(); iter != iter_end; ++iter)
 		{
 			auto& i = *iter;
 			DxLib::SetDrawAreaFull();
@@ -482,3 +483,5 @@ void Score_detail::reset_Scroll()
 
 	reset_scrolled_obj();
 }
+
+#endif // !PARENT_MODE

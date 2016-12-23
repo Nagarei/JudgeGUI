@@ -35,6 +35,8 @@ struct IUnknown;
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください。
 
+#define PARENT_MODE 1
+
 #if !defined(__clang__)
 using int8_t = char;
 using uint8_t = unsigned char;

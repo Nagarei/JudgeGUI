@@ -1,4 +1,6 @@
-﻿#include "common.h"
+﻿#ifndef PARENT_MODE
+
+#include "common.h"
 #include "KeyInputData.h"
 #include "Mouse.h"
 #include "popup.h"
@@ -113,3 +115,5 @@ void Sequence_Commom::reset_popup() {
 	dxle::sizei32 window_size = My_GetWindowSize();
 	popup::GetIns().set_area({ window_size.width - popup_size.width, title_space }, popup_size);
 }
+
+#endif // !PARENT_MODE

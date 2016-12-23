@@ -1,4 +1,5 @@
-﻿#include "Option.h"
+﻿#ifndef PARENT_MODE
+#include "Option.h"
 #include "Contest.h"
 #include "Mouse.h"
 #include "OpenFolder.h"
@@ -42,7 +43,7 @@ Option_Sequence::Option_Sequence()
 		i.set_on_color(selecting_color, selecting_color, selecting_color);
 		i.set_out_color(normal_color, normal_color, normal_color);
 	}
-	
+
 	Data::GetIns().DeleteProblem();
 }
 Option_Sequence::~Option_Sequence()
@@ -226,3 +227,5 @@ void Option_Sequence::draw() const
 
 	str_graph.DrawGraph({ 0,0 }, true);
 }
+
+#endif // !1

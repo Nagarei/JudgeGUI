@@ -1,4 +1,5 @@
-﻿#include "Script.h"
+﻿#ifndef PARENT_MODE
+#include "Script.h"
 #include "my_utility.h"
 #include "Data.h"
 
@@ -7,7 +8,7 @@ namespace
 	//@return true：処理した false:スルーした
 	bool receve_script(dxle::tstring& bace_str, const TCHAR* accept_script) {
 		auto bace_str_iter = bace_str.begin(), bace_str_end = bace_str.end();
-		for (; *accept_script != _T('\0') && bace_str_iter != bace_str_end; ++accept_script, ++bace_str_iter){
+		for (; *accept_script != _T('\0') && bace_str_iter != bace_str_end; ++accept_script, ++bace_str_iter) {
 			if (*accept_script != *bace_str_iter) {
 				return false;
 			}
@@ -32,7 +33,7 @@ namespace
 		}
 		while (iter != iter_end && _T('0') <= *iter && *iter <= _T('9'))
 		{
-			assert(value <= std::numeric_limits<INT>::max()/10 - 1);
+			assert(value <= std::numeric_limits<INT>::max() / 10 - 1);
 			value *= 10;
 			value += (*iter - _T('0'));
 			++iter;
@@ -48,7 +49,7 @@ namespace Script
 {
 	namespace impl
 	{
-//---------------------------impl::Text_Bace------------------------------------------------//
+		//---------------------------impl::Text_Bace------------------------------------------------//
 
 		void Text_Bace::Init(dxle::tstring& str, int font)
 		{
@@ -111,10 +112,10 @@ namespace Script
 		}
 		return std::make_unique<Plain_Text>(str);
 	}
-	
-//---------------------------Image------------------------------------------------//
 
-	//@image<width hight>[image-name]
+	//---------------------------Image------------------------------------------------//
+
+		//@image<width hight>[image-name]
 	Image::Image(dxle::tstring & str)
 	{
 		if (str.empty()) { return; }
@@ -128,7 +129,7 @@ namespace Script
 			iter = std::find_if(stoi_res.second, str.end(), [](TCHAR c) {
 				return (_T('0') <= c && c <= _T('9')) || (c == _T('>'));
 			});
-			if(iter == str.end()) { return; }
+			if (iter == str.end()) { return; }
 			if (*iter == _T('>')) {
 				//heightは無し
 			}
@@ -160,7 +161,7 @@ namespace Script
 			{
 				auto gr_size = graph.GetGraphSize();
 				if (size.height == 0) { size.height = gr_size.height; }
-				if (size.width  == 0) { size.width  = gr_size.width; }
+				if (size.width == 0) { size.width = gr_size.width; }
 				SetLineSize_first(size);
 			}
 		}
@@ -169,7 +170,7 @@ namespace Script
 	void Image::draw_extend(unsigned draw_line, const dxle::pointi32 & pos, double extend_rate) const
 	{
 		assert(draw_line == 0);
-		graph.DrawExtendGraph(pos, dxle::pointi(pos + size*extend_rate), true);
+		graph.DrawExtendGraph(pos, dxle::pointi(pos + size*extend_rate), false);
 	}
 
 	std::unique_ptr<Script> Image::get_script(dxle::tstring & str)
@@ -180,8 +181,8 @@ namespace Script
 		return nullptr;
 	}
 
-	
-//---------------------------build_script------------------------------------------------//
+
+	//---------------------------build_script------------------------------------------------//
 
 	std::unique_ptr<Script> build_script(dxle::tstring& str)
 	{
@@ -189,18 +190,18 @@ namespace Script
 		auto bef_str = str;
 		FINALLY([&]() {
 			assert(bef_str != str);
-		});
+});
 #endif
 #define RUN_bs(CLASS) if(auto res = CLASS::get_script(str)){return res;}
 		RUN_bs(Image)
 #undef  RUN_bs
-		return Plain_Text::get_script(str);
+			return Plain_Text::get_script(str);
 	}
 
 }//namespace Script
 
 //---------------------------advance_script------------------------------------------------//
-namespace{
+namespace {
 	//改行&復帰
 	inline void new_line(uint32_t& next_line_start, dxle::pointui32& next_start_pos, double extend_rate) {
 		//改行
@@ -239,7 +240,7 @@ namespace Script {
 		const auto& line_size = script->get_line_size();
 		if (1 <= line_num) {
 			//今の行の更新
-			if(draw_pos1){
+			if (draw_pos1) {
 				script->draw_extend(0, *draw_pos1 + static_cast<dxle::pointi32>(next_start_pos), extend_rate);
 			}
 			add_to_thisline_(line_size[0]);
@@ -272,3 +273,5 @@ namespace Script {
 		}
 	}
 }//namespace Script
+
+#endif // !1

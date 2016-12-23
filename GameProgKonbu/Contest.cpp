@@ -1,4 +1,5 @@
-﻿#include "Contest.h"
+﻿#ifndef PARENT_MODE
+#include "Contest.h"
 #include "dx_utility.h"
 #include "Mouse.h"
 #include "test.h"
@@ -16,7 +17,7 @@ namespace
 		WaitJudgeQueue::push(problem_num);
 		auto& data = Data::GetIns();
 		compile_taskmanager::set_test(
-			Data::GetIns().get_problemset_num(), 
+			Data::GetIns().get_problemset_num(),
 			std::make_unique<test_Local>(
 				problem_dir_set{ problem_num, data.GetProblemsDirectory(), data.GetLogRootDirectory(), data[problem_num].GetName() },
 				data.get_user_name(), cppfile_full_name)
@@ -26,7 +27,7 @@ namespace
 Contest::Contest(int selecting_)
 	: Sequence_Commom(selecting_)
 	, loading_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 32, 2))
-	, menu_font (DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
+	, menu_font(DxLib::CreateFontToHandle(_T("ＭＳ ゴシック"), 16, 2))
 	, problem_load_finished(false)
 {
 	scrollbar.set_pos({ menu_space_size, title_space });
@@ -63,7 +64,7 @@ std::unique_ptr<Sequence> Contest::update()
 {
 	if (1 <= DxLib::GetDragFileNum())
 	{
-		auto str_buf = std::make_unique<TCHAR[]>(GetDragFilePath(nullptr)+1);
+		auto str_buf = std::make_unique<TCHAR[]>(GetDragFilePath(nullptr) + 1);
 		GetDragFilePath(str_buf.get());
 		DxLib::DragFileInfoClear();
 		DxLib::SetDragFileValidFlag(TRUE);
@@ -125,8 +126,8 @@ std::unique_ptr<Sequence> Contest::update()
 				dxle::rgb on_string_color = dxle::color_tag::white;
 				dxle::rgb out_string_color = dxle::color_tag::white;
 
-				samples[i].set_area({ 0, title_space + menu_button_height * (i+2)}, { menu_space_size, menu_button_height });
-				samples[i].set_str(ToStringEx(_T("入力例"), i+1));
+				samples[i].set_area({ 0, title_space + menu_button_height * (i + 2) }, { menu_space_size, menu_button_height });
+				samples[i].set_str(ToStringEx(_T("入力例"), i + 1));
 				samples[i].set_on_color(on_back_color, on_edge_color, on_string_color);
 				samples[i].set_out_color(out_back_color, out_edge_color, out_string_color);
 			}
@@ -184,7 +185,7 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		memset(&ofn, NULL, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
 		//ここに指定ファイルの絶対パスが代入される
-		TCHAR szFile[MAX_PATH*2] = _T("");
+		TCHAR szFile[MAX_PATH * 2] = _T("");
 
 		//親ウィンドウのハンドル
 		ofn.hwndOwner = DxLib::GetMainWindowHandle();
@@ -192,7 +193,7 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 		ofn.lpstrFilter = _T(
 			"Cppファイル(*.cpp *.cxx)\0*.cpp;*.cxx\0"
 			"全てのファイル(*.*)\0*.*\0"
-			);
+		);
 		//パスを代入する配列
 		ofn.lpstrFile = szFile;
 		//パスの最大文字数
@@ -229,7 +230,7 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 			auto& data = Data::GetIns();
 			tifstream ifs(
 				(data.GetProblemsDirectory() + data[selecting].GetName() +
-					_T("/sample_in") + ToStringEx(i+1) + _T(".txt"))
+					_T("/sample_in") + ToStringEx(i + 1) + _T(".txt"))
 			);
 			if (ifs.bad()) {
 				popup::set(_T("コピー出来ませんでした"), dxle::color_tag::red);
@@ -242,7 +243,7 @@ std::unique_ptr<Sequence> Contest::update_Menu()
 				My_SetClipboardText(_T(""));
 			}
 			else {
-				auto str_raw_buf = std::make_unique<TCHAR[]>(static_cast<size_t>(str_len)+1u);
+				auto str_raw_buf = std::make_unique<TCHAR[]>(static_cast<size_t>(str_len) + 1u);
 				ifs.seekg(0, std::ios::beg);
 				ifs.read(str_raw_buf.get(), str_len);
 				str_raw_buf[str_len] = _T('\0');
@@ -259,7 +260,7 @@ void Contest::draw_Menu() const
 {
 	to_result.draw(menu_font);
 	to_submit.draw(menu_font);
-	for (auto&i : samples){
+	for (auto&i : samples) {
 		i.draw(menu_font);
 	}
 }
@@ -276,7 +277,7 @@ void Contest::update_Scroll()
 
 	//値セット
 	problem_pos = dxle::pointi32{ menu_space_size, title_space }
-					- scrollbar.get_value();
+	-scrollbar.get_value();
 }
 
 void Contest::reset_Scroll()
@@ -302,3 +303,5 @@ void Contest::reset_window_size()
 	//ポップアップ
 	reset_popup();
 }
+
+#endif // !1

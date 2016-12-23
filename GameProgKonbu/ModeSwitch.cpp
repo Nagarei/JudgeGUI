@@ -3,8 +3,9 @@
 #ifdef PARENT_MODE
 #include "test.h"
 
-void init_switch()
+std::unique_ptr<Sequence> init_switch()
 {
+	return std::make_unique<>();
 }
 
 void update()
@@ -25,11 +26,13 @@ void update_after_maindraw()
 #include "WaitJudge.h"
 #include "MyTchar.h"
 #include "fps.h"
+#include "Option.h"
 
-void init_switch()
+std::unique_ptr<Sequence> init_switch()
 {
 	frame_time::GetIns().upadte();
 	frame_time::GetIns().upadte();
+	return  std::make_unique<Option_Sequence>();
 }
 void update()
 {
