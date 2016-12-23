@@ -2,15 +2,16 @@
 
 #ifdef PARENT_MODE
 #include "test.h"
+#include "NetMain.h"
 
 std::unique_ptr<Sequence> init_switch()
 {
-	return std::make_unique<>();
+	return std::make_unique<NetInit>();
 }
 
 void update()
 {
-	後で書く;
+	//後で書く;
 }
 void update_after_maindraw()
 {

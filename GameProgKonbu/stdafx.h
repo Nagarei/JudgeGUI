@@ -40,6 +40,8 @@ struct IUnknown;
 #if !defined(__clang__)
 using int8_t = char;
 using uint8_t = unsigned char;
+using int16_t = short;
+using uint16_t = unsigned short;
 using int32_t = int;
 using uint32_t = unsigned int;
 #endif // !defined(__clang__)

@@ -266,6 +266,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="NetCommon.h" />
     <ClInclude Include="NetMain.h">
       <SubType>
       </SubType>
@@ -334,6 +335,8 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="NetCommon.cpp" />
+    <ClCompile Include="NetInit.cpp" />
     <ClCompile Include="NetMain.cpp">
       <SubType>
       </SubType>

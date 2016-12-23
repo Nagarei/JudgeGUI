@@ -129,7 +129,7 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 			break;
 		}
 		case Option_Sequence::Select::contest:
-			Data::GetIns().InitProblem(_T("Z:\\競技プログラミング\\contest\\"), _T("Z:\\競技プログラミング\\contest\\LOGLOGLOG"), Option::ins.username, true);
+			Data::GetIns().InitProblem(CONTEST_PROBLEM_DIR, _T("Z:\\競技プログラミング\\contest\\LOGLOGLOG"), Option::ins.username, true);
 			return std::make_unique<Contest>(0);
 			break;
 		case Option_Sequence::Select::name:

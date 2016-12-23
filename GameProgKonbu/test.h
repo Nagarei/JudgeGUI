@@ -62,6 +62,9 @@ private:
 		return ins;
 	}
 public:
+	//テスト実行スレッド起動(明示的に起動したいときのみ使用)
+	static void start(){ GetIns(); }
+
 	static void set_test(size_t problemset_num, std::unique_ptr<test_class> tester);
 	template<typename FUNC>
 	//注意：再入耐性なし
