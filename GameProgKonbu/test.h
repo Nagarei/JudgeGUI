@@ -22,30 +22,31 @@ public:
 };
 using test_class = test_Local;
 
+struct CP_user_data_bace { virtual ~CP_user_data_bace()noexcept {} };
 class compile_taskmanager final
 {
 private:
 	compile_taskmanager(const compile_taskmanager&) = delete;
 	compile_taskmanager& operator=(const compile_taskmanager&) = delete;
 
-//スレッド
+	//スレッド
 	std::atomic_bool is_end;
 	std::thread test_thread;
 
-//テスト実行前情報
-	using test_info = std::pair<size_t, std::unique_ptr<test_class>>;//first:問題セット番号 second:テスト実行クラス
+	//テスト実行前情報
+	using test_info = std::pair<std::unique_ptr<CP_user_data_bace>, std::unique_ptr<test_class>>;//first:問題セット番号 second:テスト実行クラス
 	std::mutex test_queue_mtx;
 	std::deque<test_info> test_queue;//front:pop back:push
 
-//テスト実行結果情報
+									 //テスト実行結果情報
 public:
 	struct test_result_info {
-		size_t problem_set_num;
+		std::unique_ptr<CP_user_data_bace> user_data;
 		size_t problem_num;
 		Submission_Core submission_result;
 		test_result_info() {}
-		test_result_info(size_t problem_set_num, size_t problem_num, Submission_Core&& submission_result)
-			: problem_set_num(problem_set_num), problem_num(problem_num), submission_result(std::move(submission_result))
+		test_result_info(std::unique_ptr<CP_user_data_bace>&& user_data, size_t problem_num, Submission_Core&& submission_result)
+			: user_data(std::move(user_data)), problem_num(problem_num), submission_result(std::move(submission_result))
 		{}
 	};
 private:
@@ -63,9 +64,9 @@ private:
 	}
 public:
 	//テスト実行スレッド起動(明示的に起動したいときのみ使用)
-	static void start(){ GetIns(); }
+	static void start() { GetIns(); }
 
-	static void set_test(size_t problemset_num, std::unique_ptr<test_class> tester);
+	static void set_test(std::unique_ptr<CP_user_data_bace>&& user_data, std::unique_ptr<test_class> tester);
 	template<typename FUNC>
 	//注意：再入耐性なし
 	//@param processer: void(test_result_info&&)

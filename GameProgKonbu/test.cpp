@@ -38,7 +38,7 @@ void compile_taskmanager::Loop()
 		if (test.second) {
 			auto&& new_submission = test.second->test_run();
 			std::lock_guard<std::mutex> lock(test_results_mtx);
-			test_results.emplace_back(test.first, test.second->get_problem_num(), std::move(new_submission));
+			test_results.emplace_back(std::move(test.first), test.second->get_problem_num(), std::move(new_submission));
 		}
 		else {
 			std::this_thread::sleep_for(std::chrono::milliseconds(17));
@@ -51,11 +51,11 @@ compile_taskmanager::~compile_taskmanager()
 	SetEnd();
 }
 
-void compile_taskmanager::set_test(size_t problemset_num, std::unique_ptr<test_class> tester)
+void compile_taskmanager::set_test(std::unique_ptr<CP_user_data_bace>&& user_data, std::unique_ptr<test_class> tester)
 {
 	auto& ins = GetIns();
 	std::lock_guard<std::mutex> lock(ins.test_queue_mtx);
-	ins.test_queue.emplace_back(problemset_num, std::move(tester));
+	ins.test_queue.emplace_back(std::move(user_data), std::move(tester));
 }
 
 

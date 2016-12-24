@@ -9,6 +9,7 @@
 #include "popup.h"
 #include "Option.h"
 #include "WaitJudge.h"
+#include "GUI_userdata.h"
 
 namespace
 {
@@ -17,7 +18,7 @@ namespace
 		WaitJudgeQueue::push(problem_num);
 		auto& data = Data::GetIns();
 		compile_taskmanager::set_test(
-			Data::GetIns().get_problemset_num(),
+			std::make_unique<Userdata_GUI>(Data::GetIns().get_problemset_num()),
 			std::make_unique<test_Local>(
 				problem_dir_set{ problem_num, data.GetProblemsDirectory(), data.GetLogRootDirectory(), data[problem_num].GetName() },
 				data.get_user_name(), cppfile_full_name)
