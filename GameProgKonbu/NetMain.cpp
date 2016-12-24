@@ -17,12 +17,14 @@ std::unique_ptr<Sequence> NetMain::update()
 	//通信
 
 	// 新しい接続があったらそのネットワークハンドルを得る
-	{int new_NetHandle = DxLib::GetNewAcceptNetWork();
-	if (new_NetHandle != -1) {
+	{int new_NetHandle = -1;
+	while ((new_NetHandle = DxLib::GetNewAcceptNetWork()) != -1) {
 		NewHandles.push_back(new_NetHandle);
-	}
-	}
+	}}
 
+	auto send_data_bace = [](void* buf_ptr, size_t size, int nethandle) {
+
+	};
 	auto get_data_bace = [](void* buf_ptr, size_t size, unsigned& DataLength, int nethandle) {
 		if (DataLength < size) { IEを送る; }
 		DxLib::NetWorkRecv(nethandle, buf_ptr, size); 
