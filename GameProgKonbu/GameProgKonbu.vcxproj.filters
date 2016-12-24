@@ -16,12 +16,6 @@
     <Filter Include="プリコンパイル済みヘッダー">
       <UniqueIdentifier>{9dd98c22-ec97-453c-aebd-bce01059ad3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Data">
-      <UniqueIdentifier>{c69345b0-fc8b-4824-a35e-bb88a7121108}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Data\Script">
-      <UniqueIdentifier>{22aefb7b-d8d7-46fa-a0de-cf30005ee18e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI">
       <UniqueIdentifier>{27638ae6-bbae-49f3-bbe7-8a7f9c1137fa}</UniqueIdentifier>
     </Filter>
@@ -76,6 +70,12 @@
     <Filter Include="ModeSwitch">
       <UniqueIdentifier>{d08a660a-7628-4c83-b8f3-bb64778e91a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI\Data">
+      <UniqueIdentifier>{c69345b0-fc8b-4824-a35e-bb88a7121108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Data\Script">
+      <UniqueIdentifier>{22aefb7b-d8d7-46fa-a0de-cf30005ee18e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -94,7 +94,7 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Data.h">
-      <Filter>Data</Filter>
+      <Filter>GUI\Data</Filter>
     </ClInclude>
     <ClInclude Include="KeyInputData.h">
       <Filter>GUI\Key</Filter>
@@ -142,13 +142,13 @@
       <Filter>GUI\Sequence\Score_detail</Filter>
     </ClInclude>
     <ClInclude Include="Script.h">
-      <Filter>Data\Script</Filter>
+      <Filter>GUI\Data\Script</Filter>
     </ClInclude>
     <ClInclude Include="My_GetWindowSize.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="WaitJudge.h">
-      <Filter>Data</Filter>
+      <Filter>GUI\Data</Filter>
     </ClInclude>
     <ClInclude Include="SetClipboardText.h">
       <Filter>GUI\SetClipboardText</Filter>
@@ -171,6 +171,9 @@
     <ClInclude Include="ModeSwitch.h">
       <Filter>ModeSwitch</Filter>
     </ClInclude>
+    <ClInclude Include="GUI_userdata.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -183,7 +186,7 @@
       <Filter>GUI\Sequence\Contest</Filter>
     </ClCompile>
     <ClCompile Include="Data.cpp">
-      <Filter>Data</Filter>
+      <Filter>GUI\Data</Filter>
     </ClCompile>
     <ClCompile Include="KeyInputData.cpp">
       <Filter>GUI\Key</Filter>
@@ -219,7 +222,7 @@
       <Filter>GUI\popup</Filter>
     </ClCompile>
     <ClCompile Include="Script.cpp">
-      <Filter>Data\Script</Filter>
+      <Filter>GUI\Data\Script</Filter>
     </ClCompile>
     <ClCompile Include="Score_detail.cpp">
       <Filter>GUI\Sequence\Score_detail</Filter>

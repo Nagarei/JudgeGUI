@@ -25,6 +25,7 @@ void update_after_maindraw()
 #include "WaitJudge.h"
 #include "MyTchar.h"
 #include "fps.h"
+#include "GUI_userdata.h"
 
 void init_switch()
 {
@@ -40,7 +41,8 @@ void update()
 	compile_taskmanager::process_test_result(
 		[](compile_taskmanager::test_result_info&& res) {
 			auto& data = Data::GetIns();
-			if (data.get_problemset_num() != res.problem_set_num) {
+			if (data.get_problemset_num() != 
+				static_cast<Userdata_GUI*>(res.user_data.get())->problem_set_num) {
 				return;
 			}
 			auto& ns = res.submission_result;
