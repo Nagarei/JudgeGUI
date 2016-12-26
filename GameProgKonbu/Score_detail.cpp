@@ -342,14 +342,14 @@ void Score_detail::draw() const
 		set_next(memory_width);     draw_str(_T("メモリ使用量"));
 		pos1.y += data_height;
 		//値
-		for (auto iter = scores.cbegin(), iter_end = scores.cend(); iter != iter_end; ++iter)
+		for (auto iter_begin = scores.cbegin(), iter = iter_begin, iter_end = scores.cend(); iter != iter_end; ++iter)
 		{
 			auto& i = *iter;
 			DxLib::SetDrawAreaFull();
 			my_draw_box_WF();
 			pos_x = pos1.x;
 			width = 0;
-			set_next(typename_width); draw_str(get_input_name(iter_end - iter).data());
+			set_next(typename_width); draw_str(get_input_name((iter - iter_begin)+1).data());
 			{//状態
 				set_next(type_width);
 				int32_t x1 = pos_x + (type_width - type_icon_width) / 2;

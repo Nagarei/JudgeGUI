@@ -273,8 +273,10 @@ void Problem::ReloadSubmission()
 	if (log_num == (uint32_t)(-1)) { return; }
 	dxle::tstring prb_dir;
 	prb_dir.reserve(problem_user_directory.size() + 20);
+	TCHAR buf[20];
 	for (uint32_t i = 0; i <= log_num; ++i)
 	{
+		prb_dir = problem_user_directory + my_itoa(i, buf) + _T('/');
 		this->AddSubmission(BuildScores(prb_dir));
 	}
 }
