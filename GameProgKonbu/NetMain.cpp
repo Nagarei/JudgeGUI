@@ -26,16 +26,40 @@ std::unique_ptr<Sequence> NetMain::update()
 
 	};
 	auto get_data_bace = [](void* buf_ptr, size_t size, unsigned& DataLength, int nethandle) {
-		if (DataLength < size) { IEを送る; }
+		if (DataLength < size) { IEを送る; return true; }
 		DxLib::NetWorkRecv(nethandle, buf_ptr, size); 
 		DataLength -= size;
+		return false;
 	};
 	// 新規接続の処理
-	for (auto& newhandle : NewHandles)
+	for (auto iter = NewHandles.begin(), iter_end  = NewHandles.end(); iter != iter_end;)
 	{
+		auto newhandle = *iter;
 		// データの量を取得
 		auto DataLength = (unsigned)DxLib::GetNetWorkDataLength(newhandle);
-		バージョンデータ取得;
+		if (DataLength > 0) {
+			//新規ハンドルの登録解除
+			iter = NewHandles.erase(iter);
+			iter_end = NewHandles.end();
+
+			//バージョンデータ取得
+			Send_Data::Type type;
+			Send_Data::init_VERSION version;
+			if (get_data_bace(&type, sizeof(type), DataLength, newhandle) ||
+				(type != Send_Data::Type::init_VERSION) ||
+				get_data_bace(&version, sizeof(version), DataLength, newhandle) ||
+				version.version != Send_Data::net_version) {
+				//異常値
+				DxLib::CloseNetWork(newhandle);
+			}
+			else {
+				//初期入力成功
+				NetHandles.push_back(newhandle);
+			}
+		}
+		else {
+			++iter;
+		}
 	}
 	// 送られてきたデータのチェック
 	for (auto& nethandle : NetHandles)
@@ -48,7 +72,7 @@ std::unique_ptr<Sequence> NetMain::update()
 
 			Send_Data::Type type;
 			do {
-#				define GET_data_(buf) get_data_bace(&buf, sizeof(buf), DataLength, nethandle)
+#				define GET_data_(buf) if(get_data_bace(&buf, sizeof(buf), DataLength, nethandle)){break;}
 
 
 				GET_data_(type);

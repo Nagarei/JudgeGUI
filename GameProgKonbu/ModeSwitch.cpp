@@ -11,7 +11,7 @@ std::unique_ptr<Sequence> init_switch()
 
 void update()
 {
-	//後で書く;
+	後で書く;
 }
 void update_after_maindraw()
 {
