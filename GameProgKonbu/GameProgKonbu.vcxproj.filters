@@ -25,9 +25,6 @@
     <Filter Include="TEST\test">
       <UniqueIdentifier>{6d6085a5-f87e-401b-b221-8304665b1246}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NET">
-      <UniqueIdentifier>{3aa4a99f-9e58-456d-8d5d-a064bae27ad1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI\Sequence">
       <UniqueIdentifier>{c30e9705-345c-4735-a14e-0316d9e9b672}</UniqueIdentifier>
     </Filter>
@@ -75,6 +72,12 @@
     </Filter>
     <Filter Include="GUI\Data\Script">
       <UniqueIdentifier>{22aefb7b-d8d7-46fa-a0de-cf30005ee18e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetParent">
+      <UniqueIdentifier>{3aa4a99f-9e58-456d-8d5d-a064bae27ad1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetCommon">
+      <UniqueIdentifier>{30943255-2a39-4791-afb7-c3934331c815}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +177,12 @@
     <ClInclude Include="GUI_userdata.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="NetMain.h">
+      <Filter>NetParent</Filter>
+    </ClInclude>
+    <ClInclude Include="NetCommon.h">
+      <Filter>NetCommon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -238,6 +247,15 @@
     </ClCompile>
     <ClCompile Include="ModeSwitch.cpp">
       <Filter>ModeSwitch</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMain.cpp">
+      <Filter>NetParent</Filter>
+    </ClCompile>
+    <ClCompile Include="NetInit.cpp">
+      <Filter>NetParent</Filter>
+    </ClCompile>
+    <ClCompile Include="NetCommon.cpp">
+      <Filter>NetCommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

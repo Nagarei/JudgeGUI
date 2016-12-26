@@ -2,9 +2,11 @@
 
 #ifdef PARENT_MODE
 #include "test.h"
+#include "NetMain.h"
 
-void init_switch()
+std::unique_ptr<Sequence> init_switch()
 {
+	return std::make_unique<NetInit>();
 }
 
 void update()
@@ -25,12 +27,14 @@ void update_after_maindraw()
 #include "WaitJudge.h"
 #include "MyTchar.h"
 #include "fps.h"
+#include "Option.h"
 #include "GUI_userdata.h"
 
-void init_switch()
+std::unique_ptr<Sequence> init_switch()
 {
 	frame_time::GetIns().upadte();
 	frame_time::GetIns().upadte();
+	return  std::make_unique<Option_Sequence>();
 }
 void update()
 {
@@ -41,7 +45,7 @@ void update()
 	compile_taskmanager::process_test_result(
 		[](compile_taskmanager::test_result_info&& res) {
 			auto& data = Data::GetIns();
-			if (data.get_problemset_num() != 
+			if (data.get_problemset_num() !=
 				static_cast<Userdata_GUI*>(res.user_data.get())->problem_set_num) {
 				return;
 			}

@@ -1,6 +1,5 @@
 ﻿//#include "DxLib.h"
 #include "resource.h"
-#include "Option.h"
 #include "SetLocale.h"
 #include "ModeSwitch.h"
 
@@ -17,9 +16,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPTSTR, _In_ int
 			return -1;
 		}
 
-		init_switch();
-
-		std::unique_ptr<Sequence> seqence = std::make_unique<Option_Sequence>();
+		
+		std::unique_ptr<Sequence> seqence = init_switch();
 		while (ProcessMessage() == 0)
 		{
 			update();

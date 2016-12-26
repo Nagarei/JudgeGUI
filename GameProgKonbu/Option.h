@@ -1,13 +1,13 @@
 #pragma once
 #include "my_utility.h"
 #include "button.h"
+#include "NetCommon.h"
 class Option final
 {
 public:
 	Option(const Option&) = delete;
 	Option& operator=(const Option&) = delete;
 
-	static constexpr unsigned username_length = 100;
 	TCHAR username[username_length];
 	static const Option& GetIns() {
 		return ins;

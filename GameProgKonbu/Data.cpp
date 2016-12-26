@@ -1,4 +1,5 @@
-﻿
+﻿#ifndef PARENT_MODE
+
 #include "Data.h"
 #include "my_utility.h"
 #include "GetNumfileNum.h"
@@ -22,7 +23,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 	if (problems_directory_.empty()) {
 		problems_directory_ = _T("./");
 	}
-	else if (problems_directory_.back() != '/' && problems_directory_.back() != '\\'){
+	else if (problems_directory_.back() != '/' && problems_directory_.back() != '\\') {
 		problems_directory_.push_back('/');
 	}
 	{//絶対パスに
@@ -35,7 +36,7 @@ void Data::InitProblem(dxle::tstring problems_directory_, dxle::tstring log_dire
 	if (log_directory_.empty()) {
 		log_directory_ = _T("./");
 	}
-	else if (log_directory_.back() != '/' && log_directory_.back() != '\\'){
+	else if (log_directory_.back() != '/' && log_directory_.back() != '\\') {
 		log_directory_.push_back('/');
 	}
 	{//絶対パスに
@@ -119,9 +120,9 @@ void Data::BuildProblemText()
 			//初回読み込み処理（先頭に@をつけない）
 			std::getline(problem_file, script_raw_temp, _T('@'));//'@'がでるまで読み込む
 		}
-			break;
+										  break;
 		case Data::Load_State::loading:
-			if(script_raw_temp.empty() == false) {
+			if (script_raw_temp.empty() == false) {
 				//スクリプト解析
 				problem_script_temp.emplace_back(
 					Script::build_script(script_raw_temp)
@@ -136,7 +137,7 @@ void Data::BuildProblemText()
 					if (problem_script_temp.empty()) {
 						script_raw_temp = _T("問題を読み込めませんでした。\nF5で再読み込みできます。");//ダミー登録
 					}
-					else{
+					else {
 						//読み込み終了
 						problem_text_total_size.width = std::max(problem_text_total_size.width, problem_text_next_start_pos.x);
 						problems_text[now_loding_problem].script = std::move(problem_script_temp);
@@ -161,7 +162,7 @@ void Data::BuildProblemText()
 			const auto problem_num = problems.size();
 			//まだ、読み込んでないのを全探査
 			int b_index = viewing_problem;//デクリメントしていく
-			int a_index = viewing_problem-1;//インクリメントしていく
+			int a_index = viewing_problem - 1;//インクリメントしていく
 			uint32_t find_count = 0;
 			for (; find_count < loading_max_num_div2; ++find_count)
 			{
@@ -182,7 +183,7 @@ void Data::BuildProblemText()
 				load_state = Load_State::file_open;
 			}
 		}
-			break;
+									break;
 		default:
 			assert(false);
 			return;//読み込み中断
@@ -229,7 +230,7 @@ Problem::Problem(const TCHAR* pronlem_name)
 {
 	ReloadPartialScores();
 	const_cast<uint32_t&>(sample_num) = get_numfile_num(Data::GetIns().GetProblemsDirectory() + name + _T("/sample_in"), _T(".txt"), 1);
-	if(sample_num == (uint32_t)(-1)){
+	if (sample_num == (uint32_t)(-1)) {
 		const_cast<uint32_t&>(sample_num) = 0;
 	}
 }
@@ -285,7 +286,7 @@ void Problem::ReloadPartialScores()
 	tifstream ifs(Data::GetIns().GetProblemsDirectory() + name + _T("/partial_scores.txt"));
 	if (ifs.fail()) {
 		MessageBox(GetMainWindowHandle(), (_T("問題["_ts) + name + _T("]のpartial_scores.txtがないため、問題を読み込めません")).c_str(), _T("警告"), MB_OK);
-		partial_scores.emplace_back(0,0);
+		partial_scores.emplace_back(0, 0);
 		return;
 	}
 	while (!ifs.fail())
@@ -323,7 +324,7 @@ std::vector<Submission_old> Problem::LoadSubmissionAll()const
 	DWORD_PTR hFind = (DWORD_PTR)-1;
 	FINALLY([&]() {if (hFind != -1) { FileRead_findClose(hFind); }});
 	hFind = DxLib::FileRead_findFirst((problem_directory + _T('*')).c_str(), &fi);
-	if (hFind == -1) {  }
+	if (hFind == -1) {}
 	else
 	{
 		do
@@ -402,14 +403,14 @@ std::pair<std::array<TCHAR, 10>, dxle::rgb> get_result_type_fordraw(const Submis
 			, [](const Score& s) {return s.type == Score::Type_T::AC; });
 		if (iter == scores.get_scores().end()) {
 			SET_grts_(AC);
-			color = dxle::rgb{70,136,71};
+			color = dxle::rgb{ 70,136,71 };
 		}
 		else {
 			//再帰じゃなくてScoreのオーバーロードを呼び出す
 			return get_result_type_fordraw(*iter);
 		}
 	}
-		break;
+										 break;
 	case Submission_old::Type_T::CE:
 		SET_grts_(CE);
 		color = dxle::color_tag::red;
@@ -447,10 +448,12 @@ DxLib::DATEDATA Submission_old::get_submit_time() const
 	localtime_s(&local_time, &time);
 	DxLib::DATEDATA dx_date;
 	dx_date.Year = local_time.tm_year + 1900;
-	dx_date.Mon  = local_time.tm_mon + 1;
-	dx_date.Day  = local_time.tm_mday;
+	dx_date.Mon = local_time.tm_mon + 1;
+	dx_date.Day = local_time.tm_mday;
 	dx_date.Hour = local_time.tm_hour;
-	dx_date.Min  = local_time.tm_min;
-	dx_date.Sec  = local_time.tm_sec;
+	dx_date.Min = local_time.tm_min;
+	dx_date.Sec = local_time.tm_sec;
 	return dx_date;
 }
+
+#endif // !1

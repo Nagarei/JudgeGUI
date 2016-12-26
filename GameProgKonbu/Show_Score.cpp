@@ -1,4 +1,5 @@
-﻿#include "Show_Score.h"
+﻿#ifndef PARENT_MODE
+#include "Show_Score.h"
 #include "dx_utility.h"
 #include "Mouse.h"
 #include "KeyInputData.h"
@@ -21,9 +22,9 @@ namespace
 			+ min_user_width + min_score_width + min_type_width;
 		constexpr int32_t rightspace_width = 20;//固定値
 
-		namespace index{
+		namespace index {
 			enum {
-				sbumittime, problemname, user, score, type,NUM
+				sbumittime, problemname, user, score, type, NUM
 			};
 		}
 
@@ -273,7 +274,7 @@ void Show_Score::draw_Submit() const
 			submissions_button[i].draw();
 
 			const auto& score = submissions_data[submissions_index[i]];
-			dxle::pointi32 pos1{ menu_space_size, title_space + submit::height*(i+1) };
+			dxle::pointi32 pos1{ menu_space_size, title_space + submit::height*(i + 1) };
 			pos1 -= scrollbar.get_value();
 			dxle::sizei32 draw_area{ 0, submit::height };
 			auto set_next_area = [&pos1, &draw_area, &draw_area_width](int32_t min_width) {
@@ -291,8 +292,8 @@ void Show_Score::draw_Submit() const
 				const auto& stime = score.get_submit_time();
 				DrawStringRight(pos1,
 					ToStringEx(
-						stime.Year%1000,_T('/'), std::setw(2),stime.Mon, _T('/'), std::setw(2),stime.Day,
-						_T('['), std::setw(2),stime.Hour, _T(':'), std::setw(2),stime.Min, _T(']')).c_str(),
+						stime.Year % 1000, _T('/'), std::setw(2), stime.Mon, _T('/'), std::setw(2), stime.Day,
+						_T('['), std::setw(2), stime.Hour, _T(':'), std::setw(2), stime.Min, _T(']')).c_str(),
 					dxle::color_tag::black, submissions_font, draw_area);
 			}
 			//問題名
@@ -309,8 +310,8 @@ void Show_Score::draw_Submit() const
 			set_next_area(submit::min_type_width);
 			{
 				auto&& type_draw = get_result_type_fordraw(score.get_core());
-				dxle::DrawBox(pos1 + dxle::sizei{3, 1}, pos1 + draw_area - dxle::sizei{ 0, 1 }, type_draw.second, true);
-				dxle::DrawBox(pos1 + dxle::sizei{3, 1}, pos1 + draw_area - dxle::sizei{ 0, 1 }, dxle::color_tag::black, false);
+				dxle::DrawBox(pos1 + dxle::sizei{ 3, 1 }, pos1 + draw_area - dxle::sizei{ 0, 1 }, type_draw.second, true);
+				dxle::DrawBox(pos1 + dxle::sizei{ 3, 1 }, pos1 + draw_area - dxle::sizei{ 0, 1 }, dxle::color_tag::black, false);
 				DrawStringCenter2(pos1, type_draw.first.data(), dxle::color_tag::black, submissions_font, draw_area);
 			}
 			//右スペース
@@ -390,14 +391,14 @@ void Show_Score::get_submissions_copy()
 		submissions_index.erase(
 			std::remove_if(submissions_index.begin(), submissions_index.end(),
 				[&submissions_data = this->submissions_data](const size_t& i) {
-				return submissions_data[i].get_user_name() != Data::GetIns().get_user_name(); })
+					return submissions_data[i].get_user_name() != Data::GetIns().get_user_name(); })
 			, submissions_index.end());
 	}
 }
 
 void Show_Score::reset_window_size()
 {
-	 //スクロール
+	//スクロール
 	reset_Scroll();
 
 	//問題切り替え矢印
@@ -436,7 +437,7 @@ void Show_Score::run_sort(int type)
 	case submit::index::sbumittime:
 		sort([&pred, this](size_t l, size_t r) {
 			auto to_tuple = [](const DxLib::DATEDATA& d) {
-				return std::make_tuple( d.Year,d.Mon,d.Day,d.Hour,d.Min,d.Sec );
+				return std::make_tuple(d.Year, d.Mon, d.Day, d.Hour, d.Min, d.Sec);
 			};
 			return pred(
 				to_tuple(submissions_data[l].get_submit_time()),
@@ -473,3 +474,5 @@ void Show_Score::run_sort(int type)
 		break;
 	}
 }
+
+#endif // ! PARENT_MODE
