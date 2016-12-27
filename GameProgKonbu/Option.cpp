@@ -28,9 +28,9 @@ Option_Sequence::Option_Sequence()
 	DWORD user_name_buf_length = sizeof(user_name_buf) / sizeof(user_name_buf[0]);
 	GetUserName(user_name_buf, &user_name_buf_length);
 	if (user_name_buf_length <= sizeof(user_name_buf) / sizeof(user_name_buf[0])) {
-		strncpyDx(Option::ins.username, user_name_buf, Option::username_length - 1);
+		strncpyDx(Option::ins.username, user_name_buf, username_length - 1);
 	}
-	Option::ins.username[Option::username_length - 1] = _T('\0');
+	Option::ins.username[username_length - 1] = _T('\0');
 
 	//ボタン
 	buttons[0] = Button{ { 5,   5 }, { 303, 38 }, _T("") };
@@ -134,7 +134,7 @@ std::unique_ptr<Sequence> Option_Sequence::update()
 			break;
 		case Option_Sequence::Select::name:
 			if (name_input_handle == -1) {
-				name_input_handle = DxLib::MakeKeyInput(Option::username_length - 1, TRUE, FALSE, FALSE, FALSE, FALSE);
+				name_input_handle = DxLib::MakeKeyInput(username_length - 1, TRUE, FALSE, FALSE, FALSE, FALSE);
 				SetKeyInputString(Option::GetIns().username, name_input_handle);
 			}
 			else {
