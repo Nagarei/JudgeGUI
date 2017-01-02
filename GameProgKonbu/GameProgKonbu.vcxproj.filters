@@ -79,6 +79,9 @@
     <Filter Include="NetCommon">
       <UniqueIdentifier>{30943255-2a39-4791-afb7-c3934331c815}</UniqueIdentifier>
     </Filter>
+    <Filter Include="babel">
+      <UniqueIdentifier>{8b7866ea-4179-4168-b888-8e06d4c71a28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -256,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="NetCommon.cpp">
       <Filter>NetCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="babel_compile.cpp">
+      <Filter>babel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -32,6 +32,9 @@ void update_after_maindraw()
 
 std::unique_ptr<Sequence> init_switch()
 {
+	// バベルの初期化（必須）
+	babel::init_babel();
+
 	frame_time::GetIns().upadte();
 	frame_time::GetIns().upadte();
 	return  std::make_unique<Option_Sequence>();

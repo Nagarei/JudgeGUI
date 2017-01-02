@@ -33,6 +33,9 @@ struct IUnknown;
 #include "KeyInputData.h"
 #include "My_GetWindowSize.h"
 
+#include "babel/babel.h"
+void erase_BOM(std::string& str);
+
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください。
 
 //#define PARENT_MODE 1

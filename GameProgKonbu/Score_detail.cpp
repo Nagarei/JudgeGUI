@@ -52,34 +52,35 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 	scrollbar.set_pos({ menu_space_size, title_space });
 	//ソース
 	{
-		tifstream ifs(submission.get_source_name(), std::ios::in | std::ios::binary);
+
+		std::ifstream ifs(submission.get_source_name());
 		if (ifs.bad()) {
 			source_str = _T("読み込みに失敗しました");
 		}
 		else {
-			ifs.seekg(0, std::ios::end);
-			auto str_len = ifs.tellg();
-			if (0 < str_len)
-			{
-				auto str_buf = std::make_unique<TCHAR[]>(str_len);
-				str_buf[0] = _T('\0');
-				ifs.seekg(0, std::ios::beg);
-				ifs.read(str_buf.get(), str_len);//NULL終端文字はつかないので注意！！
-				source_str.reserve(str_len * 2);
-				//source_str = str_buf.get();
-				for (auto iter = str_buf.get(), iter_end = str_buf.get() + str_len; iter != iter_end; ++iter) {
-					if (*iter == _T('\t')) {
-						for (size_t i = 0; i < 4; ++i) {
-							source_str.push_back(_T(' '));
-						}
-					}
-					else {
-						source_str.push_back(*iter);
+			// スペースや改行をスキップしない
+			ifs >> std::noskipws;
+			// ファイルの中身を全部読み込む
+			std::istream_iterator<char> ifsiter(ifs), eof;
+			std::string buffer(ifsiter, eof);
+			// エンコーディングを自動判別しShift-JISに変換する
+			erase_BOM(buffer);
+			dxle::tstring str_buf = babel::auto_translate<dxle::tstring>(buffer, babel::base_encoding::unicode);
+			source_str.reserve(str_buf.size() * 2);
+			for (auto iter = str_buf.begin(), iter_end = str_buf.end(); iter != iter_end; ++iter) {
+				if (*iter == _T('\t')) {
+					for (size_t i = 0; i < 4; ++i) {
+						source_str.push_back(_T(' '));
 					}
 				}
+				else {
+					source_str.push_back(*iter);
+				}
 			}
+
 			source_str += EOF_STR;
 		}
+
 		DxLib::GetDrawStringSizeToHandle(&source_size.width, &source_size.height, &source_line_num,
 			source_str.c_str(), source_str.size(), main_font);//@todo dxlibex
 		source_size.height += box_frame_thickness * 2;//ボックスの淵分
