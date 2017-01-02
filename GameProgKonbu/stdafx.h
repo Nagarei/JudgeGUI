@@ -13,6 +13,7 @@ struct IUnknown;
 #include <dxlibex/color.hpp>
 #undef CINTERFACE
 //#include <boost/utility.hpp>
+//#include <boost/type_traits.hpp>
 #include <vector>
 #include <memory>
 #include <thread>

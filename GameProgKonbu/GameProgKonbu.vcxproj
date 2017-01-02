@@ -270,8 +270,20 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="my_type_traits.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="NetCommon.h" />
     <ClInclude Include="NetMain.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="NetParent_userdata.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="NetSender.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -345,6 +357,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="NetSender.cpp" />
     <ClCompile Include="OpenFolder.cpp">
       <SubType>
       </SubType>
