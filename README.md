@@ -1,5 +1,3 @@
 # JudgeGUI
 
-#License
-
-Boost Software License - Version 1.0
+(C) 2016-2017 Nagarei
