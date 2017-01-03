@@ -253,6 +253,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="babel_wrap.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="button.h" />
     <ClInclude Include="GUI_userdata.h">
       <SubType>

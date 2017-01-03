@@ -186,6 +186,9 @@
     <ClInclude Include="NetCommon.h">
       <Filter>NetCommon</Filter>
     </ClInclude>
+    <ClInclude Include="babel_wrap.h">
+      <Filter>babel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

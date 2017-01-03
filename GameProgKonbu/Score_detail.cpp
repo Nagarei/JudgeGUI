@@ -62,10 +62,9 @@ Score_detail::Score_detail(int selecting_, Submission_old&& submission_)
 			ifs >> std::noskipws;
 			// ファイルの中身を全部読み込む
 			std::istream_iterator<char> ifsiter(ifs), eof;
-			std::string buffer(ifsiter, eof);
-			// エンコーディングを自動判別しShift-JISに変換する
-			erase_BOM(buffer);
-			dxle::tstring str_buf = babel::auto_translate<dxle::tstring>(buffer, babel::base_encoding::unicode);
+			// エンコーディングを自動判別し変換する
+			dxle::tstring str_buf = babel_translate<TCHAR>(
+				std::string(ifsiter, eof), babel::base_encoding::unicode);
 			source_str.reserve(str_buf.size() * 2);
 			for (auto iter = str_buf.begin(), iter_end = str_buf.end(); iter != iter_end; ++iter) {
 				if (*iter == _T('\t')) {

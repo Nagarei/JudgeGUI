@@ -1,6 +1,7 @@
 ﻿#include "babel/babel.cpp"
 
-void erase_BOM(std::string& str)
+
+void erase_BOM(::babel::bbl_binary& str)
 {
 	static_assert(sizeof(char) == 1, "");
 

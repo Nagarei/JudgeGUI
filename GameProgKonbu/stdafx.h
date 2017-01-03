@@ -34,7 +34,7 @@ struct IUnknown;
 #include "My_GetWindowSize.h"
 
 #include "babel/babel.h"
-void erase_BOM(std::string& str);
+#include "babel_wrap.h"
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください。
 
