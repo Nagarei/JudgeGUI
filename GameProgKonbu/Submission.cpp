@@ -154,16 +154,16 @@ Submission_Core BuildScores(dxle::tstring log_directory)
 			FINALLY([&file_handle]() { DxLib::FileRead_deleteInfo(file_handle); });
 			//ワイルドカード使ってないので一つしかないはず
 			FILEINFO Buffer;
-			Buffer.CreationTime.Year = Buffer.CreationTime.Mon = Buffer.CreationTime.Day
-				= Buffer.CreationTime.Hour = Buffer.CreationTime.Min = Buffer.CreationTime.Sec = 0;
+			Buffer.LastWriteTime.Year = Buffer.LastWriteTime.Mon = Buffer.LastWriteTime.Day
+				= Buffer.LastWriteTime.Hour = Buffer.LastWriteTime.Min = Buffer.LastWriteTime.Sec = 0;
 			DxLib::FileRead_getInfo(0, &Buffer, file_handle);
 			//変換
-			local_time.tm_year = Buffer.CreationTime.Year - 1900;
-			local_time.tm_mon  = Buffer.CreationTime.Mon - 1;
-			local_time.tm_mday = Buffer.CreationTime.Day;
-			local_time.tm_hour = Buffer.CreationTime.Hour;
-			local_time.tm_min  = Buffer.CreationTime.Min;
-			local_time.tm_sec  = Buffer.CreationTime.Sec;
+			local_time.tm_year = Buffer.LastWriteTime.Year - 1900;
+			local_time.tm_mon  = Buffer.LastWriteTime.Mon - 1;
+			local_time.tm_mday = Buffer.LastWriteTime.Day;
+			local_time.tm_hour = Buffer.LastWriteTime.Hour;
+			local_time.tm_min  = Buffer.LastWriteTime.Min;
+			local_time.tm_sec  = Buffer.LastWriteTime.Sec;
 		}
 		sbumit_time = mktime(&local_time);
 	}
